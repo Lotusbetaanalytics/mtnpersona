@@ -1,0 +1,64 @@
+.input__container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 15px;
+}
+
+.input {
+  width: 350px;
+  height: 50px;
+  background: #fff;
+  border-radius: 100px;
+  border: none;
+  outline: none;
+  padding-left: 20px;
+  border: 1px solid rgba(196, 196, 196, 0.5);
+}
+label {
+  width: 350px;
+  height: 50px;
+  background: rgba(196, 196, 196, 0.5);
+  border-radius: 100px;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+#file__upload {
+  color: transparent;
+}
+#file__upload::-webkit-file-upload-button {
+  visibility: hidden;
+}
+#file__upload::before {
+  content: "Select Image";
+  color: #fff;
+  display: inline-block;
+  background: rgb(100, 99, 99);
+  border: none;
+  border-radius: 100px;
+  padding: 9px 8px;
+  outline: none;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  font-size: 10pt;
+  margin-top: 8px;
+  font-weight: 200;
+  position: relative;
+  left: -12px;
+  width: 100px;
+  text-align: center;
+}
+#file__upload:hover::before {
+  border-color: none;
+}
+#file__upload:active {
+  outline: 0;
+}

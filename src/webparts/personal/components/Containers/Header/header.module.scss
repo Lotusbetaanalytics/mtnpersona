@@ -1,0 +1,32 @@
+.header__container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  justify-content: space-between;
+  align-items: center;
+  height: 100px;
+}
+
+.header__title {
+  width: 330px;
+  height: 60px;
+  background: #ffc423;
+  color: #000;
+  font-size: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  left: -8px;
+  font-weight: 700;
+  border-radius: 0px 100px 100px 0px;
+}
+
+.header__logo {
+  position: relative;
+  left: 130px;
+}
+.header__logo img {
+  width: 80px;
+  height: 80px;
+}

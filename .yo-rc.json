@@ -1,0 +1,16 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "version": "1.14.0",
+    "libraryName": "mtnpersonal",
+    "libraryId": "66d14f02-ea0e-417d-843a-ccc79de83910",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "mtnpersonal",
+    "solutionShortDescription": "mtnpersonal description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

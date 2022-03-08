@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "mtnpersonal-client-side-solution",
+    "id": "66d14f02-ea0e-417d-843a-ccc79de83910",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.14.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "mtnpersonal description"
+      },
+      "longDescription": {
+        "default": "mtnpersonal description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "mtnpersonal Feature",
+        "description": "The feature that activates elements of the mtnpersonal solution.",
+        "id": "18e2f104-b8e9-435c-826c-d1a550d425ee",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/mtnpersonal.sppkg"
+  }
+}

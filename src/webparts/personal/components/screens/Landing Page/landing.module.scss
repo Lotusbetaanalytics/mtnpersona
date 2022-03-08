@@ -1,0 +1,68 @@
+.landing__container {
+  width: 100%;
+  height: 90vh;
+  background: url(../../assets/bg.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.landing__contents {
+  width: 30%;
+  height: 50%;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: flex-start;
+  position: absolute;
+  top: 15%;
+  left: 5%;
+}
+
+.landing__logo img {
+  width: 80px;
+  height: 80px;
+}
+
+.landing__contents {
+  color: #fff;
+}
+
+.landing__title {
+  height: 20%;
+}
+.landing__contents h6 {
+  font-size: 16px;
+  position: relative;
+  // top: -10px;
+}
+.landing__contents button {
+  position: relative;
+  top: -20px;
+  // padding: 25px;
+  height: 50px;
+  border-radius: 100px;
+  background: rgba(255, 196, 35, 1);
+  color: #000;
+  border: none;
+  outline: none;
+  box-shadow: 0px 4px 4px 4px rgba(255, 196, 35, 0.27);
+  width: 180px;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 14px;
+}
+
+.landing__contents button a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.landing__contents h1 {
+  font-size: 50px;
+  font-weight: 600;
+  padding-right: 100px;
+  position: relative;
+  line-height: 50px;
+  word-spacing: 30px;
+
+  // top: -20px;
+}
