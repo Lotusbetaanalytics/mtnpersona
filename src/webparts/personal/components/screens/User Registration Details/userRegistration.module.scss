@@ -2,6 +2,10 @@
   width: 100%;
   height: 100vh;
 }
+.screen2__container {
+  width: 100%;
+  height: 100vh;
+}
 
 .screen1__container form {
   width: 70%;
@@ -11,24 +15,36 @@
   grid-gap: 2px;
   height: 60%;
 }
+.screen2__container form {
+  width: 70%;
+  margin: 20px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2px;
+  height: 100%;
+}
 
 .job__form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 2px;
   height: 100%;
-}
-.job__form div {
-  display: flex;
-  flex-direction: column;
-  grid-gap: 20px;
-  height: 100%;
+  width: 100%;
 }
 
 .job__label {
   border-radius: 50px;
-  width: 474px;
-  height: 162px;
+  width: 90%;
+  height: 120px;
   background: rgba(196, 196, 196, 0.33);
-  padding: 40px 160px 32px 75px;
+  padding: 20px;
+  font-weight: 600;
+}
+
+.input__details {
+  width: 100%;
+  grid-gap: 20px;
+  display: flex;
+  align-items: center;
+  // padding: 5px;
 }
