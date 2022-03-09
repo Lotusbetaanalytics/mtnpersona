@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { Header } from "../../../Containers";
 import styles from "../userRegistration.module.scss";
 
@@ -22,10 +23,13 @@ const JobInfo = (props: Props) => {
               How many years have you been in the world of work? Both in and
               outside MTN
             </label>
-            <select name="" id="">
-              <option value="">1</option>
-              <option value="">2</option>
-            </select>
+            <div className={styles.select}>
+              <select name="" id="">
+                <option value="">1</option>
+                <option value="">2</option>
+              </select>
+              <span className={styles.focus}></span>
+            </div>
           </div>
           <div style={{ margin: "10px 0px" }}>
             <label
@@ -98,6 +102,14 @@ const JobInfo = (props: Props) => {
           </div>
         </div>
       </form>
+      <div className={styles.nav__buttons}>
+        <button className={styles.nobackground__button}>
+          <Link to="/info/personal">Previous</Link>
+        </button>
+        <button className={styles.filled__button}>
+          <Link to="/info/page2">Next</Link>
+        </button>
+      </div>
     </div>
   );
 };
