@@ -35,13 +35,27 @@ const JobInfo = (props: Props) => {
             >
               Where are you on the Y'ello ladder?
             </label>
-            <div className={styles.input__details}>
-              <input type="radio" name="hello" />
-              <div> Grace</div>
-            </div>
-            <div className={styles.input__details}>
-              <input type="radio" name="hello" />
-              <div> Mirabel</div>
+            <div className={styles.job__info}>
+              <div className={styles.input__details}>
+                <input type="radio" name="hello" />
+                <div>Job Level 2</div>
+              </div>
+              <div className={styles.input__details}>
+                <input type="radio" name="hello" />
+                <div> Job Level 4</div>
+              </div>
+              <div className={styles.input__details}>
+                <input type="radio" name="hello" />
+                <div> Job Level 3</div>
+              </div>
+              <div className={styles.input__details}>
+                <input type="radio" name="hello" />
+                <div> Job Level 5/6</div>
+              </div>
+              <div className={styles.input__details}>
+                <input type="radio" name="hello" />
+                <div> Job Level 3H</div>
+              </div>
             </div>
           </div>
         </div>
