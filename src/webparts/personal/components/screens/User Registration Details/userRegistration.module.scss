@@ -6,6 +6,10 @@
   width: 100%;
   height: 100vh;
 }
+.screen3__container {
+  width: 100%;
+  height: 100vh;
+}
 
 .screen1__container form {
   width: 70%;
@@ -16,6 +20,14 @@
   height: 60%;
 }
 .screen2__container form {
+  width: 70%;
+  margin: 20px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2px;
+  height: 100%;
+}
+.screen3__container form {
   width: 70%;
   margin: 20px auto;
   display: grid;
@@ -37,8 +49,11 @@
   width: 90%;
   height: 120px;
   background: rgba(196, 196, 196, 0.33);
-  padding: 20px;
+  padding: 20px 40px;
   font-weight: 600;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .input__details {
@@ -47,6 +62,13 @@
   display: flex;
   align-items: center;
   // padding: 5px;
+}
+.input__details input[type="text"] {
+  border-radius: 100px;
+  width: 320px;
+  border: 1px solid rgba(0, 0, 0, 0.31);
+  height: 50px;
+  padding-left: 20px;
 }
 
 .job__info {
@@ -118,15 +140,14 @@ select:focus + .focus {
 
 .nav__buttons {
   width: 40%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  // grid-template-columns: 1fr 1fr;
   align-items: center;
   justify-content: flex-end;
   position: absolute;
   bottom: 10px;
   height: 20%;
-  right: 60px;
-  grid-gap: 10px;
+  right: 200px;
 }
 .nav__buttons button {
   height: 50px;
@@ -134,7 +155,7 @@ select:focus + .focus {
   color: #000;
   border: none;
   outline: none;
-  width: 180px;
+  width: 160px;
   font-weight: 700;
   font-size: 13px;
   line-height: 14px;
@@ -166,4 +187,18 @@ button a {
 .filled__button a {
   color: inherit;
   text-decoration: none;
+}
+
+.gridItem {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 60%;
+}
+
+.space__gap {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 20px;
+  padding: 5px 15px;
+  margin-top: 20px;
 }
