@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { Header } from "../../Containers";
 import MyModal from "../../Containers/Modal/Modal";
 import styles from "./userRegistration.module.scss";
@@ -7,7 +7,16 @@ MyModal;
 type Props = {};
 
 const PageSix = (props: Props) => {
-  const [modalShow, setModalShow] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <div className={styles.screen3__container}>
       <Header />
@@ -51,15 +60,12 @@ const PageSix = (props: Props) => {
         </div>
       </form>
       <div className={styles.nav__buttons} style={{ bottom: "-10px" }}>
-        <button
-          className={styles.nobackground__button}
-          onClick={() => setModalShow(true)}
-        >
+        <button className={styles.nobackground__button} onClick={handleOpen}>
           Cancel
         </button>
         <button className={styles.filled__button}>Submit</button>
       </div>
-      <MyModal show={modalShow} onHide={() => setModalShow(false)} />
+      <MyModal open={open} handleClose={handleClose} />
     </div>
   );
 };
