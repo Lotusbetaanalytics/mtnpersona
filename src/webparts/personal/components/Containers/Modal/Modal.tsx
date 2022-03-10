@@ -3,6 +3,7 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -20,14 +21,16 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function TransitionsModal({ open, handleClose }) {
+  const [cancelMsg, setCancelMsg] = React.useState(false);
   const classes = useStyles();
 
   const noHandler = (e: any) => {
     e.preventDefault();
     localStorage.removeItem("data");
-    setTimeout(() => {
-      handleClose();
-    }, 1000);
+    setCancelMsg(true);
+    // setTimeout(() => {
+    //   handleClose();
+    // }, 1000);
   };
   const yesHandler = (e: any) => {
     e.preventDefault();
@@ -49,15 +52,24 @@ export default function TransitionsModal({ open, handleClose }) {
           timeout: 500,
         }}
       >
-        <Fade in={open}>
-          <div className={classes.paper}>
-            <p>Are you sure you want to clear all inputs?</p>
-            <div>
-              <button onClick={noHandler}>No</button>
-              <button onClick={yesHandler}>Yes</button>
+        {cancelMsg ? (
+          <Fade in={open}>
+            <div className={classes.paper}>
+              <h2>All inputs have been cleared.</h2>
+              <Link to="/">Home</Link>
             </div>
-          </div>
-        </Fade>
+          </Fade>
+        ) : (
+          <Fade in={open}>
+            <div className={classes.paper}>
+              <p>Are you sure you want to clear all inputs?</p>
+              <div>
+                <button onClick={noHandler}>No</button>
+                <button onClick={yesHandler}>Yes</button>
+              </div>
+            </div>
+          </Fade>
+        )}
       </Modal>
     </div>
   );
