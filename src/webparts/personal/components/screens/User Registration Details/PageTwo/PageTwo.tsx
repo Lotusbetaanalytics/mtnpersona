@@ -6,6 +6,36 @@ import styles from "../userRegistration.module.scss";
 type Props = {};
 
 const PageTwo = (props: Props) => {
+  const [gender, setGender] = React.useState("");
+  const [evp, setEvp] = React.useState({});
+  const [motivation, setMotivation] = React.useState("");
+
+  const genderHandler = (e: any) => {
+    setGender(e.target.value);
+  };
+
+  const motivationHandler = (e: any) => {
+    setMotivation(e.target.value);
+  };
+
+  const evpHandler1 = (e: any) => {
+    setEvp({ ...evp, evp1: e.target.value });
+  };
+  const evpHandler2 = (e: any) => {
+    setEvp({ ...evp, evp2: e.target.value });
+  };
+
+  const onNextHandler = () => {
+    localStorage.setItem(
+      "data",
+      JSON.stringify({
+        ...JSON.parse(localStorage.getItem("data")),
+        gender,
+        evp,
+        motivation,
+      })
+    );
+  };
   return (
     <div className={styles.screen3__container}>
       <Header />
@@ -25,11 +55,23 @@ const PageTwo = (props: Props) => {
               }}
             >
               <div className={styles.input__details}>
-                <input type="radio" name="gender" id="" />
+                <input
+                  type="radio"
+                  name="gender"
+                  id=""
+                  value="male"
+                  onChange={genderHandler}
+                />
                 <div>Male</div>
               </div>
               <div className={styles.input__details}>
-                <input type="radio" name="gender" id="" />
+                <input
+                  type="radio"
+                  name="gender"
+                  id=""
+                  value="female"
+                  onChange={genderHandler}
+                />
                 <div>Female</div>
               </div>
             </div>
@@ -41,12 +83,24 @@ const PageTwo = (props: Props) => {
             </label>
             <div className={styles.space__gap}>
               <div className={styles.input__details}>
-                <input type="checkbox" name="" id="" />
-                <div>Eastern Region</div>
+                <input
+                  type="radio"
+                  name="motivation"
+                  id=""
+                  value="Project 1"
+                  onChange={motivationHandler}
+                />
+                <div>Project 1</div>
               </div>
               <div className={styles.input__details}>
-                <input type="checkbox" name="" id="" />
-                <div>Eastern Region</div>
+                <input
+                  type="radio"
+                  name="motivation"
+                  id=""
+                  value="Project 2"
+                  onChange={motivationHandler}
+                />
+                <div>Project 2</div>
               </div>
             </div>
           </div>
@@ -58,11 +112,23 @@ const PageTwo = (props: Props) => {
             </label>
             <div className={styles.space__gap}>
               <div className={styles.input__details}>
-                <input type="checkbox" name="" id="" />
+                <input
+                  type="checkbox"
+                  name="eastern1"
+                  id=""
+                  value="eastern"
+                  onChange={evpHandler1}
+                />
                 <div>Eastern Region</div>
               </div>
               <div className={styles.input__details}>
-                <input type="checkbox" name="" id="" />
+                <input
+                  type="checkbox"
+                  name="eastern 2"
+                  id=""
+                  value="eastern1"
+                  onChange={evpHandler2}
+                />
                 <div>Eastern Region</div>
               </div>
             </div>
@@ -73,7 +139,7 @@ const PageTwo = (props: Props) => {
         <button className={styles.nobackground__button}>
           <Link to="/info/job">Previous</Link>
         </button>
-        <button className={styles.filled__button}>
+        <button className={styles.filled__button} onClick={onNextHandler}>
           <Link to="/info/page3">Next</Link>
         </button>
       </div>

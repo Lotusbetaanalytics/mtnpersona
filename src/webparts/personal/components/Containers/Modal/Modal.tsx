@@ -10,8 +10,6 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      width: "300px",
-      height: "300px",
     },
     paper: {
       backgroundColor: theme.palette.background.paper,
@@ -23,15 +21,19 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function TransitionsModal({ open, handleClose }) {
   const classes = useStyles();
-  //   const [open, setOpen] = React.useState(false);
 
-  //   const handleOpen = () => {
-  //     setOpen(true);
-  //   };
-
-  //   const handleClose = () => {
-  //     setOpen(false);
-  //   };
+  const noHandler = (e: any) => {
+    e.preventDefault();
+    localStorage.removeItem("data");
+    setTimeout(() => {
+      handleClose();
+    }, 1000);
+  };
+  const yesHandler = (e: any) => {
+    e.preventDefault();
+    //submit data to sharepoint List
+    //graph.add(JSON.parse(localStorage.getItem("data")));
+  };
 
   return (
     <div>
@@ -51,8 +53,8 @@ export default function TransitionsModal({ open, handleClose }) {
           <div className={classes.paper}>
             <p>Are you sure you want to clear all inputs?</p>
             <div>
-              <button>No</button>
-              <button>Yes</button>
+              <button onClick={noHandler}>No</button>
+              <button onClick={yesHandler}>Yes</button>
             </div>
           </div>
         </Fade>
