@@ -6,6 +6,35 @@ import styles from "./userRegistration.module.scss";
 type Props = {};
 
 const PageThree = (props: Props) => {
+  const [sport, setsport] = React.useState({});
+  const [hobby, sethobby] = React.useState("");
+
+  const sportHandler = (e: any) => {
+    setsport(e.target.value);
+  };
+
+  const hobbyHandler = (e: any) => {
+    sethobby(e.target.value);
+  };
+
+  const sportHandler1 = (e: any) => {
+    setsport({ ...sport, sport1: e.target.value });
+  };
+  const sportHandler2 = (e: any) => {
+    setsport({ ...sport, sport2: e.target.value });
+  };
+
+  const onNextHandler = () => {
+    localStorage.setItem(
+      "data",
+      JSON.stringify({
+        ...JSON.parse(localStorage.getItem("data")),
+        sport,
+
+        hobby,
+      })
+    );
+  };
   return (
     <div className={styles.screen3__container}>
       <Header />
@@ -17,11 +46,11 @@ const PageThree = (props: Props) => {
             </label>
             <div className={styles.space__gap}>
               <div className={styles.input__details}>
-                <input type="checkbox" name="" id="" />
+                <input type="checkbox" name="" id="" onChange={sportHandler1} />
                 <div>Eastern Region</div>
               </div>
               <div className={styles.input__details}>
-                <input type="checkbox" name="" id="" />
+                <input type="checkbox" name="" id="" onChange={sportHandler2} />
                 <div>Eastern Region</div>
               </div>
             </div>
@@ -35,13 +64,13 @@ const PageThree = (props: Props) => {
             </label>
             <div className={styles.space__gap}>
               <div className={styles.input__details}>
-                <input type="radio" name="gender" id="" />
-                <div>Male</div>
+                <input type="text" name="hobby" id="" onChange={hobbyHandler} />
+                {/* <div>Male</div> */}
               </div>
-              <div className={styles.input__details}>
-                <input type="radio" name="gender" id="" />
+              {/* <div className={styles.input__details}>
+                <input type="radio" name="hobby" id="" />
                 <div>Female</div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -50,7 +79,7 @@ const PageThree = (props: Props) => {
         <button className={styles.nobackground__button}>
           <Link to="/info/page2">Previous</Link>
         </button>
-        <button className={styles.filled__button}>
+        <button className={styles.filled__button} onClick={onNextHandler}>
           <Link to="/info/page4">Next</Link>
         </button>
       </div>

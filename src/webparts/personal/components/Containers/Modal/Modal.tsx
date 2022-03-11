@@ -4,6 +4,7 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import { Link } from "react-router-dom";
+import styles from "./modal.module.scss";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -20,20 +21,40 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function TransitionsModal({ open, handleClose }) {
-  const [cancelMsg, setCancelMsg] = React.useState(false);
+const TransitionsModal = ({ open, handleClose }) => {
   const classes = useStyles();
+
+  //8b83ab1f-05d2-4acd-a805-c56a63dad8c
+
+  //
+
+  // pnp.sp.web.lists
+  //   .getByTitle(`test`)
+  //   .items.get()
+  //   .then((response) => {
+  //     console.log(response);
+  //   });
+
+  // React.useEffect(() => {
+  //   // we can use this 'list' variable to execute more queries on the list:
+
+  //   const r = getListTitles();
+
+  //   // show the response from the server
+  //   console.log(r);
+  // }, []);
 
   const noHandler = (e: any) => {
     e.preventDefault();
-    localStorage.removeItem("data");
-    setCancelMsg(true);
+    handleClose();
     // setTimeout(() => {
     //   handleClose();
     // }, 1000);
   };
   const yesHandler = (e: any) => {
     e.preventDefault();
+    localStorage.removeItem("data");
+    handleClose();
     //submit data to sharepoint List
     //graph.add(JSON.parse(localStorage.getItem("data")));
   };
@@ -52,25 +73,18 @@ export default function TransitionsModal({ open, handleClose }) {
           timeout: 500,
         }}
       >
-        {cancelMsg ? (
-          <Fade in={open}>
-            <div className={classes.paper}>
-              <h2>All inputs have been cleared.</h2>
-              <Link to="/">Home</Link>
+        <Fade in={open}>
+          <div className={`${classes.paper} ${styles.container}`}>
+            <h3>Are you sure you want to clear all inputs?</h3>
+            <div className={styles.modal__container}>
+              <button onClick={noHandler}>No</button>
+              <button onClick={yesHandler}>Yes</button>
             </div>
-          </Fade>
-        ) : (
-          <Fade in={open}>
-            <div className={classes.paper}>
-              <p>Are you sure you want to clear all inputs?</p>
-              <div>
-                <button onClick={noHandler}>No</button>
-                <button onClick={yesHandler}>Yes</button>
-              </div>
-            </div>
-          </Fade>
-        )}
+          </div>
+        </Fade>
       </Modal>
     </div>
   );
-}
+};
+
+export default TransitionsModal;

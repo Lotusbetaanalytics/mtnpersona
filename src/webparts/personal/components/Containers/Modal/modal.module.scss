@@ -1,0 +1,22 @@
+.modal__container {
+  display: flex;
+  grid-gap: 20px;
+  align-self: flex-end;
+}
+.modal__container button {
+  width: 80px;
+  height: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 10px;
+}
+
+.container {
+  width: 40vw;
+  height: 20vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  grid-gap: 30px;
+}

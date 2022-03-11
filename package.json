@@ -25,7 +25,8 @@
     "react": "16.13.1",
     "react-bootstrap": "^2.2.0",
     "react-dom": "16.13.1",
-    "react-router-dom": "^5.3.0"
+    "react-router-dom": "^5.3.0",
+    "sp-pnp-js": "^3.0.10"
   },
   "devDependencies": {
     "@microsoft/sp-build-web": "1.14.0",

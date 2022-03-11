@@ -3,7 +3,10 @@ import * as React from "react";
 import { Header } from "../../Containers";
 import MyModal from "../../Containers/Modal/Modal";
 import styles from "./userRegistration.module.scss";
-MyModal;
+import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { default as pnp, ItemAddResult } from "sp-pnp-js";
+import "@pnp/sp/webs";
+import "@pnp/sp/lists";
 type Props = {};
 
 const PageSix = (props: Props) => {
@@ -15,6 +18,34 @@ const PageSix = (props: Props) => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  pnp.sp.web.lists
+    .getByTitle("personal")
+    .items.get()
+    .then((res) => {
+      console.log(res);
+    });
+
+  const submitHandler = async (e: any) => {
+    e.preventDefault();
+    const data = JSON.parse(localStorage.getItem("data"));
+    console.log(data);
+    pnp.sp.web.lists
+      .getByTitle("personal")
+      .items.add({
+        Title: `${Math.random()}`,
+        name: data.name,
+        alias: data.alias,
+        // division: data.division,
+        email: data.email,
+        // evp: data.evp,
+        // gender: data.gender,
+        // motivation: data.motivation,
+        // yearsofWork: data.yearsofWork,
+        // yelloladder: data.yelloladder,
+      })
+      .then((iar: ItemAddResult) => {});
   };
 
   return (
@@ -63,7 +94,9 @@ const PageSix = (props: Props) => {
         <button className={styles.nobackground__button} onClick={handleOpen}>
           Cancel
         </button>
-        <button className={styles.filled__button}>Submit</button>
+        <button className={styles.filled__button} onClick={submitHandler}>
+          Submit
+        </button>
       </div>
       <MyModal open={open} handleClose={handleClose} />
     </div>

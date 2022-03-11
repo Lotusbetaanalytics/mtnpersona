@@ -12,13 +12,16 @@ import PageFour from "./screens/User Registration Details/PageFour";
 import PageFive from "./screens/User Registration Details/PageFive";
 import PageSix from "./screens/User Registration Details/PageSix";
 
+export const Context = React.createContext(null);
+
 export default class Personal extends React.Component<IPersonalProps, {}> {
   public render(): React.ReactElement<IPersonalProps> {
     jQuery("#workbenchPageContent").prop("style", "max-width: none");
     jQuery(".SPCanvas-canvas").prop("style", "max-width: none");
     jQuery(".CanvasZone").prop("style", "max-width: none");
+
     return (
-      <>
+      <Context.Provider value={this.props.context}>
         <HashRouter>
           <Switch>
             <Route exact path="/" component={Landing} />
@@ -31,7 +34,7 @@ export default class Personal extends React.Component<IPersonalProps, {}> {
             <Route exact path="/info/page6" component={PageSix} />
           </Switch>
         </HashRouter>
-      </>
+      </Context.Provider>
     );
   }
 }
