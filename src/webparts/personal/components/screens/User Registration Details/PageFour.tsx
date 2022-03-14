@@ -26,6 +26,21 @@ const PageThree = (props: Props) => {
               </div>
             </div>
           </div>
+          <div style={{ marginTop: "20px" }}>
+            <label className={styles.job__label} htmlFor="">
+              Let’s do some carbon dating shall we, so what’s your age range?
+            </label>
+            <div className={styles.select}>
+              <select name="" id="" onChange={(e) => {}}>
+                <option>Select...</option>
+                <option value="20-30 Years">20 - 30 Years</option>
+                <option value="31-40 Years">31 - 40 Years</option>
+                <option value="41-50 Years">41 - 50 Years</option>
+                <option value="51-60 Years">51 - 60 Years</option>
+              </select>
+              <span className={styles.focus}></span>
+            </div>
+          </div>
         </div>
         <div>
           <div>

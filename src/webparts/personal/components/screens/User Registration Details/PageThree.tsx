@@ -55,6 +55,35 @@ const PageThree = (props: Props) => {
               </div>
             </div>
           </div>
+          <div style={{ margin: "10px 0px" }}>
+            <label
+              className={styles.job__label}
+              htmlFor=""
+              style={{ marginBottom: "10px" }}
+            >
+              What’s Your Highest ITK (I too Know) Level?
+            </label>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gridGap: "10px",
+              }}
+            >
+              <div className={styles.input__details}>
+                <input type="radio" name="hello" value="Doctorate/Ph.D" />
+                <div>HND/Bachelor's Degree</div>
+              </div>
+              <div className={styles.input__details}>
+                <input type="radio" name="hello" value="Master's Degree" />
+                <div>Master's Degree</div>
+              </div>
+              <div className={styles.input__details}>
+                <input type="radio" name="hello" value="level 3" />
+                <div> Diploma</div>
+              </div>
+            </div>
+          </div>
         </div>
         <div>
           <div>

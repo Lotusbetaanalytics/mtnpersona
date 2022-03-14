@@ -22,43 +22,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const TransitionsModal = ({ open, handleClose }) => {
+const ModalOne = ({ open, handleClose }) => {
   const classes = useStyles();
-
-  //8b83ab1f-05d2-4acd-a805-c56a63dad8c
-
-  //
-
-  // pnp.sp.web.lists
-  //   .getByTitle(`test`)
-  //   .items.get()
-  //   .then((response) => {
-  //     console.log(response);
-  //   });
-
-  // React.useEffect(() => {
-  //   // we can use this 'list' variable to execute more queries on the list:
-
-  //   const r = getListTitles();
-
-  //   // show the response from the server
-  //   console.log(r);
-  // }, []);
-
-  const noHandler = (e: any) => {
-    e.preventDefault();
-    handleClose();
-    // setTimeout(() => {
-    //   handleClose();
-    // }, 1000);
-  };
-  const yesHandler = (e: any) => {
-    e.preventDefault();
-    localStorage.removeItem("data");
-    handleClose();
-    //submit data to sharepoint List
-    //graph.add(JSON.parse(localStorage.getItem("data")));
-  };
 
   return (
     <div>
@@ -88,10 +53,14 @@ const TransitionsModal = ({ open, handleClose }) => {
             >
               <Cancel />
             </div>
-            <h3>Are you sure you want to clear all inputs?</h3>
-            <div className={styles.modal__container}>
-              <button onClick={noHandler}>No</button>
-              <button onClick={yesHandler}>Yes</button>
+            <div className={styles.next__btn}>
+              <div>
+                <h5>Enter Question</h5>
+                <textarea></textarea>
+              </div>
+              <button className={styles.hr__btn}>
+                <Link to="/hr/page2">Next</Link>
+              </button>
             </div>
           </div>
         </Fade>
@@ -100,4 +69,4 @@ const TransitionsModal = ({ open, handleClose }) => {
   );
 };
 
-export default TransitionsModal;
+export default ModalOne;
