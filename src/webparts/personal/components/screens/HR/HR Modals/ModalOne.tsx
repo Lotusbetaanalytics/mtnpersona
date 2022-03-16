@@ -3,7 +3,7 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import styles from "./modal.module.scss";
 import { Cancel } from "@material-ui/icons";
 
@@ -24,6 +24,21 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const ModalOne = ({ open, handleClose }) => {
   const classes = useStyles();
+  const [question, setQuestion] = React.useState(
+    "" || JSON.parse(localStorage.getItem("hr")).question
+  );
+  const history = useHistory();
+  const onNextHandler = () => {
+    localStorage.setItem(
+      "hr",
+      JSON.stringify({
+        ...JSON.parse(localStorage.getItem("hr")),
+        question,
+        options: [],
+      })
+    );
+    history.push("/hr/page2");
+  };
 
   return (
     <div>
@@ -56,21 +71,20 @@ const ModalOne = ({ open, handleClose }) => {
             <div className={styles.next__btn}>
               <div>
                 <h5>Enter Question</h5>
-                <textarea></textarea>
-                {/* <div className={styles.select}>
-                  <select name="" id="" onChange={(e) => {}}>
-                    <option>Choose Question Section</option>
-                    <option value="section 1">Section One</option>
-                    <option value="section 2">Section Two</option>
-                    <option value="section 3">Section Three</option>
-                    <option value="section 4">Section Four</option>
-                  </select>
-                  <span className={styles.focus}></span>
-                </div> */}
+                <textarea
+                  value={question}
+                  onChange={(e) => {
+                    setQuestion(e.target.value);
+                  }}
+                ></textarea>
               </div>
 
-              <button className={styles.hr__btn}>
-                <Link to="/hr/page2">Next</Link>
+              <button
+                className={styles.hr__btn}
+                disabled={question.length < 1 ? true : false}
+                onClick={onNextHandler}
+              >
+                Next
               </button>
             </div>
           </div>

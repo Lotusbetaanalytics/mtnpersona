@@ -3,9 +3,13 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import styles from "./modal.module.scss";
 import { Cancel } from "@material-ui/icons";
+import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { default as pnp, ItemAddResult } from "sp-pnp-js";
+import "@pnp/sp/webs";
+import "@pnp/sp/lists";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,6 +29,29 @@ const useStyles = makeStyles((theme: Theme) =>
 const ModalFive = ({ open: newOpen, handleClose }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [Title, setTitle] = React.useState("");
+  const history = useHistory();
+
+  const onSubmitHandler = () => {
+    if (!JSON.parse(localStorage.getItem("hr"))) {
+      alert("Please fill the form first");
+      history.push("/hr/page1");
+    } else {
+      const questionList = JSON.parse(localStorage.getItem("hr"));
+      pnp.sp.web.lists
+        .getByTitle("Questions")
+        .items.add({
+          Title: Title,
+          question: questionList.question,
+          type: questionList.type,
+          options: JSON.stringify(questionList.options),
+        })
+        .then((iar: ItemAddResult) => {
+          localStorage.removeItem("hr");
+          console.log(iar);
+        });
+    }
+  };
 
   React.useEffect(() => {
     setOpen(true);
@@ -66,7 +93,13 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
               <div>
                 <h5>Assign Response to</h5>
                 <div className={styles.select}>
-                  <select name="" id="" onChange={(e) => {}}>
+                  <select
+                    name=""
+                    id=""
+                    onChange={(e) => {
+                      setTitle(e.target.value);
+                    }}
+                  >
                     <option>Select...</option>
                     <option value="priorities">Priorities</option>
                     <option value="goals">Goals</option>
@@ -91,7 +124,12 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
                 <button className={styles.hr__btn__nobg}>
                   <Link to="/hr/page4">Previous</Link>
                 </button>
-                <button className={styles.hr__btn__filled}>Submit</button>
+                <button
+                  className={styles.hr__btn__filled}
+                  onClick={onSubmitHandler}
+                >
+                  Submit
+                </button>
               </div>
             </div>
           </div>

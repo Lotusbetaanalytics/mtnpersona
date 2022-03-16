@@ -3,7 +3,7 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import styles from "./modal.module.scss";
 import { Cancel } from "@material-ui/icons";
 
@@ -25,6 +25,17 @@ const useStyles = makeStyles((theme: Theme) =>
 const ModalTwo = ({ open: newOpen, handleClose }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [type, setType] = React.useState(
+    "" || JSON.parse(localStorage.getItem("hr")).type
+  );
+  const history = useHistory();
+  const onNextHandler = () => {
+    localStorage.setItem(
+      "hr",
+      JSON.stringify({ ...JSON.parse(localStorage.getItem("hr")), type })
+    );
+    history.push("/hr/page3");
+  };
 
   React.useEffect(() => {
     setOpen(true);
@@ -66,7 +77,13 @@ const ModalTwo = ({ open: newOpen, handleClose }) => {
               <div>
                 <h5>Response Type</h5>
                 <div className={styles.select}>
-                  <select name="" id="" onChange={(e) => {}}>
+                  <select
+                    name=""
+                    id=""
+                    onChange={(e) => {
+                      setType(e.target.value);
+                    }}
+                  >
                     <option>Select...</option>
                     <option value="radio">Radio Input</option>
                     <option value="checkbox">Check Box</option>
@@ -79,8 +96,12 @@ const ModalTwo = ({ open: newOpen, handleClose }) => {
                 <button className={styles.hr__btn__nobg}>
                   <Link to="/hr/page1">Previous</Link>
                 </button>
-                <button className={styles.hr__btn__filled}>
-                  <Link to="/hr/page3">Next</Link>
+                <button
+                  className={styles.hr__btn__filled}
+                  disabled={type.length < 1 ? true : false}
+                  onClick={onNextHandler}
+                >
+                  Next
                 </button>
               </div>
             </div>

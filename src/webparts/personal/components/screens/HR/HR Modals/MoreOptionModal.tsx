@@ -3,7 +3,7 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import styles from "./modal.module.scss";
 import { Cancel } from "@material-ui/icons";
 
@@ -25,6 +25,19 @@ const useStyles = makeStyles((theme: Theme) =>
 const MoreOptionModal = ({ open: newOpen, handleClose }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [options, setOptions] = React.useState("");
+  const history = useHistory();
+  const onNextHandler = () => {
+    localStorage.setItem(
+      "hr",
+      JSON.stringify({
+        ...JSON.parse(localStorage.getItem("hr")),
+        options: [...JSON.parse(localStorage.getItem("hr")).options, options],
+      })
+    );
+    // history.push("/hr/page4");
+    setOptions("");
+  };
 
   const closeModal = () => {
     setOpen(false);
@@ -60,7 +73,12 @@ const MoreOptionModal = ({ open: newOpen, handleClose }) => {
               <div>
                 <h5>Enter Another Option</h5>
 
-                <textarea></textarea>
+                <textarea
+                  value={options}
+                  onChange={(e) => {
+                    setOptions(e.target.value);
+                  }}
+                ></textarea>
               </div>
 
               <div className={styles.btn__flex__1}>
@@ -70,7 +88,13 @@ const MoreOptionModal = ({ open: newOpen, handleClose }) => {
                 >
                   Close
                 </button>
-                <button className={styles.hr__btn__filled}>Add Option</button>
+                <button
+                  className={styles.hr__btn__filled}
+                  disabled={options ? false : true}
+                  onClick={onNextHandler}
+                >
+                  Add Option
+                </button>
               </div>
             </div>
           </div>

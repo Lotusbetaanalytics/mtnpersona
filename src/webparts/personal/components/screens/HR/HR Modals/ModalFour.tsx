@@ -78,7 +78,7 @@ const ModalFour = ({ open: newOpen, handleClose }) => {
                   Add Another Option
                 </button>
               </div>
-              <div></div>
+
               <div className={styles.btn__flex__1}>
                 <button className={styles.hr__btn__nobg}>
                   <Link to="/hr/page3">Previous</Link>
