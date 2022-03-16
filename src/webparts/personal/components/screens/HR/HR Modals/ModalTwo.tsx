@@ -22,8 +22,17 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const ModalOne = ({ open, handleClose }) => {
+const ModalTwo = ({ open: newOpen, handleClose }) => {
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    setOpen(true);
+  }, []);
+
+  const closeModal = () => {
+    setOpen(false);
+  };
 
   return (
     <div>
@@ -31,15 +40,15 @@ const ModalOne = ({ open, handleClose }) => {
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         className={classes.modal}
-        open={open}
-        onClose={handleClose}
+        open={open || newOpen}
+        onClose={handleClose || closeModal}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
           timeout: 500,
         }}
       >
-        <Fade in={open}>
+        <Fade in={open || newOpen}>
           <div className={`${classes.paper} ${styles.container}`}>
             <div
               style={{
@@ -48,30 +57,32 @@ const ModalOne = ({ open, handleClose }) => {
                 cursor: "pointer",
               }}
               onClick={() => {
-                handleClose();
+                closeModal();
               }}
             >
               <Cancel />
             </div>
             <div className={styles.next__btn}>
               <div>
-                <h5>Enter Question</h5>
-                <textarea></textarea>
-                {/* <div className={styles.select}>
+                <h5>Response Type</h5>
+                <div className={styles.select}>
                   <select name="" id="" onChange={(e) => {}}>
-                    <option>Choose Question Section</option>
-                    <option value="section 1">Section One</option>
-                    <option value="section 2">Section Two</option>
-                    <option value="section 3">Section Three</option>
-                    <option value="section 4">Section Four</option>
+                    <option>Select...</option>
+                    <option value="radio">Radio Input</option>
+                    <option value="checkbox">Check Box</option>
                   </select>
                   <span className={styles.focus}></span>
-                </div> */}
+                </div>
               </div>
 
-              <button className={styles.hr__btn}>
-                <Link to="/hr/page2">Next</Link>
-              </button>
+              <div className={styles.btn__flex}>
+                <button className={styles.hr__btn__nobg}>
+                  <Link to="/hr/page1">Previous</Link>
+                </button>
+                <button className={styles.hr__btn__filled}>
+                  <Link to="/hr/page3">Next</Link>
+                </button>
+              </div>
             </div>
           </div>
         </Fade>
@@ -80,4 +91,4 @@ const ModalOne = ({ open, handleClose }) => {
   );
 };
 
-export default ModalOne;
+export default ModalTwo;

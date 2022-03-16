@@ -12,6 +12,12 @@ import PageFour from "./screens/User Registration Details/PageFour";
 import PageFive from "./screens/User Registration Details/PageFive";
 import PageSix from "./screens/User Registration Details/PageSix";
 import HrPageOne from "./screens/HR/HrPageOne";
+import HrPageTwo from "./screens/HR/HrPageTwo";
+import HrPageThree from "./screens/HR/HrPageThree";
+import HrPageFour from "./screens/HR/HrPageFour";
+import HrPageFive from "./screens/HR/HrPageFive";
+import HrPageSeven from "./screens/HR/HrPageSeven";
+import HrPageSix from "./screens/HR/HrPageSix";
 
 export const Context = React.createContext(null);
 
@@ -27,6 +33,12 @@ export default class Personal extends React.Component<IPersonalProps, {}> {
           <Switch>
             <Route exact path="/" component={Landing} />
             <Route exact path="/hr/page1" component={HrPageOne} />
+            <Route exact path="/hr/page2" component={HrPageTwo} />
+            <Route exact path="/hr/page3" component={HrPageThree} />
+            <Route exact path="/hr/page4" component={HrPageFour} />
+            <Route exact path="/hr/page5" component={HrPageFive} />
+            <Route exact path="/hr/page6" component={HrPageSix} />
+            <Route exact path="/hr/page7" component={HrPageSeven} />
             <Route exact path="/info/personal" component={Screen1} />
             <Route exact path="/info/job" component={JobInfo} />
             <Route exact path="/info/page2" component={PageTwo} />

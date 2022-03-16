@@ -6,6 +6,7 @@ import Fade from "@material-ui/core/Fade";
 import { Link } from "react-router-dom";
 import styles from "./modal.module.scss";
 import { Cancel } from "@material-ui/icons";
+import MoreOptionModal from "./MoreOptionModal";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,8 +23,26 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const ModalOne = ({ open, handleClose }) => {
+const ModalFour = ({ open: newOpen, handleClose }) => {
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
+  const [optionModalOpen, setOptionModalOpen] = React.useState(false);
+
+  const openOptionModal = () => {
+    setOptionModalOpen(true);
+  };
+  const closeOptionModal = () => {
+    setOptionModalOpen(false);
+  };
+
+  React.useEffect(() => {
+    setOpen(true);
+  }, []);
+
+  const closeModal = () => {
+    setOpen(false);
+    handleClose();
+  };
 
   return (
     <div>
@@ -31,15 +50,15 @@ const ModalOne = ({ open, handleClose }) => {
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         className={classes.modal}
-        open={open}
-        onClose={handleClose}
+        open={open || newOpen}
+        onClose={handleClose || closeModal}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
           timeout: 500,
         }}
       >
-        <Fade in={open}>
+        <Fade in={open || newOpen}>
           <div className={`${classes.paper} ${styles.container}`}>
             <div
               style={{
@@ -48,36 +67,33 @@ const ModalOne = ({ open, handleClose }) => {
                 cursor: "pointer",
               }}
               onClick={() => {
-                handleClose();
+                closeModal();
               }}
             >
               <Cancel />
             </div>
             <div className={styles.next__btn}>
-              <div>
-                <h5>Enter Question</h5>
-                <textarea></textarea>
-                {/* <div className={styles.select}>
-                  <select name="" id="" onChange={(e) => {}}>
-                    <option>Choose Question Section</option>
-                    <option value="section 1">Section One</option>
-                    <option value="section 2">Section Two</option>
-                    <option value="section 3">Section Three</option>
-                    <option value="section 4">Section Four</option>
-                  </select>
-                  <span className={styles.focus}></span>
-                </div> */}
+              <div className={styles.btn__container__moreoptions}>
+                <button className={styles.more__btn} onClick={openOptionModal}>
+                  Add Another Option
+                </button>
               </div>
-
-              <button className={styles.hr__btn}>
-                <Link to="/hr/page2">Next</Link>
-              </button>
+              <div></div>
+              <div className={styles.btn__flex__1}>
+                <button className={styles.hr__btn__nobg}>
+                  <Link to="/hr/page3">Previous</Link>
+                </button>
+                <button className={styles.hr__btn__filled}>
+                  <Link to="/hr/page5">Next</Link>
+                </button>
+              </div>
             </div>
           </div>
         </Fade>
       </Modal>
+      <MoreOptionModal open={optionModalOpen} handleClose={closeOptionModal} />
     </div>
   );
 };
 
-export default ModalOne;
+export default ModalFour;

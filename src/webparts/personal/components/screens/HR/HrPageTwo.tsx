@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Header } from "../../Containers";
-import ModalOne from "./HR Modals/ModalOne";
+import ModalTwo from "./HR Modals/ModalTwo";
 import styles from "./hrstyles.module.scss";
 import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 
-const HrPageOne = () => {
+const HrPageTwo = () => {
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
@@ -34,9 +34,9 @@ const HrPageOne = () => {
         <button className={styles.hr__button}>View Questions</button>
         <button className={styles.hr__button}>Reports</button>
       </div>
-      <ModalOne open={open} handleClose={handleClose} />
+      <ModalTwo open={open} handleClose={handleClose} />
     </div>
   );
 };
 
-export default HrPageOne;
+export default HrPageTwo;
