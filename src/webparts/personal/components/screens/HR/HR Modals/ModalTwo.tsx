@@ -25,9 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const ModalTwo = ({ open: newOpen, handleClose }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-  const [type, setType] = React.useState(
-    "" || JSON.parse(localStorage.getItem("hr")).type
-  );
+  const [type, setType] = React.useState("");
   const history = useHistory();
   const onNextHandler = () => {
     localStorage.setItem(
@@ -87,6 +85,7 @@ const ModalTwo = ({ open: newOpen, handleClose }) => {
                     <option>Select...</option>
                     <option value="radio">Radio Input</option>
                     <option value="checkbox">Check Box</option>
+                    <option value="text">Text</option>
                   </select>
                   <span className={styles.focus}></span>
                 </div>
@@ -98,7 +97,7 @@ const ModalTwo = ({ open: newOpen, handleClose }) => {
                 </button>
                 <button
                   className={styles.hr__btn__filled}
-                  disabled={type.length < 1 ? true : false}
+                  disabled={type ? false : true}
                   onClick={onNextHandler}
                 >
                   Next

@@ -24,9 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const ModalOne = ({ open, handleClose }) => {
   const classes = useStyles();
-  const [question, setQuestion] = React.useState(
-    "" || JSON.parse(localStorage.getItem("hr")).question
-  );
+  const [question, setQuestion] = React.useState("");
   const history = useHistory();
   const onNextHandler = () => {
     localStorage.setItem(

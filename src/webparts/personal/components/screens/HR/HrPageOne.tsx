@@ -2,10 +2,6 @@ import * as React from "react";
 import { Header } from "../../Containers";
 import ModalOne from "./HR Modals/ModalOne";
 import styles from "./hrstyles.module.scss";
-import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
-import { default as pnp, ItemAddResult } from "sp-pnp-js";
-import "@pnp/sp/webs";
-import "@pnp/sp/lists";
 
 const HrPageOne = () => {
   const [open, setOpen] = React.useState(false);

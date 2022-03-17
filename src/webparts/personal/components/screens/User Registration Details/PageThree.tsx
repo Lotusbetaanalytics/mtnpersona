@@ -1,109 +1,121 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { Header } from "../../Containers";
+import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { default as pnp, ItemAddResult } from "sp-pnp-js";
+import "@pnp/sp/webs";
+import "@pnp/sp/lists";
 import styles from "./userRegistration.module.scss";
 
 type Props = {};
 
 const PageThree = (props: Props) => {
-  const [sport, setsport] = React.useState({});
-  const [hobby, sethobby] = React.useState("");
-
-  const sportHandler = (e: any) => {
-    setsport(e.target.value);
-  };
-
-  const hobbyHandler = (e: any) => {
-    sethobby(e.target.value);
-  };
-
-  const sportHandler1 = (e: any) => {
-    setsport({ ...sport, sport1: e.target.value });
-  };
-  const sportHandler2 = (e: any) => {
-    setsport({ ...sport, sport2: e.target.value });
-  };
+  const [list, setList] = React.useState([]);
+  const [response, setResponse] = React.useState([]);
 
   const onNextHandler = () => {
     localStorage.setItem(
       "data",
-      JSON.stringify({
-        ...JSON.parse(localStorage.getItem("data")),
-        sport,
-
-        hobby,
-      })
+      JSON.stringify([...JSON.parse(localStorage.getItem("data")), ...response])
     );
   };
+
+  React.useEffect(() => {
+    try {
+      pnp.sp.web.lists
+        .getByTitle("Questions")
+        .items.get()
+        .then((res) => {
+          console.log(res);
+
+          setList(
+            res.filter(({ section }) => {
+              return section === "communication" || section === "goals";
+            })
+          );
+        });
+    } catch (e) {
+      console.log(e.message);
+    }
+  }, []);
   return (
-    <div className={styles.screen3__container}>
+    <div className={styles.screen2__container}>
       <Header />
-      <form className={styles.job__form}>
-        <div className={styles.gridItem}>
-          <div>
-            <label className={styles.job__label} htmlFor="">
-              Which sport do you personally engage in? <br /> (1-2)
-            </label>
-            <div className={styles.space__gap}>
-              <div className={styles.input__details}>
-                <input type="checkbox" name="" id="" onChange={sportHandler1} />
-                <div>Eastern Region</div>
+      <div className={styles.job__info}>
+        {list.map((items, index) => {
+          return (
+            <form className={styles.job__form} key={index}>
+              <div>
+                <label
+                  className={styles.job__label}
+                  htmlFor=""
+                  style={{ marginBottom: "10px" }}
+                >
+                  {items.questions}
+                </label>
               </div>
-              <div className={styles.input__details}>
-                <input type="checkbox" name="" id="" onChange={sportHandler2} />
-                <div>Eastern Region</div>
-              </div>
-            </div>
-          </div>
-          <div style={{ margin: "10px 0px" }}>
-            <label
-              className={styles.job__label}
-              htmlFor=""
-              style={{ marginBottom: "10px" }}
-            >
-              What’s Your Highest ITK (I too Know) Level?
-            </label>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gridGap: "10px",
-              }}
-            >
-              <div className={styles.input__details}>
-                <input type="radio" name="hello" value="Doctorate/Ph.D" />
-                <div>HND/Bachelor's Degree</div>
-              </div>
-              <div className={styles.input__details}>
-                <input type="radio" name="hello" value="Master's Degree" />
-                <div>Master's Degree</div>
-              </div>
-              <div className={styles.input__details}>
-                <input type="radio" name="hello" value="level 3" />
-                <div> Diploma</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div>
-            <label className={styles.job__label} htmlFor="">
-              Excluding sports, what 1 - 2 things take your excitement level
-              from 0-100 in seconds
-            </label>
-            <div className={styles.space__gap}>
-              <div className={styles.input__details}>
-                <input type="text" name="hobby" id="" onChange={hobbyHandler} />
-                {/* <div>Male</div> */}
-              </div>
-              {/* <div className={styles.input__details}>
-                <input type="radio" name="hobby" id="" />
-                <div>Female</div>
-              </div> */}
-            </div>
-          </div>
-        </div>
-      </form>
+
+              {items.type === "text" ||
+              items.type === "radio" ||
+              items.type === "checkbox" ? (
+                <div>
+                  {JSON.parse(items.options).map((opt: any, index: any) => {
+                    return (
+                      <div className={styles.input__details} key={index}>
+                        <input
+                          type={items.type}
+                          name={items.type === "radio" ? "yello" : ""}
+                          value={opt ? opt : ""}
+                          onChange={(e: any) => {
+                            setResponse([
+                              ...response,
+                              {
+                                answer: e.target.value,
+                                id: items.GUID,
+                                section: items.section,
+                              },
+                            ]);
+                          }}
+                        />
+                        <div className={styles.input__options}>
+                          <div>{opt ? opt : ""}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className={styles.select}>
+                  <select
+                    name=""
+                    id=""
+                    onChange={(e) => {
+                      setResponse([
+                        ...response,
+                        {
+                          answer: e.target.value,
+                          id: items.GUID,
+                          section: items.section,
+                        },
+                      ]);
+                    }}
+                  >
+                    {JSON.parse(items.options).map((opt: any, index: any) => {
+                      return (
+                        <div key={index}>
+                          <option>Select...</option>
+                          <option value={opt}>{opt}</option>
+                        </div>
+                      );
+                    })}
+                  </select>
+                  <span className={styles.focus}></span>
+                </div>
+              )}
+            </form>
+          );
+        })}
+      </div>
       <div className={styles.nav__buttons}>
         <button className={styles.nobackground__button}>
           <Link to="/info/page2">Previous</Link>

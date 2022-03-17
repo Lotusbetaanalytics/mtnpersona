@@ -40,7 +40,7 @@ export default class Personal extends React.Component<IPersonalProps, {}> {
             <Route exact path="/hr/page6" component={HrPageSix} />
             <Route exact path="/hr/page7" component={HrPageSeven} />
             <Route exact path="/info/personal" component={Screen1} />
-            <Route exact path="/info/job" component={JobInfo} />
+            <Route exact path="/info/page1" component={JobInfo} />
             <Route exact path="/info/page2" component={PageTwo} />
             <Route exact path="/info/page3" component={PageThree} />
             <Route exact path="/info/page4" component={PageFour} />

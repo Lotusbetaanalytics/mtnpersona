@@ -19,14 +19,14 @@
   grid-gap: 2px;
   height: 60%;
 }
-.screen2__container form {
-  width: 70%;
-  margin: 20px auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 2px;
-  height: 100%;
-}
+// .screen2__container form {
+//   width: 70%;
+//   margin: 20px auto;
+//   display: grid;
+//   grid-template-columns: 1fr 1fr;
+//   grid-gap: 2px;
+//   height: 100%;
+// }
 .screen3__container form {
   width: 70%;
   margin: 20px auto;
@@ -38,9 +38,9 @@
 
 .job__form {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   grid-gap: 2px;
-  height: 100%;
+  height: 40%;
   width: 100%;
 }
 
@@ -61,6 +61,7 @@
   grid-gap: 20px;
   display: flex;
   align-items: center;
+  padding-left: 20px;
   // padding: 5px;
 }
 .input__details input[type="text"] {
@@ -72,10 +73,14 @@
 }
 
 .job__info {
-  width: 100%;
-  height: 60%;
+  width: 70%;
+  height: 70%;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+  justify-content: center;
+  margin: 10px auto;
+  overflow-y: scroll;
 }
 
 :root {
@@ -201,4 +206,13 @@ button a {
   grid-gap: 20px;
   padding: 5px 15px;
   margin-top: 20px;
+}
+
+.input__options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.input__options div {
+  margin: 5px 0px;
 }

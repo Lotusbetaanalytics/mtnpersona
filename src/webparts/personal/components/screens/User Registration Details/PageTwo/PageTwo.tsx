@@ -1,143 +1,124 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { Header } from "../../../Containers";
+import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { default as pnp, ItemAddResult } from "sp-pnp-js";
+import "@pnp/sp/webs";
+import "@pnp/sp/lists";
 import styles from "../userRegistration.module.scss";
+import { Header } from "../../../Containers";
 
 type Props = {};
 
 const PageTwo = (props: Props) => {
-  const [gender, setGender] = React.useState("");
-  const [evp, setEvp] = React.useState({});
-  const [motivation, setMotivation] = React.useState("");
-
-  const genderHandler = (e: any) => {
-    setGender(e.target.value);
-  };
-
-  const motivationHandler = (e: any) => {
-    setMotivation(e.target.value);
-  };
-
-  const evpHandler1 = (e: any) => {
-    setEvp({ ...evp, evp1: e.target.value });
-  };
-  const evpHandler2 = (e: any) => {
-    setEvp({ ...evp, evp2: e.target.value });
-  };
+  const [list, setList] = React.useState([]);
+  const [response, setResponse] = React.useState([]);
 
   const onNextHandler = () => {
     localStorage.setItem(
       "data",
-      JSON.stringify({
-        ...JSON.parse(localStorage.getItem("data")),
-        gender,
-        evp,
-        motivation,
-      })
+      JSON.stringify([...JSON.parse(localStorage.getItem("data")), ...response])
     );
   };
+
+  React.useEffect(() => {
+    try {
+      pnp.sp.web.lists
+        .getByTitle("Questions")
+        .items.get()
+        .then((res) => {
+          console.log(res);
+
+          setList(
+            res.filter(({ section }) => {
+              return section === "attributes" || section === "learning";
+            })
+          );
+        });
+    } catch (e) {
+      console.log(e.message);
+    }
+  }, []);
   return (
-    <div className={styles.screen3__container}>
+    <div className={styles.screen2__container}>
       <Header />
-      <form className={styles.job__form}>
-        <div className={styles.gridItem}>
-          <div>
-            <label className={styles.job__label} htmlFor="">
-              Gender
-            </label>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                marginTop: "20px",
-                marginBottom: "20px",
-                padding: "5px 15px",
-              }}
-            >
-              <div className={styles.input__details}>
-                <input
-                  type="radio"
-                  name="gender"
-                  id=""
-                  value="male"
-                  onChange={genderHandler}
-                />
-                <div>Male</div>
+      <div className={styles.job__info}>
+        {list.map((items, index) => {
+          return (
+            <form className={styles.job__form} key={index}>
+              <div>
+                <label
+                  className={styles.job__label}
+                  htmlFor=""
+                  style={{ marginBottom: "10px" }}
+                >
+                  {items.questions}
+                </label>
               </div>
-              <div className={styles.input__details}>
-                <input
-                  type="radio"
-                  name="gender"
-                  id=""
-                  value="female"
-                  onChange={genderHandler}
-                />
-                <div>Female</div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <label className={styles.job__label} htmlFor="">
-              What 1 project below is guaranteed to turn your frown upside down
-              and just generally make the MTN world a happier place for you?
-            </label>
-            <div className={styles.space__gap}>
-              <div className={styles.input__details}>
-                <input
-                  type="radio"
-                  name="motivation"
-                  id=""
-                  value="Project 1"
-                  onChange={motivationHandler}
-                />
-                <div>Project 1</div>
-              </div>
-              <div className={styles.input__details}>
-                <input
-                  type="radio"
-                  name="motivation"
-                  id=""
-                  value="Project 2"
-                  onChange={motivationHandler}
-                />
-                <div>Project 2</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div>
-            <label className={styles.job__label} htmlFor="">
-              Which EVP resonates the most with you?
-            </label>
-            <div className={styles.space__gap}>
-              <div className={styles.input__details}>
-                <input
-                  type="checkbox"
-                  name="eastern1"
-                  id=""
-                  value="eastern"
-                  onChange={evpHandler1}
-                />
-                <div>Eastern Region</div>
-              </div>
-              <div className={styles.input__details}>
-                <input
-                  type="checkbox"
-                  name="eastern 2"
-                  id=""
-                  value="eastern1"
-                  onChange={evpHandler2}
-                />
-                <div>Eastern Region</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
+
+              {items.type === "text" ||
+              items.type === "radio" ||
+              items.type === "checkbox" ? (
+                <div>
+                  {JSON.parse(items.options).map((opt: any, index: any) => {
+                    return (
+                      <div className={styles.input__details} key={index}>
+                        <input
+                          type={items.type}
+                          name={items.type === "radio" ? "yello" : ""}
+                          value={opt ? opt : ""}
+                          onChange={(e: any) => {
+                            setResponse([
+                              ...response,
+                              {
+                                answer: e.target.value,
+                                id: items.GUID,
+                                section: items.section,
+                              },
+                            ]);
+                          }}
+                        />
+                        <div className={styles.input__options}>
+                          <div>{opt ? opt : ""}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className={styles.select}>
+                  <select
+                    name=""
+                    id=""
+                    onChange={(e) => {
+                      setResponse([
+                        ...response,
+                        {
+                          answer: e.target.value,
+                          id: items.GUID,
+                          section: items.section,
+                        },
+                      ]);
+                    }}
+                  >
+                    {JSON.parse(items.options).map((opt: any, index: any) => {
+                      return (
+                        <div key={index}>
+                          <option>Select...</option>
+                          <option value={opt}>{opt}</option>
+                        </div>
+                      );
+                    })}
+                  </select>
+                  <span className={styles.focus}></span>
+                </div>
+              )}
+            </form>
+          );
+        })}
+      </div>
       <div className={styles.nav__buttons}>
         <button className={styles.nobackground__button}>
-          <Link to="/info/job">Previous</Link>
+          <Link to="/info/page1">Previous</Link>
         </button>
         <button className={styles.filled__button} onClick={onNextHandler}>
           <Link to="/info/page3">Next</Link>

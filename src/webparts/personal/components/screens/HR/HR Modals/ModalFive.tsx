@@ -10,6 +10,7 @@ import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
+import Toast from "../../../Containers/Toast";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,27 +30,43 @@ const useStyles = makeStyles((theme: Theme) =>
 const ModalFive = ({ open: newOpen, handleClose }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-  const [Title, setTitle] = React.useState("");
+  const [show, setShow] = React.useState(false);
+  const [section, setSection] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
   const history = useHistory();
-
+  const questionList = JSON.parse(localStorage.getItem("hr"));
   const onSubmitHandler = () => {
-    if (!JSON.parse(localStorage.getItem("hr"))) {
-      alert("Please fill the form first");
-      history.push("/hr/page1");
+    setLoading(true);
+    if (!questionList) {
+      setMessage("Please fill the form first");
+      setShow(true);
+      setTimeout(() => {
+        history.push("/hr/page1");
+      }, 1500);
     } else {
-      const questionList = JSON.parse(localStorage.getItem("hr"));
-      pnp.sp.web.lists
-        .getByTitle("Questions")
-        .items.add({
-          Title: Title,
-          question: questionList.question,
-          type: questionList.type,
-          options: JSON.stringify(questionList.options),
-        })
-        .then((iar: ItemAddResult) => {
-          localStorage.removeItem("hr");
-          console.log(iar);
-        });
+      try {
+        pnp.sp.web.lists
+          .getByTitle("Questions")
+          .items.add({
+            Title: `${Math.random()}`,
+            questions: questionList.question,
+            section,
+            type: questionList.type,
+            options: JSON.stringify(questionList.options),
+          })
+          .then((iar: ItemAddResult) => {
+            localStorage.removeItem("hr");
+            setShow(true);
+            setMessage("Question Added!");
+            setLoading(false);
+          });
+      } catch (e) {
+        setLoading(false);
+        setShow(true);
+        setMessage("Something went wrong");
+        console.log(e.message);
+      }
     }
   };
 
@@ -97,7 +114,7 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
                     name=""
                     id=""
                     onChange={(e) => {
-                      setTitle(e.target.value);
+                      setSection(e.target.value);
                     }}
                   >
                     <option>Select...</option>
@@ -124,17 +141,27 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
                 <button className={styles.hr__btn__nobg}>
                   <Link to="/hr/page4">Previous</Link>
                 </button>
-                <button
-                  className={styles.hr__btn__filled}
-                  onClick={onSubmitHandler}
-                >
-                  Submit
-                </button>
+                {loading ? (
+                  <button
+                    className={styles.hr__btn__filled}
+                    // onClick={onSubmitHandler}
+                  >
+                    ...Submitting
+                  </button>
+                ) : (
+                  <button
+                    className={styles.hr__btn__filled}
+                    onClick={onSubmitHandler}
+                  >
+                    Submit
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </Fade>
       </Modal>
+      <Toast show={show} message={message} setShow={setShow} />
     </div>
   );
 };

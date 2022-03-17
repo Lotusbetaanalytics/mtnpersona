@@ -2,7 +2,10 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { Header, Input } from "../../Containers";
 import { FileInput, SelectInput } from "../../Containers/Input";
-
+import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { default as pnp, ItemAddResult } from "sp-pnp-js";
+import "@pnp/sp/webs";
+import "@pnp/sp/lists";
 import styles from "./userRegistration.module.scss";
 
 const Screen1 = () => {
@@ -11,12 +14,29 @@ const Screen1 = () => {
   const [alias, setAlias] = React.useState("");
   const [division, setDivision] = React.useState("");
   const [file, setFile] = React.useState(null);
+  const [list, setList] = React.useState([]);
+
+  React.useEffect(() => {
+    try {
+      pnp.sp.web.lists
+        .getByTitle("Questions")
+        .items.get()
+        .then((res) => {
+          setList(
+            res.filter(({ section }) => {
+              return section === "demographic";
+            })
+          );
+        });
+    } catch (e) {
+      console.log(e.message);
+    }
+  }, []);
 
   const onNextHandler = () => {
     localStorage.setItem(
-      "data",
+      "userData",
       JSON.stringify({
-        ...JSON.parse(localStorage.getItem("data")),
         name,
         email,
         alias,
