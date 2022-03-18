@@ -14,23 +14,13 @@ const Screen1 = () => {
   const [alias, setAlias] = React.useState("");
   const [division, setDivision] = React.useState("");
   const [file, setFile] = React.useState(null);
-  const [list, setList] = React.useState([]);
 
   React.useEffect(() => {
-    try {
-      pnp.sp.web.lists
-        .getByTitle("Questions")
-        .items.get()
-        .then((res) => {
-          setList(
-            res.filter(({ section }) => {
-              return section === "demographic";
-            })
-          );
-        });
-    } catch (e) {
-      console.log(e.message);
-    }
+    pnp.sp.profiles.myProperties.get().then((response) => {
+      console.log(response.DisplayName, response.Email);
+      setName(response.DisplayName);
+      setEmail(response.Email);
+    });
   }, []);
 
   const onNextHandler = () => {
@@ -53,7 +43,7 @@ const Screen1 = () => {
           type="text"
           value={name}
           onChange={(e: any) => {
-            setName(e.target.value);
+            // setName(e.target.value);
           }}
           label="Employee Name"
           id="name"
@@ -62,7 +52,7 @@ const Screen1 = () => {
           type="email"
           value={email}
           onChange={(e: any) => {
-            setEmail(e.target.value);
+            // setEmail(e.target.value);
           }}
           label="Employee Email"
           id="email"
@@ -121,7 +111,7 @@ const Screen1 = () => {
             <Link to="/info/page3">Previous</Link>
           </button> */}
           <button className={styles.filled__button} onClick={onNextHandler}>
-            <Link to="/info/job">Next</Link>
+            <Link to="/info/page1">Next</Link>
           </button>
         </div>
       </form>

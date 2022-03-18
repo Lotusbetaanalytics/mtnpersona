@@ -146,7 +146,7 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
                     className={styles.hr__btn__filled}
                     // onClick={onSubmitHandler}
                   >
-                    ...Submitting
+                    Submitting...
                   </button>
                 ) : (
                   <button

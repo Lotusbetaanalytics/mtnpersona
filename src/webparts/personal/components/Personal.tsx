@@ -18,6 +18,7 @@ import HrPageFour from "./screens/HR/HrPageFour";
 import HrPageFive from "./screens/HR/HrPageFive";
 import HrPageSeven from "./screens/HR/HrPageSeven";
 import HrPageSix from "./screens/HR/HrPageSix";
+import Dashboard from "./screens/Persona Dashboard/Dashboard";
 
 export const Context = React.createContext(null);
 
@@ -46,6 +47,7 @@ export default class Personal extends React.Component<IPersonalProps, {}> {
             <Route exact path="/info/page4" component={PageFour} />
             <Route exact path="/info/page5" component={PageFive} />
             <Route exact path="/info/page6" component={PageSix} />
+            <Route exact path="/info/dashboard" component={Dashboard} />
           </Switch>
         </HashRouter>
       </Context.Provider>
