@@ -132,8 +132,8 @@ const Dashboard = () => {
           </div>
         </div>
         <div className={styles.dashboard__cards__right}>
-          <div></div>
-          <div></div>
+          <div className={styles.card__right__first}></div>
+          <div className={styles.card__right__second}></div>
           <div></div>
         </div>
       </div>

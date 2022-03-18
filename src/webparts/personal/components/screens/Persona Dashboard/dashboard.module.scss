@@ -111,11 +111,43 @@
   grid-gap: 10px;
 }
 
-// .cards__right {
-//   display: grid;
-//   grid-template-columns: 1fr 1fr;
-//   width: 100%;
-//   height: 120px;
-//   border: 1px solid rgb(255, 0, 200);
-//   grid-gap: 10px;
-// }
+.card__right__first {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100px;
+  padding: 20px;
+  border-radius: 10px;
+  background: #ffc423;
+}
+.card__right__first::after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  top: -20px;
+  background: #ffffff;
+}
+
+.card__right__second {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 130px;
+  padding: 20px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.card__right__second::after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  top: -20px;
+  background: #ffffff;
+}
