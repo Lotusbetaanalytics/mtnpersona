@@ -22,6 +22,19 @@ const Dashboard = () => {
         );
       });
   });
+  const learning = list.map(({ responses }) => {
+    return JSON.parse(responses)
+      .filter(({ section }) => {
+        return section === "learning";
+      })
+      .map(({ answer }, index: any) => {
+        return (
+          <div key={index} style={{ fontSize: "small" }}>
+            <>{answer}</>
+          </div>
+        );
+      });
+  });
 
   const goals = list.map(({ responses }) => {
     return JSON.parse(responses)
@@ -76,7 +89,7 @@ const Dashboard = () => {
             </div>
             <div
               style={{
-                padding: "10px inherit",
+                padding: "10px",
                 height: "100%",
                 fontSize: "small",
               }}
@@ -88,6 +101,15 @@ const Dashboard = () => {
             <div className={styles.single__card}>
               <div>
                 <h5>Learning Preference</h5>
+                <div
+                  style={{
+                    padding: "10px",
+                    height: "100%",
+                    fontSize: "small",
+                  }}
+                >
+                  {learning}
+                </div>
               </div>
             </div>
             <div className={styles.single__card}>
