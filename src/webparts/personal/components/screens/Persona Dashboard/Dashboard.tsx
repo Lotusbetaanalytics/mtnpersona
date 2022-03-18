@@ -3,7 +3,7 @@ import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import styles from "./dashboard.module.scss";
-import { AccountCircle } from "@material-ui/icons";
+import { AccountCircle, ShareSharp } from "@material-ui/icons";
 
 const Dashboard = () => {
   const [list, setList] = React.useState([]);
@@ -36,10 +36,64 @@ const Dashboard = () => {
       });
   });
 
+  const motivator = list.map(({ responses }) => {
+    return JSON.parse(responses)
+      .filter(({ section }) => {
+        return section === "motivator";
+      })
+      .map(({ answer }, index: any) => {
+        return (
+          <div key={index} style={{ fontSize: "small" }}>
+            <>{answer}</>
+          </div>
+        );
+      });
+  });
+  const interests = list.map(({ responses }) => {
+    return JSON.parse(responses)
+      .filter(({ section }) => {
+        return section === "interests";
+      })
+      .map(({ answer }, index: any) => {
+        return (
+          <div key={index} style={{ fontSize: "small" }}>
+            <>{answer}</>
+          </div>
+        );
+      });
+  });
+
   const goals = list.map(({ responses }) => {
     return JSON.parse(responses)
       .filter(({ section }) => {
         return section === "goals" || section === "priorities";
+      })
+      .map(({ answer }) => {
+        return <div>{answer}</div>;
+      });
+  });
+  const attributes = list.map(({ responses }) => {
+    return JSON.parse(responses)
+      .filter(({ section }) => {
+        return section === "attributes";
+      })
+      .map(({ answer }) => {
+        return <div>{answer}</div>;
+      });
+  });
+  const communication = list.map(({ responses }) => {
+    return JSON.parse(responses)
+      .filter(({ section }) => {
+        return section === "communication";
+      })
+      .map(({ answer }) => {
+        return <div>{answer}</div>;
+      });
+  });
+  const worries = list.map(({ responses }) => {
+    return JSON.parse(responses)
+      .filter(({ section }) => {
+        return section === "worries";
       })
       .map(({ answer }) => {
         return <div>{answer}</div>;
@@ -116,6 +170,7 @@ const Dashboard = () => {
               <div>
                 <h5>Communication Preference</h5>
               </div>
+              <div>{communication}</div>
             </div>
           </div>
           <div className={styles.left__card__3}>
@@ -123,25 +178,40 @@ const Dashboard = () => {
               <div>
                 <h5>Motivators</h5>
               </div>
+              <div>{motivator}</div>
             </div>
             <div className={styles.single__card__bg}>
               <div>
                 <h5>Worries</h5>
               </div>
+              <div>{worries}</div>
             </div>
           </div>
         </div>
         <div className={styles.dashboard__cards__right}>
           <div className={styles.card__right__first}>
-            <div><h3>Career Goal</h3></div>
+            <div className={styles.card__circle}>
+              <ShareSharp />
+            </div>
+            <div>
+              <h5>Career Goal</h5>
+            </div>
+            <div>{goals}</div>
           </div>
           <div className={styles.card__right__second}>
-            <div><h3>Interests</h3></div>
+            <div className={styles.card__circle}>
+              <ShareSharp />
+            </div>
+            <div>
+              <h5>Interests</h5>
+            </div>
+            <div>{interests}</div>
           </div>
           <div className={styles.card__right__third}>
-            <div className={styles.card__big__heading}>
+            <div className={styles.right__heading}>
               <h5>Key Attributes</h5>
             </div>
+            <div>{attributes}</div>
           </div>
         </div>
       </div>
