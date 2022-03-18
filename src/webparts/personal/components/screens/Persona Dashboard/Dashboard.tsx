@@ -89,9 +89,9 @@ const Dashboard = () => {
             </div>
             <div
               style={{
-                padding: "10px",
+                padding: "15px",
                 height: "100%",
-                fontSize: "small",
+                fontSize: "medium",
               }}
             >
               {bio}
@@ -132,9 +132,17 @@ const Dashboard = () => {
           </div>
         </div>
         <div className={styles.dashboard__cards__right}>
-          <div className={styles.card__right__first}></div>
-          <div className={styles.card__right__second}></div>
-          <div></div>
+          <div className={styles.card__right__first}>
+            <div><h3>Career Goal</h3></div>
+          </div>
+          <div className={styles.card__right__second}>
+            <div><h3>Interests</h3></div>
+          </div>
+          <div className={styles.card__right__third}>
+            <div className={styles.card__big__heading}>
+              <h5>Key Attributes</h5>
+            </div>
+          </div>
         </div>
       </div>
     </div>
