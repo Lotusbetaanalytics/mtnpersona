@@ -6,13 +6,15 @@ const ViewQuestions = ({ itemsPerPage, list }) => {
   function Items({ currentItems }) {
     return (
       <table>
-        <tr>
-          <th>SN</th>
-          <th>Questions</th>
-          <th>Response Type</th>
-          <th>Answers</th>
-          <th>Assign Response To</th>
-        </tr>
+        <thead>
+          <tr>
+            <th>SN</th>
+            <th>Questions</th>
+            <th>Response Type</th>
+            <th>Answers</th>
+            <th>Assign Response To</th>
+          </tr>
+        </thead>
         <tbody>
           {currentItems &&
             currentItems.map((item: any) => (

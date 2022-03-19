@@ -41,8 +41,36 @@
 
 .flex__container {
   display: flex;
-  align-items: center;
-  width: 100%;
+  align-items: flex-start;
+  width: 60vw;
   height: 100%;
   grid-gap: 20px;
+  margin-top: 20px;
+}
+
+thead {
+  background: rgba(196, 196, 196, 0.14);
+  border: none;
+  width: 80vw;
+  height: 50px;
+  display: flex;
+  align-items: center;
+}
+
+table tr:nth-child(even) {
+  background: rgba(196, 196, 196, 0.14);
+}
+
+td {
+  border: none;
+}
+
+tr {
+  width: 60vw;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  grid-gap: 30px;
+  padding: 0px 10px;
 }
