@@ -3,7 +3,13 @@ import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
 import styles from "./questions.module.scss";
 
-const Report = ({ itemsPerPage, list, setList }) => {
+const Report = ({ itemsPerPage, list }) => {
+  const [report, setReport] = React.useState([]);
+
+  React.useEffect(() => {
+    setReport(list);
+  }, [list]);
+
   function Items({ currentItems }) {
     return (
       <table>
@@ -62,13 +68,13 @@ const Report = ({ itemsPerPage, list, setList }) => {
   React.useEffect(() => {
     // Fetch items from another resources.
     const endOffset = itemOffset + itemsPerPage;
-    setCurrentItems(list.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(list.length / itemsPerPage));
-  }, [itemOffset, itemsPerPage, list]);
+    setCurrentItems(report.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(report.length / itemsPerPage));
+  }, [itemOffset, itemsPerPage, report]);
 
   // Invoke when user click to request another page.
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % list.length;
+    const newOffset = (event.selected * itemsPerPage) % report.length;
     setItemOffset(newOffset);
   };
 
@@ -79,8 +85,8 @@ const Report = ({ itemsPerPage, list, setList }) => {
           name=""
           id=""
           onChange={(e) => {
-            setList(
-              list.filter(({ division }) => {
+            setReport(
+              report.filter(({ division }) => {
                 return division === e.target.value;
               })
             );

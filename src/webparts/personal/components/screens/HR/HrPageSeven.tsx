@@ -56,7 +56,7 @@ const HrPageSeven = () => {
       <div className={styles.flex__container}>
         <SideBar handleOpen={handleOpen} />
         <div>
-          <Report itemsPerPage={4} list={list} setList={setList} />
+          <Report itemsPerPage={4} list={list} />
         </div>
       </div>
     </div>
