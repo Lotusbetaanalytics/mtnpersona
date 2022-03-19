@@ -51,10 +51,17 @@
 thead {
   background: rgba(196, 196, 196, 0.14);
   border: none;
-  width: 80vw;
+  // width: 80vw;
   height: 50px;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+th {
+  flex: 1;
+  justify-self: flex-start;
 }
 
 table tr:nth-child(even) {
@@ -63,14 +70,15 @@ table tr:nth-child(even) {
 
 td {
   border: none;
+  flex: 1;
 }
 
 tr {
-  width: 60vw;
+  width: 75vw;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   height: 100%;
-  grid-gap: 30px;
-  padding: 0px 10px;
+  // grid-gap: 30px;
+  padding: 0px 20px;
 }

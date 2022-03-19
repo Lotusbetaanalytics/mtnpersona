@@ -2,7 +2,7 @@ import * as React from "react";
 import ReactPaginate from "react-paginate";
 import styles from "./questions.module.scss";
 
-const ViewQuestions = ({ itemsPerPage, list }) => {
+const Report = ({ itemsPerPage, list }) => {
   function Items({ currentItems }) {
     return (
       <table>
@@ -48,11 +48,8 @@ const ViewQuestions = ({ itemsPerPage, list }) => {
                       gridGap: "10px",
                     }}
                   >
-                    <button className={styles.btn__questions__edit}>
-                      Edit
-                    </button>
-                    <button className={styles.btn__questions__delete}>
-                      Delete
+                    <button className={styles.btn__questions__more}>
+                      View More
                     </button>
                   </div>
                 </td>
@@ -110,4 +107,4 @@ const ViewQuestions = ({ itemsPerPage, list }) => {
   );
 };
 
-export default ViewQuestions;
+export default Report;
