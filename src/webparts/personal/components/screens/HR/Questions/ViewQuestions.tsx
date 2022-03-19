@@ -1,15 +1,21 @@
 import * as React from "react";
 import ReactPaginate from "react-paginate";
 import DeleteModal from "../HR Modals/DeleteModal";
+import EditQuestionModal from "../HR Modals/EditQuestionModal";
 
 import styles from "./questions.module.scss";
 
 const ViewQuestions = ({ itemsPerPage, list, setList }) => {
   const [open, setOpen] = React.useState(false);
+  const [editopen, setEditOpen] = React.useState(false);
   const [id, setId] = React.useState(null);
+  const [data, setItem] = React.useState({});
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleEditClose = () => {
+    setEditOpen(false);
   };
 
   function Items({ currentItems }) {
@@ -57,7 +63,14 @@ const ViewQuestions = ({ itemsPerPage, list, setList }) => {
                       gridGap: "10px",
                     }}
                   >
-                    <button className={styles.btn__questions__edit}>
+                    <button
+                      className={styles.btn__questions__edit}
+                      onClick={(e) => {
+                        setEditOpen(true);
+                        setItem(item);
+                        setId(item.ID);
+                      }}
+                    >
                       Edit
                     </button>
                     <button
@@ -127,6 +140,13 @@ const ViewQuestions = ({ itemsPerPage, list, setList }) => {
         handleClose={handleClose}
         setList={setList}
         id={id}
+      />
+      <EditQuestionModal
+        open={editopen}
+        setList={setList}
+        id={id}
+        item={data}
+        handleClose={handleEditClose}
       />
     </div>
   );

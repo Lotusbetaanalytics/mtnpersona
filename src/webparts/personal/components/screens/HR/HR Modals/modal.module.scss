@@ -215,3 +215,10 @@ button:disabled {
   background: rgba(231, 231, 223, 0.733);
   color: rgba(104, 103, 103, 0.911);
 }
+
+.input__tag {
+  border-radius: 10px;
+  width: 100%;
+  padding: 20px 10px;
+  // margin: 5px 0px;
+}
