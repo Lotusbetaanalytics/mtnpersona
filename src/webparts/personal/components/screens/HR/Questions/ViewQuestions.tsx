@@ -27,9 +27,9 @@ const ViewQuestions = ({ itemsPerPage, list, setList }) => {
         </thead>
         <tbody>
           {currentItems &&
-            currentItems.map((item: any) => (
+            currentItems.map((item: any, index) => (
               <tr key={item.GUID}>
-                <td>{item.ID}</td>
+                <td>{index + 1}</td>
                 <td style={{ padding: "30px" }}>{item.questions}</td>
                 <td style={{ padding: "30px" }}>{item.type}</td>
                 <td style={{ padding: "30px" }}>

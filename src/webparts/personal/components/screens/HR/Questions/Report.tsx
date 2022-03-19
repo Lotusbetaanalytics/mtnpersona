@@ -29,9 +29,9 @@ const Report = ({ itemsPerPage, list }) => {
         </thead>
         <tbody>
           {currentItems &&
-            currentItems.map((item: any) => (
+            currentItems.map((item: any, index) => (
               <tr key={item.GUID}>
-                <td>{item.Id}</td>
+                <td>{index + 1}</td>
                 <td style={{ padding: "30px" }}>{item.name}</td>
                 <td style={{ padding: "30px" }}>{item.email}</td>
                 <td>{item.alias}</td>
@@ -85,8 +85,10 @@ const Report = ({ itemsPerPage, list }) => {
           name=""
           id=""
           onChange={(e) => {
+            console.log(list);
+
             setReport(
-              report.filter(({ division }) => {
+              list.filter(({ division }) => {
                 return division === e.target.value;
               })
             );
