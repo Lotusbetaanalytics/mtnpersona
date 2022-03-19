@@ -70,12 +70,6 @@ const ViewQuestions = ({ itemsPerPage, list, setList }) => {
                     >
                       Delete
                     </button>
-                    <DeleteModal
-                      open={open}
-                      handleClose={handleClose}
-                      setList={setList}
-                      id={id}
-                    />
                   </div>
                 </td>
               </tr>
@@ -127,6 +121,12 @@ const ViewQuestions = ({ itemsPerPage, list, setList }) => {
         containerClassName="pagination"
         activeClassName="active"
         renderOnZeroPageCount={null}
+      />
+      <DeleteModal
+        open={open}
+        handleClose={handleClose}
+        setList={setList}
+        id={id}
       />
     </div>
   );
