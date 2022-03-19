@@ -6,6 +6,7 @@ import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
+import SideBar from "./SideBar";
 
 const HrPageTwo = () => {
   const [open, setOpen] = React.useState(false);
@@ -27,13 +28,7 @@ const HrPageTwo = () => {
         </div>
         <div className={styles.hr__line}></div>
       </div>
-      <div className={styles.flex__buttons}>
-        <button className={styles.hr__button} onClick={handleOpen}>
-          Add Question
-        </button>
-        <button className={styles.hr__button}>View Questions</button>
-        <button className={styles.hr__button}>Reports</button>
-      </div>
+      <SideBar handleOpen={handleOpen} />
       <ModalTwo open={open} handleClose={handleClose} />
     </div>
   );

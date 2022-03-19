@@ -7,6 +7,7 @@ import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import ViewQuestions from "./Questions/ViewQuestions";
+import SideBar from "./SideBar";
 
 const HrPageSix = () => {
   const [open, setOpen] = React.useState(false);
@@ -53,13 +54,7 @@ const HrPageSix = () => {
         </div>
       </>
       <div className={styles.flex__container}>
-        <div className={styles.flex__buttons}>
-          <button className={styles.hr__button} onClick={handleOpen}>
-            Add Question
-          </button>
-          <button className={styles.hr__button}>View Questions</button>
-          <button className={styles.hr__button}>Reports</button>
-        </div>
+        <SideBar handleOpen={handleOpen}/>
         <div>
           <ViewQuestions itemsPerPage={4} list={list} />
         </div>

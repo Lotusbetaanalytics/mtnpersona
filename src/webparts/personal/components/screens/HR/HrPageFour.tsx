@@ -6,6 +6,7 @@ import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
+import SideBar from "./SideBar";
 
 const HrPageFour = () => {
   const [open, setOpen] = React.useState(false);
@@ -27,13 +28,14 @@ const HrPageFour = () => {
         </div>
         <div className={styles.hr__line}></div>
       </div>
-      <div className={styles.flex__buttons}>
+      <SideBar handleOpen={handleOpen} />
+      {/* <div className={styles.flex__buttons}>
         <button className={styles.hr__button} onClick={handleOpen}>
           Add Question
         </button>
         <button className={styles.hr__button}>View Questions</button>
         <button className={styles.hr__button}>Reports</button>
-      </div>
+      </div> */}
       <ModalFour open={open} handleClose={handleClose} />
     </div>
   );

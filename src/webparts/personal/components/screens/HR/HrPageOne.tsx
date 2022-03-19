@@ -2,6 +2,7 @@ import * as React from "react";
 import { Header } from "../../Containers";
 import ModalOne from "./HR Modals/ModalOne";
 import styles from "./hrstyles.module.scss";
+import SideBar from "./SideBar";
 
 const HrPageOne = () => {
   const [open, setOpen] = React.useState(false);
@@ -23,13 +24,14 @@ const HrPageOne = () => {
         </div>
         <div className={styles.hr__line}></div>
       </div>
-      <div className={styles.flex__buttons}>
+      <SideBar handleOpen={handleOpen} />
+      {/* <div className={styles.flex__buttons}>
         <button className={styles.hr__button} onClick={handleOpen}>
           Add Question
         </button>
         <button className={styles.hr__button}>View Questions</button>
         <button className={styles.hr__button}>Reports</button>
-      </div>
+      </div> */}
       <ModalOne open={open} handleClose={handleClose} />
     </div>
   );

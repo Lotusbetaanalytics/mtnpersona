@@ -102,6 +102,7 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
               }}
               onClick={() => {
                 closeModal();
+                handleClose();
               }}
             >
               <Cancel />
