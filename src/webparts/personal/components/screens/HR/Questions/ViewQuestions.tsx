@@ -1,8 +1,17 @@
 import * as React from "react";
 import ReactPaginate from "react-paginate";
+import DeleteModal from "../HR Modals/DeleteModal";
+
 import styles from "./questions.module.scss";
 
-const ViewQuestions = ({ itemsPerPage, list }) => {
+const ViewQuestions = ({ itemsPerPage, list, setList }) => {
+  const [open, setOpen] = React.useState(false);
+  const [id, setId] = React.useState(null);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   function Items({ currentItems }) {
     return (
       <table>
@@ -20,7 +29,7 @@ const ViewQuestions = ({ itemsPerPage, list }) => {
           {currentItems &&
             currentItems.map((item: any) => (
               <tr key={item.GUID}>
-                <td>{item.Id}</td>
+                <td>{item.ID}</td>
                 <td style={{ padding: "30px" }}>{item.questions}</td>
                 <td style={{ padding: "30px" }}>{item.type}</td>
                 <td style={{ padding: "30px" }}>
@@ -51,9 +60,22 @@ const ViewQuestions = ({ itemsPerPage, list }) => {
                     <button className={styles.btn__questions__edit}>
                       Edit
                     </button>
-                    <button className={styles.btn__questions__delete}>
+                    <button
+                      className={styles.btn__questions__delete}
+                      onClick={(e) => {
+                        setOpen(true);
+                        setId(item.ID);
+                        // deleteItem(item.ID);
+                      }}
+                    >
                       Delete
                     </button>
+                    <DeleteModal
+                      open={open}
+                      handleClose={handleClose}
+                      setList={setList}
+                      id={id}
+                    />
                   </div>
                 </td>
               </tr>

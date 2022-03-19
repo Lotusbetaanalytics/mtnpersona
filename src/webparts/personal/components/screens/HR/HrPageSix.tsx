@@ -54,9 +54,9 @@ const HrPageSix = () => {
         </div>
       </>
       <div className={styles.flex__container}>
-        <SideBar handleOpen={handleOpen}/>
+        <SideBar handleOpen={handleOpen} />
         <div>
-          <ViewQuestions itemsPerPage={4} list={list} />
+          <ViewQuestions itemsPerPage={4} list={list} setList={setList} />
         </div>
       </div>
     </div>
