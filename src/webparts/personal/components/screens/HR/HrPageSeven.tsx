@@ -46,7 +46,7 @@ const HrPageSeven = () => {
               }}
             >
               <h5>johndoe@gmail.com</h5>
-              <h4>Questions</h4>
+              <h4>Reports</h4>
             </div>
           </div>
           <div className={styles.hr__line}></div>
@@ -61,7 +61,7 @@ const HrPageSeven = () => {
           <button className={styles.hr__button}>Reports</button>
         </div>
         <div>
-          <Report itemsPerPage={4} list={list} />
+          <Report itemsPerPage={4} list={list} setList={setList} />
         </div>
       </div>
     </div>
