@@ -1,5 +1,6 @@
 import * as React from "react";
 import ReactPaginate from "react-paginate";
+import { Link } from "react-router-dom";
 import styles from "./questions.module.scss";
 
 const Report = ({ itemsPerPage, list, setList }) => {
@@ -38,7 +39,9 @@ const Report = ({ itemsPerPage, list, setList }) => {
                     }}
                   >
                     <button className={styles.btn__questions__more}>
-                      View More
+                      <Link to={`/info/dashboard/${item.name}/${item.email}`}>
+                        View More
+                      </Link>
                     </button>
                   </div>
                 </td>

@@ -19,6 +19,7 @@ import HrPageFive from "./screens/HR/HrPageFive";
 import HrPageSeven from "./screens/HR/HrPageSeven";
 import HrPageSix from "./screens/HR/HrPageSix";
 import Dashboard from "./screens/Persona Dashboard/Dashboard";
+import DashboardFromLink from "./screens/Persona Dashboard/DashboardFromLink";
 
 export const Context = React.createContext(null);
 
@@ -48,6 +49,11 @@ export default class Personal extends React.Component<IPersonalProps, {}> {
             <Route exact path="/info/page5" component={PageFive} />
             <Route exact path="/info/page6" component={PageSix} />
             <Route exact path="/info/dashboard" component={Dashboard} />
+            <Route
+              exact
+              path="/info/dashboard/:name/:email"
+              component={DashboardFromLink}
+            />
           </Switch>
         </HashRouter>
       </Context.Provider>

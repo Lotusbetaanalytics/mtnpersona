@@ -79,6 +79,13 @@
   outline: none;
   color: #fff;
 }
+.btn__questions__more a {
+  color: inherit;
+  text-decoration: none;
+}
+.btn__questions__more a :hover {
+  color: inherit;
+}
 .btn__questions__delete {
   background: none;
   border-radius: 100px;
