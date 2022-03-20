@@ -23,6 +23,7 @@
   justify-content: center;
   grid-gap: 10px;
   overflow-y: scroll;
+  padding-bottom: 20px;
 }
 .container h3 {
   font-size: 18px;
@@ -236,9 +237,10 @@ button:disabled {
 
 .input__opt {
   display: grid;
-  grid-template-columns: 1fr 1fr 0.5fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-gap: 5px;
   width: 100%;
+  padding: 5px;
 }
 .input__tag__opt {
   border-radius: 10px;

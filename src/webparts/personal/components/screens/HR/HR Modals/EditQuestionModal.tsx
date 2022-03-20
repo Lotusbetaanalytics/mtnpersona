@@ -69,6 +69,7 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
 
   const addOptionHandler = () => {
     setopt([...opt, newOption]);
+    setNewOption("");
   };
 
   const deleteOptionHandler = (i) => {
@@ -159,6 +160,7 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
                       <div className={styles.input__tag__opt}>
                         <div>{i}</div>
                         <div
+                          style={{ cursor: "pointer" }}
                           onClick={(e) => {
                             deleteOptionHandler(index);
                           }}
