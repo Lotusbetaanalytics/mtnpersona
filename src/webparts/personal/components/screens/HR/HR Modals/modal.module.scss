@@ -14,6 +14,16 @@
   justify-content: center;
   grid-gap: 30px;
 }
+.container__edit__question {
+  width: 40vw;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  grid-gap: 10px;
+  overflow-y: scroll;
+}
 .container h3 {
   font-size: 18px;
 }
@@ -220,5 +230,37 @@ button:disabled {
   border-radius: 10px;
   width: 100%;
   padding: 20px 10px;
+
   // margin: 5px 0px;
+}
+
+.input__opt {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.5fr;
+  grid-gap: 5px;
+  width: 100%;
+}
+.input__tag__opt {
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // margin: 5px 0px;
+}
+
+.addoption__btn {
+  margin-top: 10px;
+  height: 50px;
+  border-radius: 100px;
+  color: #000;
+  border: none;
+  outline: none;
+  width: 110px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 14px;
+  cursor: pointer;
 }

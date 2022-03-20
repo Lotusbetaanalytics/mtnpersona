@@ -8,7 +8,7 @@ import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
-import { Cancel } from "@material-ui/icons";
+import { Cancel, CancelSharp } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,14 +31,17 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
   const [opt, setopt] = React.useState([]);
   const [section, setSection] = React.useState("");
   const [type, setType] = React.useState("");
+  const [newOption, setNewOption] = React.useState("");
 
   React.useEffect(() => {
     setQuestion(item.questions);
     setType(item.type);
     setSection(item.section);
     setType(item.type);
-    setopt(item.options);
+    item.options && setopt(JSON.parse(item.options));
   }, [item]);
+
+  console.log(opt);
 
   const yesHandler = () => {
     pnp.sp.web.lists
@@ -64,6 +67,18 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
     handleClose();
   };
 
+  const addOptionHandler = () => {
+    setopt([...opt, newOption]);
+  };
+
+  const deleteOptionHandler = (i) => {
+    setopt(
+      opt.filter((item, index) => {
+        return index !== i;
+      })
+    );
+  };
+
   return (
     <div>
       <Modal
@@ -79,7 +94,9 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
         }}
       >
         <Fade in={open}>
-          <div className={`${classes.paper} ${styles.container}`}>
+          <div
+            className={`${classes.paper} ${styles.container__edit__question}`}
+          >
             <div
               style={{
                 position: "relative",
@@ -94,6 +111,7 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
             </div>
             <div className={styles.next__btn}>
               <div>
+                <p>Question</p>
                 <input
                   className={styles.input__tag}
                   type="text"
@@ -102,6 +120,7 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
                 />
               </div>
               <div>
+                <p>Option Type</p>
                 <input
                   className={styles.input__tag}
                   type="text"
@@ -110,6 +129,7 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
                 />
               </div>
               <div>
+                <p>Assigned To</p>
                 <input
                   className={styles.input__tag}
                   type="text"
@@ -118,13 +138,36 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
                 />
               </div>
               <div>
-                {opt.map((i) => {
-                  <input
-                    className={styles.input__tag}
-                    type="text"
-                    value={i}
-                    onChange={(e) => setopt([...opt, e.target.value])}
-                  />;
+                <p>Add new option</p>
+                <input
+                  className={styles.input__tag}
+                  type="text"
+                  value={newOption}
+                  onChange={(e) => setNewOption(e.target.value)}
+                />
+                <button
+                  className={styles.addoption__btn}
+                  onClick={addOptionHandler}
+                >
+                  Add Option
+                </button>
+              </div>
+              <div className={styles.input__opt}>
+                {opt.map((i, index) => {
+                  return (
+                    <>
+                      <div className={styles.input__tag__opt}>
+                        <div>{i}</div>
+                        <div
+                          onClick={(e) => {
+                            deleteOptionHandler(index);
+                          }}
+                        >
+                          <CancelSharp />
+                        </div>
+                      </div>
+                    </>
+                  );
                 })}
               </div>
 
