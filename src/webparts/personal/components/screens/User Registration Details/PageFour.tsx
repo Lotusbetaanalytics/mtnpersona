@@ -72,6 +72,7 @@ const PageFour = (props: Props) => {
                               {
                                 answer: e.target.value,
                                 id: items.GUID,
+                                question: items.questions,
                                 section: items.section,
                               },
                             ]);

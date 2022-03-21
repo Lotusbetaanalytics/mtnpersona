@@ -51,7 +51,7 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
           .items.add({
             Title: `${Math.random()}`,
             questions: questionList.question,
-            section,
+            section: section,
             type: questionList.type,
             options: JSON.stringify(questionList.options),
           })
@@ -60,6 +60,12 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
             setShow(true);
             setMessage("Question Added!");
             setLoading(false);
+          })
+          .catch((e) => {
+            setLoading(false);
+            setShow(true);
+            setMessage("Something went wrong");
+            console.log(e.message);
           });
       } catch (e) {
         setLoading(false);

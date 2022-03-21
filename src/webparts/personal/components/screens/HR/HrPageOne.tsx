@@ -25,13 +25,6 @@ const HrPageOne = () => {
         <div className={styles.hr__line}></div>
       </div>
       <SideBar handleOpen={handleOpen} />
-      {/* <div className={styles.flex__buttons}>
-        <button className={styles.hr__button} onClick={handleOpen}>
-          Add Question
-        </button>
-        <button className={styles.hr__button}>View Questions</button>
-        <button className={styles.hr__button}>Reports</button>
-      </div> */}
       <ModalOne open={open} handleClose={handleClose} />
     </div>
   );
