@@ -40,9 +40,9 @@ const DashboardFromLink = () => {
       })
       .map(({ answer }, index: any) => {
         return (
-          <div key={index} style={{ fontSize: "small" }}>
-            <>{answer}</>
-          </div>
+          <ul key={index} style={{ fontSize: "small" }}>
+            <li>{answer}</li>
+          </ul>
         );
       });
   });
@@ -54,9 +54,9 @@ const DashboardFromLink = () => {
       })
       .map(({ answer }, index: any) => {
         return (
-          <div key={index} style={{ fontSize: "small" }}>
-            <>{answer}</>
-          </div>
+          <ul key={index} style={{ fontSize: "small" }}>
+            <li>{answer}</li>
+          </ul>
         );
       });
   });
@@ -67,9 +67,9 @@ const DashboardFromLink = () => {
       })
       .map(({ answer }, index: any) => {
         return (
-          <div key={index} style={{ fontSize: "small" }}>
-            <>{answer}</>
-          </div>
+          <ul key={index} style={{ fontSize: "small" }}>
+            <li>{answer}</li>
+          </ul>
         );
       });
   });
@@ -79,8 +79,12 @@ const DashboardFromLink = () => {
       .filter(({ section }) => {
         return section === "goals" || section === "priorities";
       })
-      .map(({ answer }) => {
-        return <div>{answer}</div>;
+      .map(({ answer }, index: any) => {
+        return (
+          <ul key={index} style={{ fontSize: "small" }}>
+            <li>{answer}</li>
+          </ul>
+        );
       });
   });
   const attributes = list.map(({ responses }) => {
@@ -88,8 +92,12 @@ const DashboardFromLink = () => {
       .filter(({ section }) => {
         return section === "attributes";
       })
-      .map(({ answer }) => {
-        return <div>{answer}</div>;
+      .map(({ answer }, index: any) => {
+        return (
+          <ul key={index} style={{ fontSize: "small" }}>
+            <li>{answer}</li>
+          </ul>
+        );
       });
   });
   const communication = list.map(({ responses }) => {
@@ -97,7 +105,7 @@ const DashboardFromLink = () => {
       .filter(({ section }) => {
         return section === "communication";
       })
-      .map(({ answer }) => {
+      .map(({ answer }, index: any) => {
         return <div>{answer}</div>;
       });
   });
@@ -106,7 +114,7 @@ const DashboardFromLink = () => {
       .filter(({ section }) => {
         return section === "worries";
       })
-      .map(({ answer }) => {
+      .map(({ answer }, index: any) => {
         return <div>{answer}</div>;
       });
   });
@@ -177,7 +185,15 @@ const DashboardFromLink = () => {
               <div>
                 <h5>Communication Preference</h5>
               </div>
-              <div>{communication}</div>
+              <div
+                style={{
+                  padding: "10px",
+                  height: "100%",
+                  fontSize: "small",
+                }}
+              >
+                {communication}
+              </div>
             </div>
           </div>
           <div className={styles.left__card__3}>
@@ -185,13 +201,29 @@ const DashboardFromLink = () => {
               <div>
                 <h5>Motivators</h5>
               </div>
-              <div>{motivator}</div>
+              <div
+                style={{
+                  padding: "10px",
+                  height: "100%",
+                  fontSize: "small",
+                }}
+              >
+                {motivator}
+              </div>
             </div>
             <div className={styles.single__card__bg}>
               <div>
                 <h5>Worries</h5>
               </div>
-              <div>{worries}</div>
+              <div
+                style={{
+                  padding: "10px",
+                  height: "100%",
+                  fontSize: "small",
+                }}
+              >
+                {worries}
+              </div>
             </div>
           </div>
         </div>
@@ -203,7 +235,15 @@ const DashboardFromLink = () => {
             <div>
               <h5>Career Goal</h5>
             </div>
-            <div>{goals}</div>
+            <div
+              style={{
+                padding: "10px",
+                height: "100%",
+                fontSize: "small",
+              }}
+            >
+              {goals}
+            </div>
           </div>
           <div className={styles.card__right__second}>
             <div className={styles.card__circle}>
@@ -212,13 +252,29 @@ const DashboardFromLink = () => {
             <div>
               <h5>Interests</h5>
             </div>
-            <div>{interests}</div>
+            <div
+              style={{
+                padding: "10px",
+                height: "100%",
+                fontSize: "small",
+              }}
+            >
+              {interests}
+            </div>
           </div>
           <div className={styles.card__right__third}>
             <div className={styles.right__heading}>
               <h5>Key Attributes</h5>
             </div>
-            <div>{attributes}</div>
+            <div
+              style={{
+                padding: "10px",
+                height: "100%",
+                fontSize: "small",
+              }}
+            >
+              {attributes}
+            </div>
           </div>
         </div>
       </div>

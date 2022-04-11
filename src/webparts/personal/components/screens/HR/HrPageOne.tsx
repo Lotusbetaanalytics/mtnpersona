@@ -3,6 +3,8 @@ import { Header } from "../../Containers";
 import ModalOne from "./HR Modals/ModalOne";
 import styles from "./hrstyles.module.scss";
 import SideBar from "./SideBar";
+import { sp, spGet, spPost } from "@pnp/sp";
+import HRHeader from "./HRHeader";
 
 const HrPageOne = () => {
   const [open, setOpen] = React.useState(false);
@@ -17,13 +19,7 @@ const HrPageOne = () => {
   return (
     <div>
       <Header title="Human Resource" />
-      <div className={styles.hr__details}>
-        <div>
-          <h3>John Doe</h3>
-          <h5>johndoe@gmail.com</h5>
-        </div>
-        <div className={styles.hr__line}></div>
-      </div>
+      <HRHeader />
       <SideBar handleOpen={handleOpen} />
       <ModalOne open={open} handleClose={handleClose} />
     </div>

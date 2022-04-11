@@ -30,7 +30,15 @@
   background: #000;
   border: 6px solid #ffffff;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.15));
+}
+.dashboard__header div:nth-of-type(1) img {
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
 }
 .dashboard__header div:nth-of-type(2) {
   right: 40%;
@@ -78,13 +86,13 @@
 
 .left__card__2 {
   display: flex;
-  height: 80px;
+  height: 130px;
   grid-gap: 10px;
   width: 100%;
 }
 .left__card__3 {
   display: flex;
-  height: 110px;
+  height: 130px;
   grid-gap: 10px;
   width: 100%;
 }
@@ -129,7 +137,7 @@
   position: relative;
   flex-direction: column;
   width: 100%;
-  height: 15vh;
+  height: 25vh;
   padding: 20px;
   border-radius: 10px;
   background: #fff;

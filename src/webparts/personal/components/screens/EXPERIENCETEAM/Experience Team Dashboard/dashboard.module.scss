@@ -1,0 +1,34 @@
+.dashboard__container {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+}
+
+.dashboard__container__content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  gap: 40px;
+  position: absolute;
+  left: 223px;
+}
+.dashboard__container__cards {
+  display: flex;
+  width: 100%;
+  gap: 30px;
+  padding-left: 30px;
+  box-sizing: border-box;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.dashboard__container__chart {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  gap: 15px;
+  padding-left: 30px;
+  box-sizing: border-box;
+}

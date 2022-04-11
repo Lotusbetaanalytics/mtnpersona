@@ -2,11 +2,12 @@ import * as React from "react";
 import { Header } from "../../Containers";
 import ModalTwo from "./HR Modals/ModalTwo";
 import styles from "./hrstyles.module.scss";
-import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import SideBar from "./SideBar";
+import HRHeader from "./HRHeader";
 
 const HrPageTwo = () => {
   const [open, setOpen] = React.useState(false);
@@ -21,13 +22,7 @@ const HrPageTwo = () => {
   return (
     <div>
       <Header title="Human Resource" />
-      <div className={styles.hr__details}>
-        <div>
-          <h3>John Doe</h3>
-          <h5>johndoe@gmail.com</h5>
-        </div>
-        <div className={styles.hr__line}></div>
-      </div>
+      <HRHeader />
       <SideBar handleOpen={handleOpen} />
       <ModalTwo open={open} handleClose={handleClose} />
     </div>

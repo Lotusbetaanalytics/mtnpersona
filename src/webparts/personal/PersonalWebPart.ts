@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as ReactDom from "react-dom";
 import { Version } from "@microsoft/sp-core-library";
+import { sp } from "@pnp/sp/presets/all";
 
 import {
   IPropertyPaneConfiguration,
@@ -23,6 +24,10 @@ export default class PersonalWebPart extends BaseClientSideWebPart<IPersonalWebP
 
   protected onInit(): Promise<void> {
     this._environmentMessage = this._getEnvironmentMessage();
+
+    sp.setup({
+      spfxContext: this.context,
+    });
 
     return super.onInit();
   }

@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Header } from "../../Containers";
-import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
@@ -12,22 +12,37 @@ type Props = {};
 const PageFour = (props: Props) => {
   const [list, setList] = React.useState([]);
   const [response, setResponse] = React.useState([]);
+  const [count, setCount] = React.useState(
+    0 || JSON.parse(localStorage.getItem("count"))
+  );
+  const [questions, setQuestions] = React.useState(0);
+
+  const [total, setTotal] = React.useState(0);
+
+  const history = useHistory();
 
   const onNextHandler = () => {
-    localStorage.setItem(
-      "data",
-      JSON.stringify([...JSON.parse(localStorage.getItem("data")), ...response])
-    );
+    if (response.length >= questions) {
+      history.push("/info/page5");
+      localStorage.setItem("count", JSON.stringify(count));
+      localStorage.setItem(
+        "data",
+        JSON.stringify([
+          ...JSON.parse(localStorage.getItem("data")),
+          ...response,
+        ])
+      );
+    }
   };
 
   React.useEffect(() => {
     try {
-      pnp.sp.web.lists
+      sp.web.lists
         .getByTitle("Questions")
         .items.get()
         .then((res) => {
           console.log(res);
-
+          setTotal(res.length);
           setList(
             res.filter(({ section }) => {
               return section === "motivator";
@@ -38,9 +53,18 @@ const PageFour = (props: Props) => {
       console.log(e.message);
     }
   }, []);
+
+  React.useEffect(() => {
+    setQuestions(list.length);
+    setCount((prev) => prev + list.length);
+  }, [list]);
+
   return (
     <div className={styles.screen2__container}>
       <Header />
+      <div>
+        {count} out of {total} | What really motivates you 😃
+      </div>
       <div className={styles.job__info}>
         {list.map((items, index) => {
           return (
@@ -101,12 +125,12 @@ const PageFour = (props: Props) => {
                       ]);
                     }}
                   >
+                    <option>Select...</option>
                     {JSON.parse(items.options).map((opt: any, index: any) => {
                       return (
-                        <div key={index}>
-                          <option>Select...</option>
+                        <>
                           <option value={opt}>{opt}</option>
-                        </div>
+                        </>
                       );
                     })}
                   </select>
@@ -122,7 +146,7 @@ const PageFour = (props: Props) => {
           <Link to="/info/page3">Previous</Link>
         </button>
         <button className={styles.filled__button} onClick={onNextHandler}>
-          <Link to="/info/page5">Next</Link>
+          Next
         </button>
       </div>
     </div>

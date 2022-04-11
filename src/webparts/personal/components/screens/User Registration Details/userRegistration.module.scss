@@ -16,8 +16,8 @@
   margin: 20px auto;
   display: grid;
   grid-template-columns: 1fr;
-  grid-gap: 2px;
-  height: 60%;
+  grid-gap: 5px;
+  height: 70%;
 }
 // .screen2__container form {
 //   width: 70%;
@@ -215,4 +215,37 @@ button a {
 }
 .input__options div {
   margin: 5px 0px;
+}
+
+@media screen and (max-width: 768px) {
+  .nav__buttons {
+    bottom: -100px;
+  }
+  .job__info {
+    grid-template-columns: 1fr;
+    margin-right: 30px;
+  }
+  .screen1__container form {
+    display: flex;
+    flex-direction: column;
+    grid-gap: 10px;
+    height: 60%;
+  }
+}
+@media screen and (max-width: 992px) {
+  .nav__buttons {
+    bottom: -100px;
+  }
+
+  .job__info {
+    grid-template-columns: 1fr;
+    margin-right: 30px;
+  }
+
+  .screen1__container form {
+    display: flex;
+    flex-direction: column;
+    grid-gap: 10px;
+    height: 60%;
+  }
 }

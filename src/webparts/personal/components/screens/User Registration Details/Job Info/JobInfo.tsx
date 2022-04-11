@@ -1,24 +1,30 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Header } from "../../../Containers";
-import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import styles from "../userRegistration.module.scss";
+import { CountContext } from "../../../Context/CountContext";
 
 type Props = {};
 
 const JobInfo = (props: Props) => {
   const [list, setList] = React.useState([]);
   const [response, setResponse] = React.useState([]);
+  const [count, setCount] = React.useState(0);
+  const [total, setTotal] = React.useState(0);
+
+  // const { total } = React.useContext(CountContext);
 
   React.useEffect(() => {
     try {
-      pnp.sp.web.lists
+      sp.web.lists
         .getByTitle("Questions")
         .items.get()
         .then((res) => {
+          setTotal(res.length);
           setList(
             res.filter(({ section }) => {
               return section === "bio";
@@ -30,12 +36,27 @@ const JobInfo = (props: Props) => {
     }
   }, []);
 
+  React.useEffect(() => {
+    setCount(list.length);
+  }, [list]);
+
+  const history = useHistory();
+
   const onNextHandler = () => {
-    localStorage.setItem("data", JSON.stringify(response));
+    console.log(response, response.length);
+
+    if (response.length >= count) {
+      history.push("/info/page2");
+      localStorage.setItem("data", JSON.stringify(response));
+      localStorage.setItem("count", JSON.stringify(count));
+    }
   };
   return (
     <div className={styles.screen2__container}>
       <Header />
+      <div>
+        {count} out of {total} | Let's get to know a few things about you 😉
+      </div>
       <div className={styles.job__info}>
         {list.map((items, index) => {
           return (
@@ -103,7 +124,7 @@ const JobInfo = (props: Props) => {
           <Link to="/info/personal">Previous</Link>
         </button>
         <button className={styles.filled__button} onClick={onNextHandler}>
-          <Link to="/info/page2">Next</Link>
+          Next
         </button>
       </div>
     </div>

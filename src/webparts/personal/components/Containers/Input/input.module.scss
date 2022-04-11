@@ -62,3 +62,15 @@ label {
 #file__upload:active {
   outline: 0;
 }
+
+@media screen and (max-width: 768px) {
+  .input__container {
+    grid-template-columns: 1fr;
+  }
+}
+@media screen and (max-width: 992px) {
+  .input__container {
+    grid-template-columns: 1fr;
+    grid-gap: 5px;
+  }
+}

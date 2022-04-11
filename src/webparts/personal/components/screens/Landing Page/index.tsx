@@ -9,7 +9,7 @@ const Landing = (props: Props) => {
       <div className={`${styles.landing__container}`}>
         <div className={`${styles.landing__contents}`}>
           <div className={`${styles.landing__logo}`}>
-            <img src={require("../../assets/logo.jpg")} alt="MTN" />
+            <img src="https://lotusbetaanalytics.com/mtn/logo.jpg" alt="MTN" />
           </div>
           <div className={`${styles.landing__title}`}>
             <h6>Welcome to the</h6>

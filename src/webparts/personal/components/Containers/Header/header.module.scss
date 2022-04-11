@@ -30,3 +30,15 @@
   width: 80px;
   height: 80px;
 }
+
+@media screen and (max-width: 768px) {
+  .header__container {
+    display: flex;
+    width: 50%;
+  }
+
+  .header__title {
+    width: 200px;
+    font-size: 14px;
+  }
+}

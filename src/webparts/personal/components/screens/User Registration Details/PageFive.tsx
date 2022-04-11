@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Header } from "../../Containers";
-import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
@@ -13,21 +13,37 @@ const PageFive = (props: Props) => {
   const [list, setList] = React.useState([]);
   const [response, setResponse] = React.useState([]);
 
+  const [count, setCount] = React.useState(
+    0 || JSON.parse(localStorage.getItem("count"))
+  );
+  const [questions, setQuestions] = React.useState(0);
+
+  const [total, setTotal] = React.useState(0);
+
+  const history = useHistory();
+
   const onNextHandler = () => {
-    localStorage.setItem(
-      "data",
-      JSON.stringify([...JSON.parse(localStorage.getItem("data")), ...response])
-    );
+    if (response.length >= questions) {
+      history.push("/info/page6");
+      localStorage.setItem("count", JSON.stringify(count));
+      localStorage.setItem(
+        "data",
+        JSON.stringify([
+          ...JSON.parse(localStorage.getItem("data")),
+          ...response,
+        ])
+      );
+    }
   };
 
   React.useEffect(() => {
     try {
-      pnp.sp.web.lists
+      sp.web.lists
         .getByTitle("Questions")
         .items.get()
         .then((res) => {
           console.log(res);
-
+          setTotal(res.length);
           setList(
             res.filter(({ section }) => {
               return section === "worries" || section === "interests";
@@ -38,9 +54,18 @@ const PageFive = (props: Props) => {
       console.log(e.message);
     }
   }, []);
+
+  React.useEffect(() => {
+    setQuestions(list.length);
+    setCount((prev) => prev + list.length);
+  }, [list]);
+
   return (
     <div className={styles.screen2__container}>
       <Header />
+      <div>
+        {count} out of {total} | Let's learn about your worries and interests
+      </div>
       <div className={styles.job__info}>
         {list.map((items, index) => {
           return (

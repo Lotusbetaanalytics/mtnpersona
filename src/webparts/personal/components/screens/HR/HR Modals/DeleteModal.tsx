@@ -4,7 +4,7 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import styles from "./modal.module.scss";
-import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
@@ -29,7 +29,7 @@ const DeleteModal = ({ open, handleClose, setList, id }) => {
   const classes = useStyles();
 
   const yesHandler = () => {
-    pnp.sp.web.lists
+    sp.web.lists
       .getByTitle("Questions")
       .items.getById(id)
       .delete()

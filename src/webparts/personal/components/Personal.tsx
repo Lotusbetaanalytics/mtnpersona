@@ -20,6 +20,8 @@ import HrPageSeven from "./screens/HR/HrPageSeven";
 import HrPageSix from "./screens/HR/HrPageSix";
 import Dashboard from "./screens/Persona Dashboard/Dashboard";
 import DashboardFromLink from "./screens/Persona Dashboard/DashboardFromLink";
+import ExperienceTeamDashboard from "./screens/EXPERIENCETEAM/Experience Team Dashboard/ExperienceTeamDashboard";
+import ConfigureRoles from "./screens/EXPERIENCETEAM/Configure Roles/ConfigureRoles";
 
 export const Context = React.createContext(null);
 
@@ -53,6 +55,18 @@ export default class Personal extends React.Component<IPersonalProps, {}> {
               exact
               path="/info/dashboard/:name/:email"
               component={DashboardFromLink}
+            />
+
+            {/* Experience Team Links */}
+            <Route
+              exact
+              path="/experienceteam/dashboard"
+              component={ExperienceTeamDashboard}
+            />
+            <Route
+              exact
+              path="/experienceteam/configure"
+              component={ConfigureRoles}
             />
           </Switch>
         </HashRouter>

@@ -4,11 +4,12 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import styles from "./modal.module.scss";
-import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import { Cancel, CancelSharp } from "@material-ui/icons";
+import { FormControl, MenuItem, Select } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,11 +38,10 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
     setQuestion(item.questions);
     setType(item.type);
     setSection(item.section);
-    setType(item.type);
     item.options && setopt(JSON.parse(item.options));
   }, [item]);
 
-  console.log(opt);
+  console.log(section);
 
   const yesHandler = () => {
     pnp.sp.web.lists
@@ -68,7 +68,7 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
   };
 
   const addOptionHandler = () => {
-    setopt([...opt, newOption]);
+    newOption && setopt([...opt, newOption]);
     setNewOption("");
   };
 
@@ -122,21 +122,83 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
               </div>
               <div>
                 <p>Option Type</p>
-                <input
-                  className={styles.input__tag}
-                  type="text"
-                  value={type}
-                  onChange={(e) => setType(e.target.value)}
-                />
+                <FormControl fullWidth variant="outlined">
+                  <Select
+                    onChange={(e: any) => setType(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    value={type}
+                  >
+                    <MenuItem value="">Select</MenuItem>
+                    <MenuItem value="radio" selected={"radio" == type}>
+                      Radio
+                    </MenuItem>
+                    <MenuItem value="checkbox" selected={"checkbox" == type}>
+                      Checkbox
+                    </MenuItem>
+                  </Select>
+                </FormControl>
               </div>
               <div>
                 <p>Assigned To</p>
-                <input
-                  className={styles.input__tag}
-                  type="text"
-                  value={section}
-                  onChange={(e) => setSection(e.target.value)}
-                />
+                <FormControl fullWidth variant="outlined">
+                  <Select
+                    onChange={(e: any) => setSection(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    value={section}
+                  >
+                    <MenuItem value="">Select</MenuItem>
+                    <MenuItem
+                      value="priorities"
+                      selected={"priorities" == section}
+                    >
+                      Priorities
+                    </MenuItem>
+                    <MenuItem value="goals" selected={"goals" == section}>
+                      Goals
+                    </MenuItem>
+                    <MenuItem
+                      value="interests"
+                      selected={"interests" == section}
+                    >
+                      Interests
+                    </MenuItem>
+                    <MenuItem
+                      value="communication"
+                      selected={"communication" == section}
+                    >
+                      Communication Preference
+                    </MenuItem>
+                    <MenuItem
+                      value="motivator"
+                      selected={"motivator" == section}
+                    >
+                      Motivator
+                    </MenuItem>
+                    <MenuItem value="bio" selected={"bio" == section}>
+                      Short Bio
+                    </MenuItem>
+                    <MenuItem
+                      value="attributes"
+                      selected={"attributes" == section}
+                    >
+                      Super Power and Key Attributes
+                    </MenuItem>
+                    <MenuItem value="worries" selected={"worries" == section}>
+                      Worries
+                    </MenuItem>
+                    <MenuItem
+                      value="demographic"
+                      selected={"demographic" == section}
+                    >
+                      Demographic Information
+                    </MenuItem>
+                    <MenuItem value="learning" selected={"learning" == section}>
+                      Learning Preference
+                    </MenuItem>
+                  </Select>
+                </FormControl>
               </div>
               <div>
                 <p>Add new option</p>

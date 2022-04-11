@@ -1,5 +1,6 @@
 import * as React from "react";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
+import { sp, spGet, spPost } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import styles from "./dashboard.module.scss";
@@ -8,6 +9,19 @@ import { AccountCircle, ShareSharp } from "@material-ui/icons";
 const Dashboard = () => {
   const [list, setList] = React.useState([]);
   const [userName, setUserName] = React.useState("");
+  const [dp, setDp] = React.useState("");
+  const [avatar, setAvatar] = React.useState([]);
+  const [myInterests, setMyInterests] = React.useState([]);
+
+  const getDp = (arr1: any, arr2: any) => {
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr2.includes(arr1[i].Section)) {
+        setDp(JSON.parse(arr1[i].Avatar).serverRelativeUrl);
+        return;
+      }
+    }
+    return [];
+  };
 
   const bio = list.map(({ responses }) => {
     return JSON.parse(responses)
@@ -101,9 +115,44 @@ const Dashboard = () => {
   });
 
   React.useEffect(() => {
-    pnp.sp.profiles.myProperties.get().then((response) => {
+    sp.web.lists
+      .getByTitle("Avatars")
+      .items.get()
+      .then((res) => {
+        setAvatar(res);
+      });
+  }, []);
+
+  React.useEffect(() => {
+    setMyInterests(
+      list.map(({ responses }) => {
+        return JSON.parse(responses).filter(({ section }) => {
+          return section === "interests";
+        });
+      })
+    );
+  }, [list]);
+
+  React.useEffect(() => {
+    const arr2 = list.map(({ responses }) => {
+      return JSON.parse(responses).filter(({ section }) => {
+        return section === "interests";
+      });
+    });
+
+    const newArr = [];
+
+    for (let item of arr2.flat()) {
+      newArr.push(item.answer);
+    }
+
+    getDp(avatar, newArr);
+  }, [list]);
+
+  React.useEffect(() => {
+    sp.profiles.myProperties.get().then((response) => {
       setUserName(response.DisplayName);
-      pnp.sp.web.lists
+      sp.web.lists
         .getByTitle("personal")
         .items.get()
         .then((res) => {
@@ -122,7 +171,9 @@ const Dashboard = () => {
   return (
     <div className={styles.dashboard__container}>
       <div className={styles.dashboard__header}>
-        <div></div>
+        <div>
+          <img src={dp} alt="" />
+        </div>
         <div>
           <h1>{userName}</h1>
         </div>

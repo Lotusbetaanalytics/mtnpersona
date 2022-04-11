@@ -6,6 +6,7 @@ import Fade from "@material-ui/core/Fade";
 import { Link, useHistory } from "react-router-dom";
 import styles from "./modal.module.scss";
 import { Cancel } from "@material-ui/icons";
+import { FormControl, MenuItem, Select } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,21 +75,45 @@ const ModalTwo = ({ open: newOpen, handleClose }) => {
             <div className={styles.next__btn}>
               <div>
                 <h5>Response Type</h5>
-                <div className={styles.select}>
-                  <select
-                    name=""
-                    id=""
-                    onChange={(e) => {
-                      setType(e.target.value);
+                <>
+                  <FormControl
+                    fullWidth
+                    style={{
+                      borderRadius: "100px",
+                      marginTop: "10px",
                     }}
+                    className={styles.formControl}
                   >
-                    <option>Select...</option>
-                    <option value="radio">Radio Input</option>
-                    <option value="checkbox">Check Box</option>
-                    <option value="text">Text</option>
-                  </select>
+                    <Select
+                      onChange={(e: any) => setType(e.target.value)}
+                      fullWidth
+                      variant="outlined"
+                      value={type}
+                      className={styles.formControl}
+                      style={{
+                        borderRadius: "100px",
+                      }}
+                    >
+                      {/* <MenuItem value="">--Select--</MenuItem> */}
+                      <MenuItem value="radio">Radio</MenuItem>
+                      <MenuItem value="checkbox">Check Box</MenuItem>
+                      <MenuItem value="select">Select Field</MenuItem>
+                    </Select>
+                    {/* <select
+                      name=""
+                      id=""
+                      onChange={(e) => {
+                        setType(e.target.value);
+                      }}
+                    >
+                      <option>Select...</option>
+                      <option value="radio">Radio Input</option>
+                      <option value="checkbox">Check Box</option>
+                      <option value="text">Text</option>
+                    </select> */}
+                  </FormControl>
                   <span className={styles.focus}></span>
-                </div>
+                </>
               </div>
 
               <div className={styles.btn__flex}>

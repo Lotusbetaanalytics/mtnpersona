@@ -6,11 +6,12 @@ import Fade from "@material-ui/core/Fade";
 import { Link, useHistory } from "react-router-dom";
 import styles from "./modal.module.scss";
 import { Cancel } from "@material-ui/icons";
-import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import Toast from "../../../Containers/Toast";
+import { FormControl, MenuItem, Select } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,6 +61,10 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
             setShow(true);
             setMessage("Question Added!");
             setLoading(false);
+
+            setTimeout(() => {
+              closeModal();
+            }, 500);
           })
           .catch((e) => {
             setLoading(false);
@@ -116,14 +121,40 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
             <div className={styles.next__btn}>
               <div>
                 <h5>Assign Response to</h5>
-                <div className={styles.select}>
-                  <select
-                    name=""
-                    id=""
-                    onChange={(e) => {
-                      setSection(e.target.value);
-                    }}
-                  >
+                <>
+                  <FormControl fullWidth>
+                    <Select
+                      name=""
+                      id=""
+                      onChange={(e: any) => {
+                        setSection(e.target.value);
+                      }}
+                      value={section}
+                      fullWidth
+                      style={{
+                        borderRadius: "100px",
+                      }}
+                      variant="outlined"
+                    >
+                      <MenuItem value="priorities">Priorities</MenuItem>
+                      <MenuItem value="goals">Goals</MenuItem>
+                      <MenuItem value="interests">Interests</MenuItem>
+                      <MenuItem value="communication">
+                        Communication Preference
+                      </MenuItem>
+                      <MenuItem value="motivator">Motivator</MenuItem>
+                      <MenuItem value="bio">Short Bio</MenuItem>
+                      <MenuItem value="attributes">
+                        Super Power and Key Attributes
+                      </MenuItem>
+                      <MenuItem value="worries">Worries</MenuItem>
+                      <MenuItem value="demographic">
+                        Demographic Information
+                      </MenuItem>
+                      <MenuItem value="learning">Learning Preference</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {/* <select>
                     <option>Select...</option>
                     <option value="priorities">Priorities</option>
                     <option value="goals">Goals</option>
@@ -140,13 +171,13 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
                     <option value="demographic">Demographic Information</option>
                     <option value="learning">Learning Preference</option>
                   </select>
-                  <span className={styles.focus}></span>
-                </div>
+                  <span className={styles.focus}></span> */}
+                </>
               </div>
 
               <div className={styles.btn__flex__1}>
                 <button className={styles.hr__btn__nobg}>
-                  <Link to="/hr/page4">Previous</Link>
+                  <Link to="/hr/page3">Previous</Link>
                 </button>
                 {loading ? (
                   <button

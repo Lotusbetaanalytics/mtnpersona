@@ -5,7 +5,13 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import { Link, useHistory } from "react-router-dom";
 import styles from "./modal.module.scss";
-import { Cancel } from "@material-ui/icons";
+import {
+  Add,
+  Cancel,
+  CancelSharp,
+  Edit,
+  EditOutlined,
+} from "@material-ui/icons";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,17 +31,22 @@ const useStyles = makeStyles((theme: Theme) =>
 const ModalThree = ({ open: newOpen, handleClose }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [clicked, setClicked] = React.useState(false);
+  const [other, setOther] = React.useState("");
   const [options, setOptions] = React.useState("");
+  const [optionsShow, setOptionsShow] = React.useState(
+    [] || JSON.parse(localStorage.getItem("hr")).options
+  );
   const history = useHistory();
   const onNextHandler = () => {
     localStorage.setItem(
       "hr",
       JSON.stringify({
         ...JSON.parse(localStorage.getItem("hr")),
-        options: [...JSON.parse(localStorage.getItem("hr")).options, options],
+        options: optionsShow,
       })
     );
-    history.push("/hr/page4");
+    history.push("/hr/page5");
   };
 
   React.useEffect(() => {
@@ -44,6 +55,48 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
 
   const closeModal = () => {
     setOpen(false);
+  };
+
+  const onAddOptions = () => {
+    options && setOptionsShow([options, ...optionsShow]);
+    setOptions("");
+    console.log(other);
+  };
+
+  const onDeleteOption = (i) => {
+    const newOptions = optionsShow.filter((_, index) => index !== i);
+    setOptionsShow(newOptions);
+  };
+
+  const onEditOption = (i) => {
+    setOptions(optionsShow[i]);
+    onDeleteOption(i);
+  };
+
+  const onAddOthers = () => {
+    optionsShow.push(
+      <div
+        style={{
+          display: "flex",
+          zIndex: "1",
+          justifyContent: "space-between",
+          position: "relative",
+          width: "235%",
+          height: "100%",
+          backgroundColor: "#000",
+        }}
+      >
+        <input type="text" style={{ width: "93%" }} />
+        <div
+          onClick={() => {
+            setClicked(false);
+          }}
+        >
+          <CancelSharp />
+        </div>
+      </div>
+    );
+    setClicked(true);
   };
 
   return (
@@ -61,7 +114,7 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
         }}
       >
         <Fade in={open || newOpen}>
-          <div className={`${classes.paper} ${styles.container}`}>
+          <div className={`${classes.paper} ${styles.container__options}`}>
             <div
               style={{
                 position: "relative",
@@ -78,12 +131,74 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
               <div>
                 <h5>Enter Options</h5>
 
-                <textarea
-                  value={options}
-                  onChange={(e) => {
-                    setOptions(e.target.value);
-                  }}
-                ></textarea>
+                <div className={styles.add__options__field}>
+                  <input
+                    value={options}
+                    onChange={(e) => {
+                      setOptions(e.target.value);
+                    }}
+                  />
+                  <>
+                    <button onClick={onAddOptions}>
+                      <Add />
+                    </button>
+                    or
+                    {clicked ? null : (
+                      <button onClick={onAddOthers}>Add others</button>
+                    )}
+                  </>
+                </div>
+                <div className={styles.view__options__container}>
+                  {optionsShow.map((option, i) => {
+                    return (
+                      <>
+                        <div key={i} className={styles.view__options__added}>
+                          <span
+                            style={{
+                              flex: 1,
+
+                              padding: "10px",
+                            }}
+                          >
+                            {option}
+                          </span>
+                          <span
+                            onClick={() => {
+                              onDeleteOption(i);
+                            }}
+                            style={{
+                              color: "red",
+                              flex: 1,
+                              height: "20px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              justifySelf: "flex-end",
+                            }}
+                          >
+                            X
+                          </span>
+                          <span
+                            style={{
+                              height: "20px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              justifySelf: "flex-end",
+                            }}
+                            onClick={() => {
+                              onEditOption(i);
+                            }}
+                          >
+                            <EditOutlined />
+                          </span>
+                        </div>
+                      </>
+                    );
+                  })}
+                </div>
               </div>
 
               <div className={styles.btn__flex__1}>
@@ -92,7 +207,7 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
                 </button>
                 <button
                   className={styles.hr__btn__filled}
-                  disabled={options ? false : true}
+                  disabled={optionsShow.length > 1 ? false : true}
                   onClick={onNextHandler}
                 >
                   Next

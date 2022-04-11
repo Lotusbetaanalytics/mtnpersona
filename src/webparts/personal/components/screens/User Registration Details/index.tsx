@@ -2,7 +2,8 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { Header, Input } from "../../Containers";
 import { FileInput, SelectInput } from "../../Containers/Input";
-import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+
+import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
@@ -13,10 +14,13 @@ const Screen1 = () => {
   const [email, setEmail] = React.useState("");
   const [alias, setAlias] = React.useState("");
   const [division, setDivision] = React.useState("");
-  const [file, setFile] = React.useState(null);
+  const [file, setFile] = React.useState("");
+  const [res, setRes] = React.useState(null);
+
+  var reader = new FileReader();
 
   React.useEffect(() => {
-    pnp.sp.profiles.myProperties.get().then((response) => {
+    sp.profiles.myProperties.get().then((response) => {
       console.log(response.DisplayName, response.Email);
       setName(response.DisplayName);
       setEmail(response.Email);
@@ -31,6 +35,7 @@ const Screen1 = () => {
         email,
         alias,
         division,
+        dp: file,
       })
     );
   };
@@ -98,14 +103,32 @@ const Screen1 = () => {
             Yello Digital Financial Service
           </option>
         </SelectInput>
-        <FileInput
+        {/* <FileInput
           type="file"
           value={file}
           onChange={(e: any) => {
-            setFile(e.target.value);
+            setRes(
+              React.createElement("img", {
+                style: {
+                  width: "100px",
+                  height: "100px",
+                },
+                src: URL.createObjectURL(e.target.files[0]),
+                alt: "",
+              })
+            );
+            reader.readAsDataURL(e.target.files[0]);
+            reader.onload = function () {
+              console.log(reader.result); //base64encoded string
+              localStorage.setItem("dp", JSON.stringify(reader.result));
+            };
+            reader.onerror = function (error) {
+              console.log("Error: ", error);
+            };
           }}
           label="Upload Image"
         />
+        <div style={{ width: "10vw", height: "10vh" }}>{res}</div> */}
         <div className={styles.nav__buttons}>
           {/* <button className={styles.nobackground__button}>
             <Link to="/info/page3">Previous</Link>

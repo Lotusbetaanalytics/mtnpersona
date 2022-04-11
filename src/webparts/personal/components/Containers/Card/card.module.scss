@@ -1,0 +1,25 @@
+.card__container {
+  width: 300px;
+  height: 140px;
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 20px 30px;
+  align-items: center;
+  background: #ffc423;
+  position: relative;
+}
+.card__container::after {
+  content: "";
+  position: absolute;
+  background: rgba(0, 0, 0, 0.09);
+  width: inherit;
+  height: 18px;
+  left: 0;
+  top: 140px;
+}
+
+.card__container__text {
+  display: flex;
+  flex-direction: column;
+}

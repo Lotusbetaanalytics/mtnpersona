@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
-import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { Link, useHistory } from "react-router-dom";
+import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
@@ -12,12 +12,25 @@ type Props = {};
 const PageTwo = (props: Props) => {
   const [list, setList] = React.useState([]);
   const [response, setResponse] = React.useState([]);
+  const [count, setCount] = React.useState(0);
+  const [questions, setQuestions] = React.useState(0);
+
+  const [total, setTotal] = React.useState(0);
+
+  const history = useHistory();
 
   const onNextHandler = () => {
-    localStorage.setItem(
-      "data",
-      JSON.stringify([...JSON.parse(localStorage.getItem("data")), ...response])
-    );
+    if (response.length >= questions) {
+      history.push("/info/page3");
+      localStorage.setItem("count", JSON.stringify(count));
+      localStorage.setItem(
+        "data",
+        JSON.stringify([
+          ...JSON.parse(localStorage.getItem("data")),
+          ...response,
+        ])
+      );
+    }
   };
 
   React.useEffect(() => {
@@ -27,7 +40,7 @@ const PageTwo = (props: Props) => {
         .items.get()
         .then((res) => {
           console.log(res);
-
+          setTotal(res.length);
           setList(
             res.filter(({ section }) => {
               return section === "attributes" || section === "learning";
@@ -38,9 +51,22 @@ const PageTwo = (props: Props) => {
       console.log(e.message);
     }
   }, []);
+
+  React.useEffect(() => {
+    setQuestions(list.length);
+    setCount(
+      JSON.parse(localStorage.getItem("count"))
+        ? JSON.parse(localStorage.getItem("count")) + list.length
+        : list.length
+    );
+  }, [list]);
   return (
     <div className={styles.screen2__container}>
       <Header />
+      <div>
+        {count} out of {total} | Tell us about your attributes and learning
+        style
+      </div>
       <div className={styles.job__info}>
         {list.map((items, index) => {
           return (
@@ -121,7 +147,7 @@ const PageTwo = (props: Props) => {
           <Link to="/info/page1">Previous</Link>
         </button>
         <button className={styles.filled__button} onClick={onNextHandler}>
-          <Link to="/info/page3">Next</Link>
+          Next
         </button>
       </div>
     </div>

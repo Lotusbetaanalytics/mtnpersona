@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { Header } from "../../Containers";
 import MyModal from "../../Containers/Modal/Modal";
 import styles from "./userRegistration.module.scss";
-import { spfi, SPFx, spGet, spPost } from "@pnp/sp";
+import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
@@ -19,6 +19,12 @@ const PageSix = (props: Props) => {
   const [loading, setLoading] = React.useState(false);
   const [list, setList] = React.useState([]);
   const [response, setResponse] = React.useState([]);
+  const [count, setCount] = React.useState(
+    0 || JSON.parse(localStorage.getItem("count"))
+  );
+  const [questions, setQuestions] = React.useState(0);
+
+  const [total, setTotal] = React.useState(0);
 
   const handleOpen = () => {
     setOpen(true);
@@ -30,12 +36,12 @@ const PageSix = (props: Props) => {
 
   React.useEffect(() => {
     try {
-      pnp.sp.web.lists
+      sp.web.lists
         .getByTitle("Questions")
         .items.get()
         .then((res) => {
           console.log(res);
-
+          setTotal(res.length);
           setList(
             res.filter(({ section }) => {
               return section === "priorities";
@@ -47,49 +53,66 @@ const PageSix = (props: Props) => {
     }
   }, []);
 
+  React.useEffect(() => {
+    setQuestions(list.length);
+    setCount((prev) => prev + list.length);
+  }, [list]);
+
   const data = JSON.parse(localStorage.getItem("data"));
   const userData = JSON.parse(localStorage.getItem("userData"));
+  const dp = JSON.parse(localStorage.getItem("dp"));
+
   const submitHandler = async (e: any) => {
     e.preventDefault();
-    setLoading(true);
-    if (!data && !userData) {
-      setLoading(false);
-      setMessage("No answers provided!");
-      setShow(true);
-      setTimeout(() => {
-        history.push("/info/personal");
-      }, 1000);
-    } else {
-      const answerData = [...data, ...response];
-      pnp.sp.web.lists
-        .getByTitle("personal")
-        .items.add({
-          Title: `${Math.random()}`,
-          name: userData.name,
-          alias: userData.alias,
-          responses: JSON.stringify(answerData),
-          division: userData.division,
-          email: userData.email,
-        })
-        .then((iar: ItemAddResult) => {
-          setLoading(false);
-          localStorage.removeItem("userData");
-          localStorage.removeItem("data");
-          setMessage("Answers Submitted! 😊");
-          setShow(true);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-          setShow(true);
-          setMessage("An error occurred! Try again...");
-        });
+    if (response.length >= questions) {
+      setLoading(true);
+      if (!data && !userData) {
+        setLoading(false);
+        setMessage("No answers provided!");
+        setShow(true);
+        setTimeout(() => {
+          history.push("/info/personal");
+        }, 1000);
+      } else {
+        const answerData = [...data, ...response];
+        sp.web.lists
+          .getByTitle("personal")
+          .items.add({
+            Title: `${Math.random()}`,
+            name: userData.name,
+            alias: userData.alias,
+            responses: JSON.stringify(answerData),
+            division: userData.division,
+            email: userData.email,
+            dp,
+          })
+          .then(() => {
+            setLoading(false);
+            localStorage.removeItem("userData");
+            localStorage.removeItem("data");
+            setMessage("Answers Submitted! 😊");
+            setShow(true);
+            setTimeout(() => {
+              history.push("/info/dashboard");
+            }, 1000);
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoading(false);
+            setShow(true);
+            setMessage("An error occurred! Try again...");
+          });
+      }
     }
   };
 
   return (
     <div className={styles.screen2__container}>
       <Header />
+      <div>
+        {count}out of {total} | Whoops!! You got to the last page 👍... Please
+        tell us about your priorities
+      </div>
       <div className={styles.job__info}>
         {list.map((items, index) => {
           return (

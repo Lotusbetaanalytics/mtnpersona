@@ -71,6 +71,10 @@ const ModalOne = ({ open, handleClose }) => {
                 <h5>Enter Question</h5>
                 <textarea
                   value={question}
+                  style={{
+                    margin: "10px auto",
+                    marginLeft: "30px",
+                  }}
                   onChange={(e) => {
                     setQuestion(e.target.value);
                   }}
@@ -79,6 +83,9 @@ const ModalOne = ({ open, handleClose }) => {
 
               <button
                 className={styles.hr__btn}
+                style={{
+                  marginLeft: "30px",
+                }}
                 disabled={question.length < 1 ? true : false}
                 onClick={onNextHandler}
               >
