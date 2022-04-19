@@ -2,6 +2,7 @@ import * as React from "react";
 import "./styles.scss";
 import { IPersonalProps } from "./IPersonalProps";
 import { escape } from "@microsoft/sp-lodash-subset";
+import { sp } from "@pnp/sp";
 import * as jQuery from "jquery";
 import { HashRouter, Switch, Route } from "react-router-dom";
 import { Landing, Screen1 } from "./screens";
@@ -22,17 +23,49 @@ import Dashboard from "./screens/Persona Dashboard/Dashboard";
 import DashboardFromLink from "./screens/Persona Dashboard/DashboardFromLink";
 import ExperienceTeamDashboard from "./screens/EXPERIENCETEAM/Experience Team Dashboard/ExperienceTeamDashboard";
 import ConfigureRoles from "./screens/EXPERIENCETEAM/Configure Roles/ConfigureRoles";
+import ViewReport from "./screens/EXPERIENCETEAM/View Reports/ViewReport";
+import RejectedSurvey from "./screens/EXPERIENCETEAM/View Reports/RejectedSurveys";
+import ViewRoles from "./screens/EXPERIENCETEAM/Configure Roles/ViewRoles";
+import HrbpDashboard from "./screens/HRBP/HRBP Dashboard/HRBPDashboard";
+import HrbpViewReport from "./screens/HRBP/HRBP View Reports/HRBPViewReport";
 
-export const Context = React.createContext(null);
+export default class Personal extends React.Component<
+  IPersonalProps,
+  {
+    allSurvey: any[];
+  }
+> {
+  constructor(props: IPersonalProps) {
+    super(props);
+    this.state = {
+      allSurvey: [],
+    };
+  }
 
-export default class Personal extends React.Component<IPersonalProps, {}> {
+  componentDidMount(): void {
+    sp.web.lists
+      .getByTitle("personal")
+      .items.get()
+      .then((items: any) => {
+        this.setState({
+          allSurvey: items,
+        });
+        console.log(items);
+      });
+  }
+
   public render(): React.ReactElement<IPersonalProps> {
     jQuery("#workbenchPageContent").prop("style", "max-width: none");
     jQuery(".SPCanvas-canvas").prop("style", "max-width: none");
     jQuery(".CanvasZone").prop("style", "max-width: none");
 
     return (
-      <Context.Provider value={this.props.context}>
+      <Context.Provider
+        value={{
+          spHttpClient: this.props.context.spHttpClient,
+          allSurvey: this.state.allSurvey,
+        }}
+      >
         <HashRouter>
           <Switch>
             <Route exact path="/" component={Landing} />
@@ -68,9 +101,29 @@ export default class Personal extends React.Component<IPersonalProps, {}> {
               path="/experienceteam/configure"
               component={ConfigureRoles}
             />
+            <Route
+              exact
+              path="/experienceteam/viewroles"
+              component={ViewRoles}
+            />
+            <Route exact path="/experienceteam/report" component={ViewReport} />
+            <Route
+              exact
+              path="/experienceteam/rejected"
+              component={RejectedSurvey}
+            />
+
+            {/* HRBP Team Links */}
+            <Route exact path="/hrbp/dashboard" component={HrbpDashboard} />
+            <Route exact path="/hrbp/report" component={HrbpViewReport} />
           </Switch>
         </HashRouter>
       </Context.Provider>
     );
   }
 }
+
+export const Context = React.createContext({
+  spHttpClient: null,
+  allSurvey: null,
+});

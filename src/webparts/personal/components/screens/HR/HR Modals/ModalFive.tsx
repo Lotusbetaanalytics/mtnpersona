@@ -47,7 +47,7 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
       }, 1500);
     } else {
       try {
-        pnp.sp.web.lists
+        sp.web.lists
           .getByTitle("Questions")
           .items.add({
             Title: `${Math.random()}`,
@@ -56,7 +56,7 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
             type: questionList.type,
             options: JSON.stringify(questionList.options),
           })
-          .then((iar: ItemAddResult) => {
+          .then(() => {
             localStorage.removeItem("hr");
             setShow(true);
             setMessage("Question Added!");

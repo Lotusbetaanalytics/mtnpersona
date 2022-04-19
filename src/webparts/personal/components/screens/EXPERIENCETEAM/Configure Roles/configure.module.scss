@@ -17,7 +17,7 @@
 .container__content__form {
   display: grid;
   grid-template-columns: auto auto;
-  gap: 30px;
+  gap: 40px;
   padding-left: 30px;
   justify-content: flex-start;
   align-items: flex-start;
@@ -25,26 +25,67 @@
 .input__area {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 }
-.container__content__form input {
+
+.container__content__form_input {
   border: 1px solid rgba(0, 0, 0, 0.31);
   box-sizing: border-box;
   width: 400px;
-  height: 50px;
+  height: 60px;
   padding-left: 20px;
   border-radius: 100px;
 }
 .container__content__form button {
-  height: 50px;
+  height: 60px;
   border-radius: 100px;
   background: rgba(255, 196, 35, 1);
   color: #000;
   border: none;
   outline: none;
   box-shadow: 0px 4px 4px 4px rgba(255, 196, 35, 0.27);
-  width: 180px;
+  width: 160px;
   font-weight: 700;
   font-size: 13px;
   line-height: 14px;
+}
+
+.container__content__select {
+  display: "flex";
+  justify-content: "space-between";
+  align-items: "center";
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 20px;
+  max-height: 200px;
+}
+.container__content__select:hover {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.5);
+  cursor: context-menu;
+}
+
+/* Portrait phones and smaller */
+@media (max-width: 480px) {
+  .container__content__form_input {
+    width: 380px;
+  }
+}
+@media (min-width: 576px) {
+  .container__content__form_input {
+    width: 400px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .container__content__form {
+    grid-template-columns: auto;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .container__content__form {
+    grid-template-columns: auto;
+  }
 }

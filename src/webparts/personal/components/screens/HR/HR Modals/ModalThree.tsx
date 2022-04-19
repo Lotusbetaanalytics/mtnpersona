@@ -58,16 +58,17 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
   };
 
   const onAddOptions = () => {
-    options && setOptionsShow([options, ...optionsShow]);
+    options && setOptionsShow([options, ...optionsShow]); //if options is not empty add options to optionsShow
     setOptions("");
-    console.log(other);
   };
 
+  //delete an option
   const onDeleteOption = (i) => {
     const newOptions = optionsShow.filter((_, index) => index !== i);
     setOptionsShow(newOptions);
   };
 
+  //Edit options
   const onEditOption = (i) => {
     setOptions(optionsShow[i]);
     onDeleteOption(i);
@@ -142,10 +143,6 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
                     <button onClick={onAddOptions}>
                       <Add />
                     </button>
-                    or
-                    {clicked ? null : (
-                      <button onClick={onAddOthers}>Add others</button>
-                    )}
                   </>
                 </div>
                 <div className={styles.view__options__container}>

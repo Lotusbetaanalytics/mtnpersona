@@ -11,11 +11,12 @@ import BarChart from "../../../Containers/Bar Chart/BarChart";
 import Card from "../../../Containers/Card/Card";
 import PieChart from "../../../Containers/Pie Chart/PieChart";
 import { Context } from "../../../Personal";
-import ExperienceTeamHeader from "../Experience Team Header/ExperienceTeamHeader";
-import ExperienceTeamNavbar from "../Experience Team Navbar/ExperienceTeamNavbar";
+import ExperienceTeamHeader from "../../EXPERIENCETEAM/Experience Team Header/ExperienceTeamHeader";
+import HrbpNavbar from "../HRBP Navbar/HRBPNavbar";
+
 import styles from "./dashboard.module.scss";
 
-const ExperienceTeamDashboard = () => {
+const HrbpDashboard = () => {
   const { allSurvey } = React.useContext(Context);
   const [numberofSurvey, setNumberOfSurvey] = React.useState(0);
   const [rejectedSurvey, setRejectedSurvey] = React.useState(0);
@@ -84,7 +85,7 @@ const ExperienceTeamDashboard = () => {
   return (
     <>
       <div className={styles.dashboard__container}>
-        <ExperienceTeamNavbar />
+        <HrbpNavbar />
         <div className={styles.dashboard__container__content}>
           <div style={{ position: "relative" }}>
             <ExperienceTeamHeader title="Dashboard" />
@@ -139,4 +140,4 @@ const ExperienceTeamDashboard = () => {
   );
 };
 
-export default ExperienceTeamDashboard;
+export default HrbpDashboard;

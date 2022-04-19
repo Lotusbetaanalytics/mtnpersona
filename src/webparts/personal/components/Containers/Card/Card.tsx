@@ -8,7 +8,7 @@ const Card = ({ title, number, icon }) => {
         <span>{title}</span>
         <h1>{number}</h1>
       </div>
-      <div>{icon}</div>
+      <div className={styles.cardIcon}>{icon}</div>
     </div>
   );
 };

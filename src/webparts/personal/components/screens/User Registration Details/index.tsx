@@ -8,6 +8,12 @@ import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import styles from "./userRegistration.module.scss";
+import {
+  SPHttpClient,
+  SPHttpClientConfiguration,
+  SPHttpClientResponse,
+} from "@microsoft/sp-http";
+import { Context } from "../../Personal";
 
 const Screen1 = () => {
   const [name, setName] = React.useState("");
@@ -16,16 +22,19 @@ const Screen1 = () => {
   const [division, setDivision] = React.useState("");
   const [file, setFile] = React.useState("");
   const [res, setRes] = React.useState(null);
+  const { spHttpClient } = React.useContext(Context);
 
-  var reader = new FileReader();
+  const reader = new FileReader();
 
   React.useEffect(() => {
     sp.profiles.myProperties.get().then((response) => {
-      console.log(response.DisplayName, response.Email);
       setName(response.DisplayName);
       setEmail(response.Email);
     });
   }, []);
+
+  const [start, setStart] = React.useState(0);
+  const [end, setEnd] = React.useState(10000);
 
   const onNextHandler = () => {
     localStorage.setItem(
@@ -130,9 +139,19 @@ const Screen1 = () => {
         />
         <div style={{ width: "10vw", height: "10vh" }}>{res}</div> */}
         <div className={styles.nav__buttons}>
-          {/* <button className={styles.nobackground__button}>
-            <Link to="/info/page3">Previous</Link>
-          </button> */}
+          <button
+            className={styles.nobackground__button}
+            onClick={() => {
+              setEnd((prev) => {
+                return prev + end;
+              });
+              setStart((prev) => {
+                return prev + end;
+              });
+            }}
+          >
+            Next Item
+          </button>
           <button className={styles.filled__button} onClick={onNextHandler}>
             <Link to="/info/page1">Next</Link>
           </button>

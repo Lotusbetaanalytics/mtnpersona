@@ -15,9 +15,15 @@ const SideBar = ({ handleOpen }) => {
   const reportHandler = () => {
     history.push("/hr/page7");
   };
+  const gotoDashboard = () => {
+    history.push("/experienceteam/dashboard");
+  };
 
   return (
     <div className={styles.flex__buttons}>
+      <button className={styles.hr__button} onClick={gotoDashboard}>
+        Dashboard
+      </button>
       <button className={styles.hr__button} onClick={addQuestionHandler}>
         Add Question
       </button>

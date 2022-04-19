@@ -6,7 +6,6 @@ import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import styles from "../userRegistration.module.scss";
-import { CountContext } from "../../../Context/CountContext";
 
 type Props = {};
 

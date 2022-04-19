@@ -14,10 +14,12 @@ const Dashboard = () => {
   const [myInterests, setMyInterests] = React.useState([]);
 
   const getDp = (arr1: any, arr2: any) => {
-    for (let i = 0; i < arr1.length; i++) {
-      if (arr2.includes(arr1[i].Section)) {
-        setDp(JSON.parse(arr1[i].Avatar).serverRelativeUrl);
-        return;
+    for (let i = 0; i < arr2.length; i++) {
+      for (let j = 0; j < arr1.length; j++) {
+        if (arr2[i] == arr1[j].Section) {
+          setDp(JSON.parse(arr1[j].Avatar).serverRelativeUrl);
+          return;
+        }
       }
     }
     return [];

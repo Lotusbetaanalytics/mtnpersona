@@ -10,11 +10,42 @@ import {
   AiOutlineUserAdd,
 } from "react-icons/ai";
 import { useHistory } from "react-router-dom";
+import { sp } from "@pnp/sp";
 
 const ExperienceTeamNavbar = () => {
   const history = useHistory();
+  const [matches, setMatches] = React.useState(
+    window.matchMedia("(min-width: 768px)").matches
+  );
+
+  const [role, setRole] = React.useState("");
+
+  React.useEffect(() => {
+    window
+      .matchMedia("(min-width: 768px)")
+      .addEventListener("change", (e) => setMatches(e.matches));
+  }, []);
+
+  React.useEffect(() => {
+    sp.profiles.myProperties.get().then((profile) => {
+      console.log(profile);
+
+      sp.web.lists
+        .getByTitle("Roles")
+        .items.filter(`Email eq '${profile.Email}'`)
+        .get()
+        .then((lists: any) => {
+          lists = lists.flat();
+          console.log(lists);
+          setRole(lists.Role);
+        });
+    });
+  }, []);
+
+  console.log(role, "role>>>");
+
   return (
-    <div className={styles.navbar__container}>
+    <div className={`${styles.navbar__container} `}>
       <div className={styles.navbar__container__logo}>
         <img src="https://lotusbetaanalytics.com/mtn/logo.jpg" alt="MTN" />
       </div>
@@ -51,7 +82,7 @@ const ExperienceTeamNavbar = () => {
         </div>
         <div
           onClick={() => {
-            history.push("/experienceteam/question");
+            history.push("/hr/page1");
           }}
         >
           <span>
@@ -59,36 +90,42 @@ const ExperienceTeamNavbar = () => {
           </span>
           <span> Question</span>
         </div>
-        <div
-          onClick={() => {
-            history.push("/experienceteam/configure");
-          }}
-        >
-          <span>
-            <AiOutlineSetting />
-          </span>
-          <span> Configure Roles</span>
-        </div>
-        <div
-          onClick={() => {
-            history.push("/experienceteam/viewroles");
-          }}
-        >
-          <span>
-            <AiOutlineEye />
-          </span>
-          <span> View Roles</span>
-        </div>
-        <div
-          onClick={() => {
-            history.push("/experienceteam/addroles");
-          }}
-        >
-          <span>
-            <AiOutlineUserAdd />
-          </span>
-          <span> Add Roles</span>
-        </div>
+        {role == "Super Admin" && (
+          <div
+            onClick={() => {
+              history.push("/experienceteam/configure");
+            }}
+          >
+            <span>
+              <AiOutlineSetting />
+            </span>
+            <span> Configure Roles</span>
+          </div>
+        )}
+        {role == "Super Admin" && (
+          <div
+            onClick={() => {
+              history.push("/experienceteam/viewroles");
+            }}
+          >
+            <span>
+              <AiOutlineEye />
+            </span>
+            <span> View Roles</span>
+          </div>
+        )}
+        {role == "Super Admin" && (
+          <div
+            onClick={() => {
+              history.push("/experienceteam/addroles");
+            }}
+          >
+            <span>
+              <AiOutlineUserAdd />
+            </span>
+            <span> Add Roles</span>
+          </div>
+        )}
       </div>
     </div>
   );
