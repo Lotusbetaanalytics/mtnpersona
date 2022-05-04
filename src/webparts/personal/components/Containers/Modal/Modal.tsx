@@ -25,26 +25,6 @@ const useStyles = makeStyles((theme: Theme) =>
 const TransitionsModal = ({ open, handleClose }) => {
   const classes = useStyles();
 
-  //8b83ab1f-05d2-4acd-a805-c56a63dad8c
-
-  //
-
-  // pnp.sp.web.lists
-  //   .getByTitle(`test`)
-  //   .items.get()
-  //   .then((response) => {
-  //     console.log(response);
-  //   });
-
-  // React.useEffect(() => {
-  //   // we can use this 'list' variable to execute more queries on the list:
-
-  //   const r = getListTitles();
-
-  //   // show the response from the server
-  //   console.log(r);
-  // }, []);
-
   const noHandler = (e: any) => {
     e.preventDefault();
     handleClose();

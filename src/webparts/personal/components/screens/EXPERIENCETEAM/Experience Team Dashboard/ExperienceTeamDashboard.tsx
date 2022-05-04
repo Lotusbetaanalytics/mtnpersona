@@ -1,10 +1,4 @@
-import {
-  BookSharp,
-  CancelOutlined,
-  QuestionAnswer,
-  ReportTwoTone,
-} from "@material-ui/icons";
-import { DocumentCardDetails } from "office-ui-fabric-react";
+import { BookSharp, CancelOutlined, QuestionAnswer } from "@material-ui/icons";
 import * as React from "react";
 import { sp } from "sp-pnp-js";
 import BarChart from "../../../Containers/Bar Chart/BarChart";
@@ -63,14 +57,12 @@ const ExperienceTeamDashboard = () => {
   React.useEffect(() => {
     setNumberOfSurvey(allSurvey.length);
     setRejectedSurvey(
-      allSurvey.filter((survey) => survey.EXApprovalStatus === "Yes").length
+      allSurvey.filter((survey) => survey.EXApprovalStatus === "No").length
     );
     setPendingSurvey(
       allSurvey.filter((survey) => survey.EXApprovalStatus === "Pending").length
     );
   }, [allSurvey]);
-
-  console.log(rejectedSurvey, "rejectedSurvey");
 
   React.useEffect(() => {
     sp.web.lists

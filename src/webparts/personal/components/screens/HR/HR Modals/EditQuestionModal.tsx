@@ -44,7 +44,7 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
   console.log(section);
 
   const yesHandler = () => {
-    pnp.sp.web.lists
+    sp.web.lists
       .getByTitle("Questions")
       .items.getById(id)
       .update({
@@ -54,7 +54,7 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
         section: section,
       })
       .then(() => {
-        pnp.sp.web.lists
+        sp.web.lists
           .getByTitle("Questions")
           .items.get()
           .then((res) => {

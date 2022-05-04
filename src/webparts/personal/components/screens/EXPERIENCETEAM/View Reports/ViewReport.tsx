@@ -46,7 +46,6 @@ const ViewReport = () => {
       .getByTitle("personal")
       .items.get()
       .then((items: any) => {
-        console.log(items);
         setData(items);
         setFindingData(false);
       });

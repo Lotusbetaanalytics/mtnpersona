@@ -23,6 +23,7 @@ const Screen1 = () => {
   const [file, setFile] = React.useState("");
   const [res, setRes] = React.useState(null);
   const { spHttpClient } = React.useContext(Context);
+  const [listofDivision, setListOfDivision] = React.useState([]);
 
   const reader = new FileReader();
 
@@ -33,8 +34,16 @@ const Screen1 = () => {
     });
   }, []);
 
-  const [start, setStart] = React.useState(0);
-  const [end, setEnd] = React.useState(10000);
+  React.useEffect(() => {
+    sp.web.lists
+      .getByTitle("MTN DIVISION")
+      .items.get()
+      .then((response) => {
+        console.log(response);
+
+        setListOfDivision(response);
+      });
+  }, []);
 
   const onNextHandler = () => {
     localStorage.setItem(
@@ -86,33 +95,15 @@ const Screen1 = () => {
           }}
           label="Select Division"
         >
-          <option>Select...</option>
-          <option value="Company Secreteriat/ CEO’s Office(CEO,PA, COO, Business Manager)">
-            Company Secreteriat/ CEO’s Office(CEO,PA, COO, Business Manager)
-          </option>
-          <option value="Corporate Services">Corporate Services</option>
-          <option value="Customer Relations">Customer Relations</option>
-          <option value="Digital Services">Digital Services</option>
-          <option value="Enterprise Business">Enterprise Business</option>
-          <option value="Finance">Finance</option>
-          <option value="Human Resource">Human Resource</option>
-          <option value="Information Technology">Information Technology</option>
-          <option value="Marketing">Marketing</option>
-          <option value="Interna Audit and Fraud Forensics">
-            Interna Audit and Fraud Forensics
-          </option>
-          <option value="Mobile Financial Services">
-            Mobile Financial Services
-          </option>
-          <option value="Networks">Networks</option>
-          <option value="Risk and Compliance">Risk and Compliance</option>
-          <option value="Sales and Distribution">Sales and Distribution</option>
-          <option value="Transformation Office">Transformation Office</option>
-          <option value="Yello Digital Financial Service">
-            Yello Digital Financial Service
-          </option>
+          {listofDivision.map((item, index) => {
+            return (
+              <option key={index} value={item.Division}>
+                {item.Division}
+              </option>
+            );
+          })}
         </SelectInput>
-        {/* <FileInput
+        <FileInput
           type="file"
           value={file}
           onChange={(e: any) => {
@@ -128,7 +119,7 @@ const Screen1 = () => {
             );
             reader.readAsDataURL(e.target.files[0]);
             reader.onload = function () {
-              console.log(reader.result); //base64encoded string
+              //base64encoded string
               localStorage.setItem("dp", JSON.stringify(reader.result));
             };
             reader.onerror = function (error) {
@@ -137,21 +128,8 @@ const Screen1 = () => {
           }}
           label="Upload Image"
         />
-        <div style={{ width: "10vw", height: "10vh" }}>{res}</div> */}
+        <div style={{ width: "10vw", height: "10vh" }}>{res}</div>
         <div className={styles.nav__buttons}>
-          <button
-            className={styles.nobackground__button}
-            onClick={() => {
-              setEnd((prev) => {
-                return prev + end;
-              });
-              setStart((prev) => {
-                return prev + end;
-              });
-            }}
-          >
-            Next Item
-          </button>
           <button className={styles.filled__button} onClick={onNextHandler}>
             <Link to="/info/page1">Next</Link>
           </button>

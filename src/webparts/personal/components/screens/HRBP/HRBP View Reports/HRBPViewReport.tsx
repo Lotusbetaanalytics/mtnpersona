@@ -40,19 +40,36 @@ const HrbpViewReport = () => {
   const [filtered, setFiltered] = React.useState([]);
   const [selected, setSelected] = React.useState("Choose Division");
   const [showDivisionSelect, setShowDivisionSelection] = React.useState(false);
+  const [user, setUser] = React.useState({
+    division: "",
+  });
 
   const history = useHistory();
 
   React.useEffect(() => {
     setFindingData(true);
+    sp.profiles.myProperties.get().then((data) => {
+      sp.web.lists
+        .getByTitle("Roles")
+        .items.filter(`Email eq '${data.Email}'`)
+        .get()
+        .then((items: any) => {
+          setUser({ division: items[0].Division });
+        });
+    });
+  }, []);
+
+  React.useEffect(() => {
     sp.web.lists
       .getByTitle("personal")
-      .items.get()
+      .items.filter(`division eq '${user.division}'`)
+      .get()
       .then((items: any) => {
-        setData(items);
         setFindingData(false);
+        setData(items);
       });
-  }, []);
+  }, [user]);
+
   React.useEffect(() => {
     sp.web.lists
       .getByTitle("MTN DIVISION")
@@ -82,7 +99,7 @@ const HrbpViewReport = () => {
           </div>
         ) : (
           <>
-            <>
+            {/* <>
               <Filter
                 showSelect={showDivisionSelect}
                 setShowSelection={setShowDivisionSelection}
@@ -117,7 +134,8 @@ const HrbpViewReport = () => {
                   })}
                 </div>
               </Filter>
-            </>
+            </> */}
+            <>Division: {user.division}</>
             <MaterialTable
               icons={{
                 Add: forwardRef((props: any, ref: any) => (
@@ -174,7 +192,7 @@ const HrbpViewReport = () => {
               }}
               title={`Total Submitted Surveys: ${filtered.length}`}
               columns={columns}
-              data={filtered}
+              data={data}
               options={{
                 exportButton: true,
                 actionsCellStyle: {

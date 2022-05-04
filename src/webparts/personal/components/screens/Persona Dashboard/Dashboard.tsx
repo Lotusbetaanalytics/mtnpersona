@@ -5,6 +5,7 @@ import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import styles from "./dashboard.module.scss";
 import { AccountCircle, ShareSharp } from "@material-ui/icons";
+import * as _ from "lodash";
 
 const Dashboard = () => {
   const [list, setList] = React.useState([]);
@@ -12,17 +13,87 @@ const Dashboard = () => {
   const [dp, setDp] = React.useState("");
   const [avatar, setAvatar] = React.useState([]);
   const [myInterests, setMyInterests] = React.useState([]);
+  const [division, setDivision] = React.useState("");
+  const [length, setLength] = React.useState(0);
+  const [interestGroup, setInterestGroup] = React.useState([]);
+  const [total, setTotal] = React.useState([]);
+  const [staffDp, setStaffDp] = React.useState("");
+  const [avatarName, setAvatarName] = React.useState("");
+  const [avatarDp, setAvatarDp] = React.useState("");
+  const [avatarDescription, setAvatarDescription] = React.useState("");
 
+  const getNumberofInterests = () => {
+    return sp.web.lists
+      .getByTitle("personal")
+      .items.get()
+      .then((items) => {
+        let foundDivisions = items
+          .filter((item) => {
+            return item.division == division;
+          })
+          .map(({ responses }) => {
+            return JSON.parse(responses)
+              .filter(({ section }) => {
+                return section == "interests";
+              })
+              .flat();
+          });
+        setInterestGroup(foundDivisions.flat(1));
+      });
+  };
+
+  //helper function to get employees in same division
+  const getNumberofEmployees = () => {
+    return sp.web.lists
+      .getByTitle("personal")
+      .items.get()
+      .then((items) => {
+        let foundDivisions = items.filter((item) => {
+          return item.division == division;
+        });
+
+        setTotal(foundDivisions.flat(1));
+      });
+  };
+
+  //get interest group
+  React.useEffect(() => {
+    getNumberofInterests();
+  }, [division]);
+
+  //Number of employees in staff division
+  React.useEffect(() => {
+    getNumberofEmployees();
+  }, [division]);
+
+  //calculate number of interest group
+  const calculateLength = (param) => {
+    const count = interestGroup.filter(({ answer }) => {
+      return answer == param;
+    });
+    return count.length;
+  };
+
+  //get the avatar for a specific super power
   const getDp = (arr1: any, arr2: any) => {
+    const foundAttributes = [];
     for (let i = 0; i < arr2.length; i++) {
-      for (let j = 0; j < arr1.length; j++) {
-        if (arr2[i] == arr1[j].Section) {
-          setDp(JSON.parse(arr1[j].Avatar).serverRelativeUrl);
-          return;
+      for (let { SuperPower } of arr1) {
+        let superPowerArray = SuperPower.split(";");
+        if (superPowerArray.includes(arr2[i])) {
+          foundAttributes.push(arr2[i]);
         }
       }
     }
-    return [];
+    for (let { SuperPower, Avatar, AvatarName, Definition } of arr1) {
+      const superPowerArray = SuperPower.split(";");
+      if (_.isEqual(foundAttributes, superPowerArray)) {
+        setAvatarDp(JSON.parse(Avatar).serverRelativeUrl); //set dp
+        setAvatarName(AvatarName); //set avatar name
+        setAvatarDescription(Definition); //set description
+        return;
+      }
+    }
   };
 
   const bio = list.map(({ responses }) => {
@@ -45,9 +116,9 @@ const Dashboard = () => {
       })
       .map(({ answer }, index: any) => {
         return (
-          <div key={index} style={{ fontSize: "small" }}>
-            <>{answer}</>
-          </div>
+          <ul key={index} style={{ fontSize: "small" }}>
+            <li>{answer}</li>
+          </ul>
         );
       });
   });
@@ -59,9 +130,9 @@ const Dashboard = () => {
       })
       .map(({ answer }, index: any) => {
         return (
-          <div key={index} style={{ fontSize: "small" }}>
-            <>{answer}</>
-          </div>
+          <ul key={index} style={{ fontSize: "small" }}>
+            <li>{answer}</li>
+          </ul>
         );
       });
   });
@@ -72,9 +143,26 @@ const Dashboard = () => {
       })
       .map(({ answer }, index: any) => {
         return (
-          <div key={index} style={{ fontSize: "small" }}>
-            <>{answer}</>
-          </div>
+          <>
+            <li
+              key={index}
+              style={{
+                fontSize: "11px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "5px",
+                width: "100%",
+              }}
+            >
+              <span style={{ flex: "1.5" }}> {answer}</span>
+              <progress
+                style={{ flex: "0.5", color: "#ffc423" }}
+                value={calculateLength(answer)}
+                max={total.length}
+              ></progress>
+            </li>
+          </>
         );
       });
   });
@@ -84,8 +172,12 @@ const Dashboard = () => {
       .filter(({ section }) => {
         return section === "goals" || section === "priorities";
       })
-      .map(({ answer }) => {
-        return <div>{answer}</div>;
+      .map(({ answer }, index: any) => {
+        return (
+          <ul key={index} style={{ fontSize: "small" }}>
+            <li>{answer}</li>
+          </ul>
+        );
       });
   });
   const attributes = list.map(({ responses }) => {
@@ -93,8 +185,14 @@ const Dashboard = () => {
       .filter(({ section }) => {
         return section === "attributes";
       })
-      .map(({ answer }) => {
-        return <div>{answer}</div>;
+      .map(({ answer }, index: any) => {
+        return (
+          <>
+            <li key={index} style={{ fontSize: "11px" }}>
+              {answer}
+            </li>
+          </>
+        );
       });
   });
   const communication = list.map(({ responses }) => {
@@ -102,8 +200,12 @@ const Dashboard = () => {
       .filter(({ section }) => {
         return section === "communication";
       })
-      .map(({ answer }) => {
-        return <div>{answer}</div>;
+      .map(({ answer }, index: any) => {
+        return (
+          <li key={index} style={{ fontSize: "11px" }}>
+            {answer}
+          </li>
+        );
       });
   });
   const worries = list.map(({ responses }) => {
@@ -111,16 +213,22 @@ const Dashboard = () => {
       .filter(({ section }) => {
         return section === "worries";
       })
-      .map(({ answer }) => {
-        return <div>{answer}</div>;
+      .map(({ answer }, index: any) => {
+        return (
+          <li key={index} style={{ fontSize: "11px" }}>
+            {answer}
+          </li>
+        );
       });
   });
 
+  //get a list of avatar
   React.useEffect(() => {
     sp.web.lists
       .getByTitle("Avatars")
       .items.get()
       .then((res) => {
+        console.log(res);
         setAvatar(res);
       });
   }, []);
@@ -135,22 +243,24 @@ const Dashboard = () => {
     );
   }, [list]);
 
+  //Assign avatar to interest group
   React.useEffect(() => {
     const arr2 = list.map(({ responses }) => {
       return JSON.parse(responses).filter(({ section }) => {
-        return section === "interests";
+        return section === "attributes";
       });
     });
 
-    const newArr = [];
+    const newArrOfAnswers = [];
 
     for (let item of arr2.flat()) {
-      newArr.push(item.answer);
+      newArrOfAnswers.push(item.answer);
     }
 
-    getDp(avatar, newArr);
+    getDp(avatar, newArrOfAnswers);
   }, [list]);
 
+  //set staff division
   React.useEffect(() => {
     sp.profiles.myProperties.get().then((response) => {
       setUserName(response.DisplayName);
@@ -166,6 +276,15 @@ const Dashboard = () => {
               );
             })
           );
+          let foundStaff = res.filter(({ name, email }) => {
+            return (
+              name === `${response.DisplayName}` &&
+              email === `${response.Email}`
+            );
+          });
+
+          setDivision(foundStaff[0].division);
+          setStaffDp(foundStaff[0].dp);
         });
     });
   }, []);
@@ -173,16 +292,15 @@ const Dashboard = () => {
   return (
     <div className={styles.dashboard__container}>
       <div className={styles.dashboard__header}>
-        <div>
-          <img src={dp} alt="" />
+        <div className={styles.personalImage}>
+          <img src={staffDp} alt="" />
         </div>
         <div>
           <h1>{userName}</h1>
         </div>
-        <div>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-          Reprehenderit perferendis ducimus aspernatur iusto nesciunt eaque
-          consequuntur veniam, ipsum eum itaque.
+        <div className={styles.avatarSection}>
+          <img src={avatarDp} alt="" />
+          <div>{avatarDescription}</div>
         </div>
       </div>
       <div className={styles.dashboard__cards}>
@@ -258,7 +376,7 @@ const Dashboard = () => {
             <div>
               <h5>Interests</h5>
             </div>
-            <div>{interests}</div>
+            <ul>{interests}</ul>
           </div>
           <div className={styles.card__right__third}>
             <div className={styles.right__heading}>

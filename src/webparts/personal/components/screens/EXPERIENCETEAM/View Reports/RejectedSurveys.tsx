@@ -30,7 +30,16 @@ const RejectedSurvey = () => {
     { title: "Employee Name", field: "name", type: "string" as const },
     { title: "Email", field: "email", type: "string" as const },
     { title: "Employee Alias", field: "alias", type: "string" as const },
-    { title: "Division", field: "division", type: "string" as const },
+    {
+      title: "Division",
+      field: "division",
+      type: "string" as const,
+    },
+    {
+      title: "Reason",
+      field: "Comments_x002f_RejectionReason",
+      type: "string" as const,
+    },
     { title: "Approval Status", field: "EXApprovalStatus" },
   ];
 
@@ -43,10 +52,9 @@ const RejectedSurvey = () => {
     setFindingData(true);
     sp.web.lists
       .getByTitle("personal")
-      .items.filter("EXApprovalStatus eq 'Yes'")
+      .items.filter("EXApprovalStatus eq 'No'")
       .get()
       .then((items: any) => {
-        console.log(items);
         setData(items);
         setFindingData(false);
       })
@@ -150,7 +158,7 @@ const RejectedSurvey = () => {
                   tooltip: "View More",
 
                   onClick: (event, rowData) => {
-                    history.push(`/experienceteam/report/${rowData.ID}`);
+                    history.push(`/experienceteam/rejected/${rowData.ID}`);
                   },
                 },
               ]}

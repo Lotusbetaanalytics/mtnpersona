@@ -1,10 +1,10 @@
 import * as React from "react";
-import { default as pnp, ItemAddResult } from "sp-pnp-js";
-import "@pnp/sp/webs";
-import "@pnp/sp/lists";
 import styles from "./dashboard.module.scss";
-import { AccountCircle, ShareSharp } from "@material-ui/icons";
-import { useParams } from "react-router-dom";
+import { AccountCircle, ShareSharp, Cancel } from "@material-ui/icons";
+import CancelIcon from "@material-ui/icons/Cancel";
+import { useParams, useHistory } from "react-router-dom";
+import { sp } from "@pnp/sp";
+import { CommentModal } from "../EXPERIENCETEAM/View Reports/StaffView";
 
 type Params = {
   name: any;
@@ -13,12 +13,38 @@ type Params = {
 
 const DashboardFromLink = () => {
   const user = useParams() as Params;
-
+  const [open, setOpen] = React.useState(false);
   const foundUser = React.useRef(user);
   const [userName, setUserName] = React.useState("");
   const [userEmail, setUserEmail] = React.useState("");
-
   const [list, setList] = React.useState([]);
+  const [dp, setDp] = React.useState("");
+  const [avatar, setAvatar] = React.useState([]);
+  const [id, setId] = React.useState("");
+  const [staffImg, setStaffImg] = React.useState("");
+  const [rejected, setRejected] = React.useState(false);
+
+  const history = useHistory();
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const getDp = (arr1: any, arr2: any) => {
+    for (let i = 0; i < arr2.length; i++) {
+      for (let j = 0; j < arr1.length; j++) {
+        if (arr2[i] == arr1[j].Section) {
+          setDp(JSON.parse(arr1[j].Avatar).serverRelativeUrl);
+          return;
+        }
+      }
+    }
+    return [];
+  };
 
   const bio = list.map(({ responses }) => {
     return JSON.parse(responses)
@@ -106,7 +132,11 @@ const DashboardFromLink = () => {
         return section === "communication";
       })
       .map(({ answer }, index: any) => {
-        return <div>{answer}</div>;
+        return (
+          <ul key={index} style={{ fontSize: "small" }}>
+            <li>{answer}</li>
+          </ul>
+        );
       });
   });
   const worries = list.map(({ responses }) => {
@@ -115,14 +145,27 @@ const DashboardFromLink = () => {
         return section === "worries";
       })
       .map(({ answer }, index: any) => {
-        return <div>{answer}</div>;
+        return (
+          <ul key={index} style={{ fontSize: "small" }}>
+            <li>{answer}</li>
+          </ul>
+        );
       });
   });
 
   React.useEffect(() => {
+    sp.web.lists
+      .getByTitle("Avatars")
+      .items.get()
+      .then((res) => {
+        setAvatar(res);
+      });
+  }, []);
+
+  React.useEffect(() => {
     setUserName(user.name);
     setUserEmail(user.email);
-    pnp.sp.web.lists
+    sp.web.lists
       .getByTitle("personal")
       .items.get()
       .then((res) => {
@@ -134,17 +177,38 @@ const DashboardFromLink = () => {
       });
   }, [userName, userEmail, list, user]);
 
+  React.useEffect(() => {
+    if (list.length > 0) {
+      setId(list[0].ID);
+      list[0].EXApprovalStatus === "No" && setRejected(true);
+      setStaffImg(list[0].dp);
+    }
+  }, [list]);
+
+  React.useEffect(() => {
+    const arr2 = list.map(({ responses }) => {
+      return JSON.parse(responses).filter(({ section }) => {
+        return section === "interests";
+      });
+    });
+
+    const newArr = [];
+
+    for (let item of arr2.flat()) {
+      newArr.push(item.answer);
+    }
+
+    getDp(avatar, newArr);
+  }, [list]);
+
   return (
     <div className={styles.dashboard__container}>
       <div className={styles.dashboard__header}>
-        <div></div>
         <div>
-          <h1>{userName}</h1>
+          <img src={staffImg} alt="" />
         </div>
         <div>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-          Reprehenderit perferendis ducimus aspernatur iusto nesciunt eaque
-          consequuntur veniam, ipsum eum itaque.
+          <h1>{userName}</h1>
         </div>
       </div>
       <div className={styles.dashboard__cards}>
@@ -185,15 +249,7 @@ const DashboardFromLink = () => {
               <div>
                 <h5>Communication Preference</h5>
               </div>
-              <div
-                style={{
-                  padding: "10px",
-                  height: "100%",
-                  fontSize: "small",
-                }}
-              >
-                {communication}
-              </div>
+              <div>{communication}</div>
             </div>
           </div>
           <div className={styles.left__card__3}>
@@ -201,29 +257,13 @@ const DashboardFromLink = () => {
               <div>
                 <h5>Motivators</h5>
               </div>
-              <div
-                style={{
-                  padding: "10px",
-                  height: "100%",
-                  fontSize: "small",
-                }}
-              >
-                {motivator}
-              </div>
+              <div>{motivator}</div>
             </div>
             <div className={styles.single__card__bg}>
               <div>
                 <h5>Worries</h5>
               </div>
-              <div
-                style={{
-                  padding: "10px",
-                  height: "100%",
-                  fontSize: "small",
-                }}
-              >
-                {worries}
-              </div>
+              <div>{worries}</div>
             </div>
           </div>
         </div>
@@ -235,15 +275,7 @@ const DashboardFromLink = () => {
             <div>
               <h5>Career Goal</h5>
             </div>
-            <div
-              style={{
-                padding: "10px",
-                height: "100%",
-                fontSize: "small",
-              }}
-            >
-              {goals}
-            </div>
+            <div>{goals}</div>
           </div>
           <div className={styles.card__right__second}>
             <div className={styles.card__circle}>
@@ -252,32 +284,31 @@ const DashboardFromLink = () => {
             <div>
               <h5>Interests</h5>
             </div>
-            <div
-              style={{
-                padding: "10px",
-                height: "100%",
-                fontSize: "small",
-              }}
-            >
-              {interests}
-            </div>
+            <div>{interests}</div>
           </div>
           <div className={styles.card__right__third}>
             <div className={styles.right__heading}>
               <h5>Key Attributes</h5>
             </div>
-            <div
-              style={{
-                padding: "10px",
-                height: "100%",
-                fontSize: "small",
-              }}
-            >
-              {attributes}
-            </div>
+            <div>{attributes}</div>
           </div>
         </div>
       </div>
+      {rejected ? (
+        <button className={styles.rejectBtn} disabled>
+          <Cancel />
+        </button>
+      ) : (
+        <button className={styles.rejectBtn} onClick={handleOpen}>
+          <Cancel />
+        </button>
+      )}
+      <CommentModal
+        open={open}
+        handleClose={handleClose}
+        id={id}
+        history={history}
+      />
     </div>
   );
 };

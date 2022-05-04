@@ -45,6 +45,7 @@ const ConfigureRoles = ({ context }) => {
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [error, setError] = React.useState(false);
+  const [divisionRequired, setDivisionRequired] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -59,21 +60,7 @@ const ConfigureRoles = ({ context }) => {
       .getByTitle("Configured Roles")
       .items.get()
       .then((response) => {
-        console.log(response);
         setAllRoles(response);
-      });
-  }, []);
-
-  React.useEffect(() => {
-    spHttpClient
-      .get(
-        `https://lotusbetaanalytics.sharepoint.com/sites/business_solutions/_api/lists/GetByTitle('CURRENT HCM STAFF LIST-test')/items`,
-        SPHttpClient.configurations.v1
-      )
-      .then((response: SPHttpClientResponse) => {
-        response.json().then((responseJSON: any) => {
-          console.log(responseJSON);
-        });
       });
   }, []);
 
@@ -83,7 +70,6 @@ const ConfigureRoles = ({ context }) => {
       .getByTitle("MTN DIVISION")
       .items.get()
       .then((response) => {
-        console.log(response);
         setAllDivisions(response);
       });
   }, []);
@@ -119,6 +105,7 @@ const ConfigureRoles = ({ context }) => {
         setError(true);
       });
   };
+
   return (
     <div className={styles.dashboard__container}>
       <ExperienceTeamNavbar />
@@ -164,21 +151,6 @@ const ConfigureRoles = ({ context }) => {
                     backgroundColor: "#fff",
                   }}
                 >
-                  <div
-                    className={styles.container__content__select}
-                    onClick={() => {
-                      setShowSelection(false);
-                      setRole("--Select Role--");
-                    }}
-                  >
-                    <div
-                      style={{
-                        flex: 1,
-                      }}
-                    >
-                      --Select Role--
-                    </div>
-                  </div>
                   {allRoles.map(({ Role }) => {
                     return (
                       <div
@@ -186,6 +158,9 @@ const ConfigureRoles = ({ context }) => {
                         onClick={() => {
                           setShowSelection(false);
                           setRole(Role);
+                          Role == "HRBP"
+                            ? setDivisionRequired(true)
+                            : setDivisionRequired(false);
                         }}
                       >
                         <div
@@ -209,7 +184,7 @@ const ConfigureRoles = ({ context }) => {
                 value={divisions}
                 showSelect={showDivisionSelect}
                 setShowSelection={setShowDivisionSelection}
-                required={role == "HRBP" && true}
+                required={divisionRequired}
               >
                 <div
                   style={{
@@ -219,21 +194,6 @@ const ConfigureRoles = ({ context }) => {
                     backgroundColor: "#fff",
                   }}
                 >
-                  <div
-                    className={styles.container__content__select}
-                    onClick={() => {
-                      setShowDivisionSelection(false);
-                      setDivision("--Select Role--");
-                    }}
-                  >
-                    <div
-                      style={{
-                        flex: 1,
-                      }}
-                    >
-                      --Select Role--
-                    </div>
-                  </div>
                   {allDivisions.map(({ Division: division }) => {
                     return (
                       <div
@@ -260,7 +220,15 @@ const ConfigureRoles = ({ context }) => {
           {loading ? (
             <button disabled>Adding...</button>
           ) : (
-            <button type="submit">Add</button>
+            <>
+              {divisionRequired && divisions.length < 1 ? (
+                <button type="submit" disabled>
+                  Add
+                </button>
+              ) : (
+                <button type="submit">Add</button>
+              )}
+            </>
           )}
         </form>
       </div>

@@ -22,6 +22,10 @@ const HrbpDashboard = () => {
   const [rejectedSurvey, setRejectedSurvey] = React.useState(0);
   const [pendingSurvey, setPendingSurvey] = React.useState(0);
   const [numberofQuestions, setNumberOfQuestions] = React.useState(0);
+  const [showChart, setShowChart] = React.useState(false);
+  const [user, setUser] = React.useState({
+    division: "",
+  });
 
   const data = {
     numberofSurvey: [numberofSurvey],
@@ -41,7 +45,6 @@ const HrbpDashboard = () => {
       label: `Rejected Surveys: ${rejectedSurvey}`,
     },
   ];
-  const [showChart, setShowChart] = React.useState(false);
 
   //Create Bar chart component
   const showBarChart = () => {
@@ -62,16 +65,35 @@ const HrbpDashboard = () => {
   };
 
   React.useEffect(() => {
-    setNumberOfSurvey(allSurvey.length);
+    sp.profiles.myProperties.get().then((data) => {
+      sp.web.lists
+        .getByTitle("Roles")
+        .items.filter(`Email eq '${data.Email}'`)
+        .get()
+        .then((items: any) => {
+          setUser({ division: items[0].Division });
+        });
+    });
+  }, []);
+
+  React.useEffect(() => {
+    setNumberOfSurvey(
+      allSurvey.filter((survey) => survey.division == user.division).length
+    );
     setRejectedSurvey(
-      allSurvey.filter((survey) => survey.EXApprovalStatus === "Yes").length
+      allSurvey.filter(
+        (survey) =>
+          survey.EXApprovalStatus === "No" && survey.division == user.division
+      ).length
     );
     setPendingSurvey(
-      allSurvey.filter((survey) => survey.EXApprovalStatus === "Pending").length
+      allSurvey.filter(
+        (survey) =>
+          survey.EXApprovalStatus === "Pending" &&
+          survey.division == user.division
+      ).length
     );
-  }, [allSurvey]);
-
-  console.log(rejectedSurvey, "rejectedSurvey");
+  }, [allSurvey, user]);
 
   React.useEffect(() => {
     sp.web.lists

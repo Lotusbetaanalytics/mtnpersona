@@ -28,21 +28,15 @@ const ExperienceTeamNavbar = () => {
 
   React.useEffect(() => {
     sp.profiles.myProperties.get().then((profile) => {
-      console.log(profile);
-
       sp.web.lists
         .getByTitle("Roles")
         .items.filter(`Email eq '${profile.Email}'`)
         .get()
         .then((lists: any) => {
-          lists = lists.flat();
-          console.log(lists);
-          setRole(lists.Role);
+          setRole(lists[0].Role);
         });
     });
   }, []);
-
-  console.log(role, "role>>>");
 
   return (
     <div className={`${styles.navbar__container} `}>
