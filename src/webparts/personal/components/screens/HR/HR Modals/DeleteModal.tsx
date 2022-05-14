@@ -5,10 +5,10 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import styles from "./modal.module.scss";
 import { sp, spGet, spPost } from "@pnp/sp";
-import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import { Cancel } from "@material-ui/icons";
+import { useToasts } from "react-toast-notifications";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const DeleteModal = ({ open, handleClose, setList, id }) => {
   const classes = useStyles();
-
+  const { addToast } = useToasts();
   const yesHandler = () => {
     sp.web.lists
       .getByTitle("Questions")
@@ -36,6 +36,10 @@ const DeleteModal = ({ open, handleClose, setList, id }) => {
       .then((res) => {
         setList((prev) => {
           return prev.filter((item) => item.ID !== id);
+        });
+        return addToast("Delete Successful", {
+          appearance: "success",
+          autoDismiss: true,
         });
       });
     handleClose();
@@ -59,7 +63,7 @@ const DeleteModal = ({ open, handleClose, setList, id }) => {
         }}
       >
         <Fade in={open}>
-          <div className={`${classes.paper} ${styles.container}`}>
+          <div className={`${classes.paper} ${styles.container__modal}`}>
             <div
               style={{
                 position: "relative",
@@ -74,7 +78,7 @@ const DeleteModal = ({ open, handleClose, setList, id }) => {
             </div>
             <div className={styles.next__btn}>
               <div>
-                <h2>Are you sure you want to delete this record?</h2>
+                <h3>Are you sure you want to delete this record?</h3>
               </div>
 
               <div className={styles.btn__flex__1}>

@@ -10,19 +10,21 @@ import ExperienceTeamNavbar from "../Experience Team Navbar/ExperienceTeamNavbar
 import styles from "./dashboard.module.scss";
 
 const ExperienceTeamDashboard = () => {
-  const { allSurvey } = React.useContext(Context);
+  const { allSurvey, rejectedSurvey, allQuestions } = React.useContext(Context);
   const [numberofSurvey, setNumberOfSurvey] = React.useState(0);
-  const [rejectedSurvey, setRejectedSurvey] = React.useState(0);
   const [pendingSurvey, setPendingSurvey] = React.useState(0);
-  const [numberofQuestions, setNumberOfQuestions] = React.useState(0);
 
   const data = {
-    numberofSurvey: [numberofSurvey],
-    rejected: [rejectedSurvey],
+    numberofSurvey: [numberofSurvey + rejectedSurvey.length],
+    rejected: [rejectedSurvey.length],
     pending: [pendingSurvey],
   };
   const pieChartData = [
-    { x: 2, y: numberofSurvey || 0, label: `All Surveys: ${numberofSurvey}` },
+    {
+      x: 2,
+      y: numberofSurvey + rejectedSurvey.length || 0,
+      label: `All Surveys: ${numberofSurvey + rejectedSurvey.length}`,
+    },
     {
       x: 3,
       y: pendingSurvey || 0,
@@ -30,8 +32,8 @@ const ExperienceTeamDashboard = () => {
     },
     {
       x: 4,
-      y: rejectedSurvey || 0,
-      label: `Rejected Surveys: ${rejectedSurvey}`,
+      y: rejectedSurvey.length || 0,
+      label: `Rejected Surveys: ${rejectedSurvey.length}`,
     },
   ];
   const [showChart, setShowChart] = React.useState(false);
@@ -56,22 +58,10 @@ const ExperienceTeamDashboard = () => {
 
   React.useEffect(() => {
     setNumberOfSurvey(allSurvey.length);
-    setRejectedSurvey(
-      allSurvey.filter((survey) => survey.EXApprovalStatus === "No").length
-    );
     setPendingSurvey(
       allSurvey.filter((survey) => survey.EXApprovalStatus === "Pending").length
     );
   }, [allSurvey]);
-
-  React.useEffect(() => {
-    sp.web.lists
-      .getByTitle("Questions")
-      .items.get()
-      .then((items: any) => {
-        setNumberOfQuestions(items.length);
-      });
-  }, []);
 
   return (
     <>
@@ -84,17 +74,17 @@ const ExperienceTeamDashboard = () => {
           <div className={styles.dashboard__container__cards}>
             <Card
               title="Number of Survey"
-              number={numberofSurvey}
+              number={numberofSurvey + rejectedSurvey.length}
               icon={<BookSharp style={{ fontSize: 60 }} />}
             />
             <Card
               title="Rejected Surveys"
-              number={rejectedSurvey}
+              number={rejectedSurvey.length}
               icon={<CancelOutlined style={{ fontSize: 60 }} />}
             />
             <Card
               title="Total Questions"
-              number={numberofQuestions}
+              number={allQuestions.length}
               icon={<QuestionAnswer style={{ fontSize: 60 }} />}
             />
           </div>

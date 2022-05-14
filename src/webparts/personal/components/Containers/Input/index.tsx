@@ -1,7 +1,15 @@
 import * as React from "react";
 import styles from "./input.module.scss";
 
-const InputField = ({ value, onChange, label, type, id }) => {
+const InputField = ({
+  value,
+  onChange,
+  label,
+  type,
+  id,
+  readOnly = false,
+  required = false,
+}) => {
   return (
     <div className={`${styles.input__container}`}>
       <label htmlFor="">{label}</label>
@@ -11,6 +19,8 @@ const InputField = ({ value, onChange, label, type, id }) => {
         value={value}
         onChange={onChange}
         id={id}
+        readOnly={readOnly}
+        required={required}
       />
     </div>
   );
@@ -18,7 +28,13 @@ const InputField = ({ value, onChange, label, type, id }) => {
 
 export default InputField;
 
-export const FileInput = ({ value, onChange, label, type }) => {
+export const FileInput = ({
+  value,
+  onChange,
+  label,
+  type,
+  required = false,
+}) => {
   return (
     <div className={`${styles.input__container}`}>
       <label htmlFor="">{label}</label>
@@ -28,15 +44,29 @@ export const FileInput = ({ value, onChange, label, type }) => {
         value={value}
         onChange={onChange}
         id={styles.file__upload}
+        required={required}
+        accept="image/*"
       />
     </div>
   );
 };
-export const SelectInput = ({ onChange, label, children }) => {
+export const SelectInput = ({
+  onChange,
+  label,
+  children,
+  required = false,
+}) => {
   return (
     <div className={`${styles.input__container}`}>
       <label htmlFor="">{label}</label>
-      <select className={`${styles.input}`} onChange={onChange}>
+      <select
+        className={`${styles.input}`}
+        onChange={onChange}
+        required={required}
+      >
+        <option value="" disabled selected>
+          Select Division...
+        </option>
         {children}
       </select>
     </div>

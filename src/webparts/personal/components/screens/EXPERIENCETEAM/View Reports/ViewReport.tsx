@@ -27,11 +27,11 @@ import { Spinner } from "office-ui-fabric-react";
 
 const ViewReport = () => {
   const columns = [
-    { title: "SN", field: "ID", type: "string" as const },
     { title: "Employee Name", field: "name", type: "string" as const },
     { title: "Email", field: "email", type: "string" as const },
     { title: "Employee Alias", field: "alias", type: "string" as const },
     { title: "Division", field: "division", type: "string" as const },
+    { title: "Avatar Group", field: "AvatarGroup", type: "string" as const },
     { title: "Approval Status", field: "EXApprovalStatus" },
   ];
 
@@ -54,7 +54,9 @@ const ViewReport = () => {
     <div className={styles.report__container}>
       <ExperienceTeamNavbar />
       <div className={styles.report__container__content}>
-        <ExperienceTeamHeader title="Report" />
+        <div>
+          <ExperienceTeamHeader title="Report" />
+        </div>
         {findingData ? (
           <div className={styles.spinner}>
             <Spinner />

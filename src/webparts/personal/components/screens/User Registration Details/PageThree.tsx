@@ -6,31 +6,30 @@ import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import styles from "./userRegistration.module.scss";
+import { ChangeHandlerRadio } from "./PageTwo/PageTwo";
+import { getResponsesFromTwoSections } from "./Job Info/JobInfo";
+import swal from "sweetalert";
 
 type Props = {};
 
 const PageThree = (props: Props) => {
+  const [sectionResponses, setSectionResponses] = React.useState([]);
   const [list, setList] = React.useState([]);
   const [response, setResponse] = React.useState([]);
   const [count, setCount] = React.useState(0);
   const [questions, setQuestions] = React.useState(0);
-
+  const [others, setOthers] = React.useState("");
+  const [showField, setShowField] = React.useState(false);
   const [total, setTotal] = React.useState(0);
-
   const history = useHistory();
 
-  const onNextHandler = () => {
-    if (response.length >= questions) {
-      history.push("/info/page4");
-      localStorage.setItem("count", JSON.stringify(count));
-      localStorage.setItem(
-        "data",
-        JSON.stringify([
-          ...JSON.parse(localStorage.getItem("data")),
-          ...response,
-        ])
-      );
-    }
+  const onNextHandler = (e) => {
+    e.preventDefault();
+
+    history.push("/info/page4");
+    const existing = JSON.parse(localStorage.getItem("data"));
+    localStorage.setItem("data", JSON.stringify([...response, ...existing]));
+    localStorage.setItem("count", JSON.stringify(count));
   };
 
   React.useEffect(() => {
@@ -39,7 +38,6 @@ const PageThree = (props: Props) => {
         .getByTitle("Questions")
         .items.get()
         .then((res) => {
-          console.log(res);
           setTotal(res.length);
           setList(
             res.filter(({ section }) => {
@@ -60,11 +58,21 @@ const PageThree = (props: Props) => {
         : list.length
     );
   }, [list]);
+
+  React.useEffect(() => {
+    setSectionResponses(getResponsesFromTwoSections("communication", "goals"));
+  }, []);
+
+  const getChecked = (opt) => {
+    const answer = sectionResponses.filter(({ answer }) => answer == opt);
+    return answer.length > 0 && answer[0].answer;
+  };
+
   return (
     <div className={styles.screen2__container}>
       <Header />
-      {count} out of {total} | We'd like to know about your goals and mode of
-      communication
+      {/* {count} out of {total} | We'd like to know about your goals and mode of
+      communication */}
       <div className={styles.job__info}>
         {list.map((items, index) => {
           return (
@@ -89,20 +97,49 @@ const PageThree = (props: Props) => {
                         <input
                           type={items.type}
                           name={items.type === "radio" ? "yello" : ""}
-                          value={opt ? opt : ""}
+                          value={opt == "Others" ? others : opt ? opt : ""}
+                          checked={opt == getChecked(opt) ? true : null}
                           onChange={(e: any) => {
+                            // ChangeHandlerRadio(e, items);
                             setResponse([
                               ...response,
                               {
                                 answer: e.target.value,
-                                id: items.GUID,
+                                id: items.ID,
                                 section: items.section,
                               },
                             ]);
                           }}
                         />
                         <div className={styles.input__options}>
-                          <div>{opt ? opt : ""}</div>
+                          <div>
+                            {opt == "Others" ? (
+                              <div
+                                onClick={() => {
+                                  setShowField(!showField);
+                                }}
+                              >
+                                Others, specify
+                                {showField && (
+                                  <input
+                                    type="text"
+                                    value={others}
+                                    onChange={(e) => {
+                                      setOthers(e.target.value);
+                                    }}
+                                    style={{
+                                      border: "none",
+                                      borderBottom: "1px solid grey",
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            ) : opt ? (
+                              opt
+                            ) : (
+                              ""
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
@@ -118,7 +155,7 @@ const PageThree = (props: Props) => {
                         ...response,
                         {
                           answer: e.target.value,
-                          id: items.GUID,
+                          id: items.ID,
                           section: items.section,
                         },
                       ]);

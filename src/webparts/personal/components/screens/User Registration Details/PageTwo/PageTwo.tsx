@@ -6,6 +6,9 @@ import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import styles from "../userRegistration.module.scss";
 import { Header } from "../../../Containers";
+import { Context } from "../../../Personal";
+import { getResponsesFromTwoSections, prevHandler } from "../Job Info/JobInfo";
+import swal from "sweetalert";
 
 type Props = {};
 
@@ -14,32 +17,39 @@ const PageTwo = (props: Props) => {
   const [response, setResponse] = React.useState([]);
   const [count, setCount] = React.useState(0);
   const [questions, setQuestions] = React.useState(0);
-
+  const [data, setData] = React.useState("");
+  const [checkboxResponse, setCheckboxResponse] = React.useState([]);
+  const [sectionResponses, setSectionResponses] = React.useState([]);
   const [total, setTotal] = React.useState(0);
+  const [others, setOthers] = React.useState("");
+  const [showField, setShowField] = React.useState(false);
+
+  React.useEffect(() => {
+    sp.web.lists
+      .getByTitle("personal")
+      .items.getById(JSON.parse(localStorage.getItem("surveyId")))
+      .get()
+      .then((response) => {
+        response.attributes && setData(response.attributes);
+      });
+  }, []);
 
   const history = useHistory();
 
-  const onNextHandler = () => {
-    if (response.length >= questions) {
-      history.push("/info/page3");
-      localStorage.setItem("count", JSON.stringify(count));
-      localStorage.setItem(
-        "data",
-        JSON.stringify([
-          ...JSON.parse(localStorage.getItem("data")),
-          ...response,
-        ])
-      );
-    }
+  const onNextHandler = (e) => {
+    e.preventDefault();
+    history.push("/info/page3");
+    const existing = JSON.parse(localStorage.getItem("data"));
+    localStorage.setItem("data", JSON.stringify([...response, ...existing]));
+    localStorage.setItem("count", JSON.stringify(count));
   };
 
   React.useEffect(() => {
     try {
-      pnp.sp.web.lists
+      sp.web.lists
         .getByTitle("Questions")
         .items.get()
         .then((res) => {
-          console.log(res);
           setTotal(res.length);
           setList(
             res.filter(({ section }) => {
@@ -60,13 +70,19 @@ const PageTwo = (props: Props) => {
         : list.length
     );
   }, [list]);
+
+  React.useEffect(() => {
+    setSectionResponses(getResponsesFromTwoSections("attributes", "learning"));
+  }, []);
+
+  const getChecked = (opt) => {
+    const answer = sectionResponses.filter(({ answer }) => answer == opt);
+    return answer.length > 0 && answer[0].answer;
+  };
+
   return (
     <div className={styles.screen2__container}>
       <Header />
-      <div>
-        {count} out of {total} | Tell us about your attributes and learning
-        style
-      </div>
       <div className={styles.job__info}>
         {list.map((items, index) => {
           return (
@@ -91,20 +107,48 @@ const PageTwo = (props: Props) => {
                         <input
                           type={items.type}
                           name={items.type === "radio" ? "yello" : ""}
-                          value={opt ? opt : ""}
+                          value={opt == "Others" ? others : opt ? opt : ""}
+                          checked={opt == getChecked(opt) ? true : null}
                           onChange={(e: any) => {
                             setResponse([
                               ...response,
                               {
                                 answer: e.target.value,
-                                id: items.GUID,
+                                id: items.ID,
                                 section: items.section,
                               },
                             ]);
                           }}
                         />
                         <div className={styles.input__options}>
-                          <div>{opt ? opt : ""}</div>
+                          <div>
+                            {opt == "Others" ? (
+                              <div
+                                onClick={() => {
+                                  setShowField(true);
+                                }}
+                              >
+                                Others, specify
+                                {showField && (
+                                  <input
+                                    type="text"
+                                    value={others}
+                                    onChange={(e) => {
+                                      setOthers(e.target.value);
+                                    }}
+                                    style={{
+                                      border: "none",
+                                      borderBottom: "1px solid grey",
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            ) : opt ? (
+                              opt
+                            ) : (
+                              ""
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
@@ -120,7 +164,7 @@ const PageTwo = (props: Props) => {
                         ...response,
                         {
                           answer: e.target.value,
-                          id: items.GUID,
+                          id: items.ID,
                           section: items.section,
                         },
                       ]);
@@ -146,7 +190,11 @@ const PageTwo = (props: Props) => {
         <button className={styles.nobackground__button}>
           <Link to="/info/page1">Previous</Link>
         </button>
-        <button className={styles.filled__button} onClick={onNextHandler}>
+        <button
+          className={styles.filled__button}
+          type="submit"
+          onClick={onNextHandler}
+        >
           Next
         </button>
       </div>
@@ -155,3 +203,66 @@ const PageTwo = (props: Props) => {
 };
 
 export default PageTwo;
+
+export const ChangeHandler = (e, item, section) => {
+  const [data, setData] = React.useState("");
+
+  React.useEffect(() => {
+    sp.web.lists
+      .getByTitle("personal")
+      .items.getById(JSON.parse(localStorage.getItem("surveyId")))
+      .get()
+      .then((response) => {
+        console.log(response[section]);
+        response[section] && setData(response[section]);
+      });
+  }, []);
+
+  if (item.type == "checkbox") {
+    console.log(data);
+    localStorage.getItem("surveyId") &&
+      sp.web.lists
+        .getByTitle("personal")
+        .items.getById(JSON.parse(localStorage.getItem("surveyId")))
+        .update({
+          [item.section]:
+            data == null ? e.target.value : `${data && data};${e.target.value}`,
+        })
+        .then((response) => {
+          console.log(response);
+          localStorage.getItem("surveyId") &&
+            sp.web.lists
+              .getByTitle("personal")
+              .items.getById(JSON.parse(localStorage.getItem("surveyId")))
+              .get()
+              .then((response) => {
+                console.log(response.section);
+                response[section] && setData(response[section]);
+              });
+        });
+  } else {
+    localStorage.getItem("surveyId") &&
+      sp.web.lists
+        .getByTitle("personal")
+        .items.getById(JSON.parse(localStorage.getItem("surveyId")))
+        .update({
+          [item.section]: e.target.value,
+        })
+        .then((response) => {
+          console.log(response);
+        });
+  }
+};
+
+export const ChangeHandlerRadio = (e, item) => {
+  localStorage.getItem("surveyId") &&
+    sp.web.lists
+      .getByTitle("personal")
+      .items.getById(JSON.parse(localStorage.getItem("surveyId")))
+      .update({
+        [item.section]: e.target.value,
+      })
+      .then((response) => {
+        console.log(response);
+      });
+};

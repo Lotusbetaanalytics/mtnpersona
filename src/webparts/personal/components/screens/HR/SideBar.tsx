@@ -12,9 +12,7 @@ const SideBar = ({ handleOpen }) => {
   const viewQuestionHandler = () => {
     history.push("/hr/page6");
   };
-  const reportHandler = () => {
-    history.push("/hr/page7");
-  };
+
   const gotoDashboard = () => {
     history.push("/experienceteam/dashboard");
   };
@@ -30,9 +28,9 @@ const SideBar = ({ handleOpen }) => {
       <button className={styles.hr__button} onClick={viewQuestionHandler}>
         View Questions
       </button>
-      <button className={styles.hr__button} onClick={reportHandler}>
+      {/* <button className={styles.hr__button} onClick={reportHandler}>
         Reports
-      </button>
+      </button> */}
     </div>
   );
 };

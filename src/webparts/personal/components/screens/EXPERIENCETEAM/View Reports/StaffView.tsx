@@ -12,6 +12,7 @@ import Fade from "@material-ui/core/Fade";
 import { Link, useHistory } from "react-router-dom";
 import styles2 from "./modal.module.scss";
 import { Cancel } from "@material-ui/icons";
+import swal from "sweetalert";
 
 type user = {
   id: any;
@@ -40,7 +41,7 @@ const StaffView = () => {
     setOpen(false);
   };
 
-  const href = `${proxy}/info/dashboard/${employeeName}/${employeeEmail}`;
+  const href = `${proxy}#/info/dashboard/${employeeName}/${employeeEmail}`;
 
   React.useEffect(() => {
     setFindingData(true);
@@ -55,8 +56,12 @@ const StaffView = () => {
         setEmployeeDivision(items.division);
         setID(items.ID);
         setImg(items.dp);
-        items.EXApprovalStatus === "No" && setRejected(true);
+        items.EXApprovalStatus === "Declined" && setRejected(true);
         setFindingData(false);
+      })
+      .catch((error) => {
+        setFindingData(false);
+        swal("error", "An error occured!", "error");
       });
   }, []);
 
@@ -71,7 +76,9 @@ const StaffView = () => {
     <div className={styles.report__container}>
       <ExperienceTeamNavbar />
       <div className={styles.report__container__content}>
-        <ExperienceTeamHeader title="Report" />
+        <div>
+          <ExperienceTeamHeader title="Report" />
+        </div>
         {findingData ? (
           <Spinner />
         ) : (
@@ -155,18 +162,38 @@ export const CommentModal = ({ open, handleClose, id, history }) => {
       .getByTitle("personal")
       .items.getById(id)
       .update({
-        EXApprovalStatus: "No",
+        EXApprovalStatus: "Declined",
         Comments_x002f_RejectionReason: comment,
       })
       .then(() => {
         setLoading(false);
         handleClose();
+        setComment("");
         history.push("/experienceteam/report");
       })
       .catch((error) => {
         console.log(error);
         setLoading(false);
       });
+  };
+
+  const noHandler = (e) => {
+    e.preventDefault();
+    setComment("");
+    handleClose();
+  };
+
+  const btnFlex = () => {
+    return {
+      display: "flex",
+      gap: "5px",
+      width: "100%",
+      height: "50%",
+      boxSizing: "border-box",
+      paddingLeft: "20%",
+      justifyItems: "flex-end",
+      alignItems: "center",
+    };
   };
 
   return (
@@ -197,10 +224,11 @@ export const CommentModal = ({ open, handleClose, id, history }) => {
             >
               <Cancel />
             </div>
-            <div className={styles2.modal__container2}>
+            <form className={styles2.modal__container2} onSubmit={yesHandler}>
               <h4>Comment</h4>
               <textarea
                 value={comment}
+                required
                 onChange={(e) => {
                   setComment(e.target.value);
                 }}
@@ -209,9 +237,23 @@ export const CommentModal = ({ open, handleClose, id, history }) => {
               {loading ? (
                 <button disabled>Submitting...</button>
               ) : (
-                <button onClick={yesHandler}>Submit</button>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "5px",
+                    width: "100%",
+                    height: "50%",
+                    boxSizing: "border-box",
+                    paddingLeft: "20%",
+                    justifyItems: "flex-end",
+                    alignItems: "center",
+                  }}
+                >
+                  <button onClick={noHandler}>Cancel</button>
+                  <button type="submit">Submit</button>
+                </div>
               )}
-            </div>
+            </form>
           </div>
         </Fade>
       </Modal>

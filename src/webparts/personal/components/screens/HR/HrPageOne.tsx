@@ -13,6 +13,8 @@ const HrPageOne = () => {
     setOpen(true);
   };
 
+  React.useEffect(() => handleOpen(), []);
+
   const handleClose = () => {
     setOpen(false);
   };

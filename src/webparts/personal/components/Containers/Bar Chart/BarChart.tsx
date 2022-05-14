@@ -58,7 +58,7 @@ function BarChart({ data }) {
       },
     ],
   };
-  return <Bar options={options} data={alldata} />;
+  return <Bar options={options} data={alldata} height={120} />;
 }
 
 export default BarChart;

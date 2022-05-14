@@ -1,19 +1,13 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Header, Input } from "../../Containers";
 import { FileInput, SelectInput } from "../../Containers/Input";
-
 import { sp, spGet, spPost } from "@pnp/sp";
-import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import styles from "./userRegistration.module.scss";
-import {
-  SPHttpClient,
-  SPHttpClientConfiguration,
-  SPHttpClientResponse,
-} from "@microsoft/sp-http";
 import { Context } from "../../Personal";
+import swal from "sweetalert";
 
 const Screen1 = () => {
   const [name, setName] = React.useState("");
@@ -22,10 +16,12 @@ const Screen1 = () => {
   const [division, setDivision] = React.useState("");
   const [file, setFile] = React.useState("");
   const [res, setRes] = React.useState(null);
-  const { spHttpClient } = React.useContext(Context);
+  const { lineManager, setState } = React.useContext(Context);
   const [listofDivision, setListOfDivision] = React.useState([]);
 
   const reader = new FileReader();
+
+  const history = useHistory();
 
   React.useEffect(() => {
     sp.profiles.myProperties.get().then((response) => {
@@ -39,29 +35,44 @@ const Screen1 = () => {
       .getByTitle("MTN DIVISION")
       .items.get()
       .then((response) => {
-        console.log(response);
-
         setListOfDivision(response);
       });
   }, []);
 
-  const onNextHandler = () => {
-    localStorage.setItem(
-      "userData",
-      JSON.stringify({
-        name,
-        email,
-        alias,
-        division,
-        dp: file,
-      })
-    );
+  const onNextHandler = (e) => {
+    e.preventDefault();
+    sp.web.lists
+      .getByTitle("personal")
+      .items.filter(`email eq '${email}'`)
+      .get()
+      .then((result) => {
+        if (result.length > 0 && result[0].EXApprovalStatus == "Pending") {
+          swal(
+            "Error",
+            "Sorry! You have to wait for the MTN Experience Team to finish vetting your previous submission!",
+            "error"
+          );
+        } else {
+          localStorage.setItem(
+            "userData",
+            JSON.stringify({
+              name,
+              email,
+              alias,
+              division,
+              LineManager: lineManager,
+              dp: file,
+            })
+          );
+          history.push("/info/page1");
+        }
+      });
   };
 
   return (
     <div className={`${styles.screen1__container}`}>
       <Header title="Persona Questionnaire" />
-      <form>
+      <form onSubmit={onNextHandler}>
         <Input
           type="text"
           value={name}
@@ -70,6 +81,7 @@ const Screen1 = () => {
           }}
           label="Employee Name"
           id="name"
+          readOnly={true}
         />
         <Input
           type="email"
@@ -77,8 +89,19 @@ const Screen1 = () => {
           onChange={(e: any) => {
             // setEmail(e.target.value);
           }}
+          readOnly={true}
           label="Employee Email"
           id="email"
+        />
+        <Input
+          type="text"
+          value={lineManager}
+          onChange={(e: any) => {
+            // setEmail(e.target.value);
+          }}
+          readOnly={true}
+          label="Employee Line Manager"
+          id="manager"
         />
         <Input
           type="text"
@@ -88,13 +111,16 @@ const Screen1 = () => {
           }}
           label="Employee Alias"
           id="employee__alias"
+          required={true}
         />
         <SelectInput
           onChange={(e: any) => {
             setDivision(e.target.value);
           }}
           label="Select Division"
+          required={true}
         >
+          <option value="">--Select Division--</option>
           {listofDivision.map((item, index) => {
             return (
               <option key={index} value={item.Division}>
@@ -130,8 +156,8 @@ const Screen1 = () => {
         />
         <div style={{ width: "10vw", height: "10vh" }}>{res}</div>
         <div className={styles.nav__buttons}>
-          <button className={styles.filled__button} onClick={onNextHandler}>
-            <Link to="/info/page1">Next</Link>
+          <button type="submit" className={styles.filled__button}>
+            Next
           </button>
         </div>
       </form>

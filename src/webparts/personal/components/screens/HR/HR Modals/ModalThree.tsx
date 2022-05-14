@@ -74,30 +74,10 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
     onDeleteOption(i);
   };
 
-  const onAddOthers = () => {
-    optionsShow.push(
-      <div
-        style={{
-          display: "flex",
-          zIndex: "1",
-          justifyContent: "space-between",
-          position: "relative",
-          width: "235%",
-          height: "100%",
-          backgroundColor: "#000",
-        }}
-      >
-        <input type="text" style={{ width: "93%" }} />
-        <div
-          onClick={() => {
-            setClicked(false);
-          }}
-        >
-          <CancelSharp />
-        </div>
-      </div>
-    );
-    setClicked(true);
+  const [showBtn, setShowBtn] = React.useState(true);
+  const onAddOthers = (text = "Others") => {
+    setShowBtn(false);
+    setOptionsShow([text, ...optionsShow]);
   };
 
   return (
@@ -143,6 +123,15 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
                     <button onClick={onAddOptions}>
                       <Add />
                     </button>
+                    {showBtn && (
+                      <button
+                        onClick={() => {
+                          onAddOthers();
+                        }}
+                      >
+                        Add other
+                      </button>
+                    )}
                   </>
                 </div>
                 <div className={styles.view__options__container}>

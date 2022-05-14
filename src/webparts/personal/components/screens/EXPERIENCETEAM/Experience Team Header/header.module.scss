@@ -7,3 +7,10 @@
   padding-left: 30px;
   align-items: center;
 }
+
+@media screen and (max-width: 600px) {
+  .header__container {
+    height: 50px;
+    background: none;
+  }
+}

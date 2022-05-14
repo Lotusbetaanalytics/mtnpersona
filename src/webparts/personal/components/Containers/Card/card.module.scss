@@ -44,3 +44,10 @@
   align-items: center;
   box-sizing: border-box;
 }
+
+@media screen and (max-width: 600px) {
+  .card__container {
+    width: 230px;
+    min-height: 100px;
+  }
+}

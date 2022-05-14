@@ -23,10 +23,11 @@ import ExperienceTeamNavbar from "../Experience Team Navbar/ExperienceTeamNavbar
 import styles from "./report.module.scss";
 import { sp } from "@pnp/sp";
 import { Spinner } from "office-ui-fabric-react";
+import { Context } from "../../../Personal";
 
 const RejectedSurvey = () => {
+  let SN = 0;
   const columns = [
-    { title: "SN", field: "ID", type: "string" as const },
     { title: "Employee Name", field: "name", type: "string" as const },
     { title: "Email", field: "email", type: "string" as const },
     { title: "Employee Alias", field: "alias", type: "string" as const },
@@ -35,27 +36,27 @@ const RejectedSurvey = () => {
       field: "division",
       type: "string" as const,
     },
+
     {
-      title: "Reason",
+      title: "Rejection Reason",
       field: "Comments_x002f_RejectionReason",
       type: "string" as const,
     },
-    { title: "Approval Status", field: "EXApprovalStatus" },
   ];
 
   const [data, setData] = React.useState([]);
   const [findingData, setFindingData] = React.useState(false);
+  const { rejectedSurvey } = React.useContext(Context);
 
   const history = useHistory();
 
   React.useEffect(() => {
     setFindingData(true);
     sp.web.lists
-      .getByTitle("personal")
-      .items.filter("EXApprovalStatus eq 'No'")
-      .get()
+      .getByTitle("RejectedSurveys")
+      .items.get()
       .then((items: any) => {
-        setData(items);
+        setData(rejectedSurvey);
         setFindingData(false);
       })
       .catch((err) => {
@@ -128,7 +129,7 @@ const RejectedSurvey = () => {
                   <ViewColumn {...props} ref={ref} />
                 )),
               }}
-              title={`Total Rejected Surveys: ${data.length}`}
+              title={`Total Rejected Surveys: ${rejectedSurvey.length}`}
               columns={columns}
               data={data}
               options={{

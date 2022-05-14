@@ -15,7 +15,7 @@ const Landing = (props: Props) => {
         .items.filter(`Email eq '${profile.Email}'`)
         .get()
         .then((lists: any) => {
-          setRole(lists.Role);
+          setRole(lists[0].Role);
         });
     });
   }, []);
@@ -30,15 +30,33 @@ const Landing = (props: Props) => {
           <div className={`${styles.landing__title}`}>
             <h6>Welcome to the</h6>
             <h1 style={{ marginBottom: "30px" }}>PERSONA PORTAL</h1>
-            <button>
+            <>
               {role === "Super Admin" || role === "MTN Experience Team" ? (
-                <Link to="/experienceteam/dashboard">Goto Dashboard</Link>
+                <div style={{ display: "flex", gap: "20px" }}>
+                  <button>
+                    <Link to="/experienceteam/dashboard">
+                      Experience Team Dashboard
+                    </Link>
+                  </button>
+                  <button>
+                    <Link to="/info/personal">Discover Persona</Link>
+                  </button>
+                </div>
               ) : role === "HRBP" ? (
-                <Link to="/hrbp/dashboard">Goto Dashboard</Link>
+                <div style={{ display: "flex", gap: "20px" }}>
+                  <button>
+                    <Link to="/hrbp/dashboard">HRBP Dashboard</Link>
+                  </button>
+                  <button>
+                    <Link to="/info/personal">Discover Persona</Link>
+                  </button>
+                </div>
               ) : (
-                <Link to="/info/personal">Discover Persona</Link>
+                <button>
+                  <Link to="/info/personal">Discover Persona</Link>
+                </button>
               )}
-            </button>
+            </>
           </div>
         </div>
       </div>

@@ -4,25 +4,17 @@ import { sp, spGet, spPost } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 
-// style={{
-//                 display: "flex",
-//                 justifyContent: "space-between",
-//                 width: "90%",
-//                 alignItems: "center",
-//               }}
-
 const HRHeader = () => {
   const [userName, setUserName] = React.useState("");
   const [email, setEmail] = React.useState("");
   React.useEffect(() => {
     sp.profiles.myProperties.get().then((response) => {
-      console.log(response);
       setUserName(response.DisplayName);
       setEmail(response.Email);
     });
   }, []);
   return (
-    <div className={styles.hr__details}>
+    <div className={styles.hr__details} style={{ padding: "10px" }}>
       <div>
         <h3>{userName}</h3>
         <h5>{email}</h5>

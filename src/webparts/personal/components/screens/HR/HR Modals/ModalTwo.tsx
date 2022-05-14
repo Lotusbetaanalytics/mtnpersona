@@ -97,7 +97,6 @@ const ModalTwo = ({ open: newOpen, handleClose }) => {
                       {/* <MenuItem value="">--Select--</MenuItem> */}
                       <MenuItem value="radio">Radio</MenuItem>
                       <MenuItem value="checkbox">Check Box</MenuItem>
-                      <MenuItem value="select">Select Field</MenuItem>
                     </Select>
                     {/* <select
                       name=""

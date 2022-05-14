@@ -6,34 +6,33 @@ import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import styles from "./userRegistration.module.scss";
+import { getResponsesFromTwoSections } from "./Job Info/JobInfo";
+import swal from "sweetalert";
 
 type Props = {};
 
 const PageFive = (props: Props) => {
   const [list, setList] = React.useState([]);
   const [response, setResponse] = React.useState([]);
-
   const [count, setCount] = React.useState(
     0 || JSON.parse(localStorage.getItem("count"))
   );
   const [questions, setQuestions] = React.useState(0);
-
+  const [show, setShow] = React.useState(false);
   const [total, setTotal] = React.useState(0);
+  const [sectionResponses, setSectionResponses] = React.useState([]);
+  const [others, setOthers] = React.useState("");
+  const [showField, setShowField] = React.useState(false);
 
   const history = useHistory();
 
-  const onNextHandler = () => {
-    if (response.length >= questions) {
-      history.push("/info/page6");
-      localStorage.setItem("count", JSON.stringify(count));
-      localStorage.setItem(
-        "data",
-        JSON.stringify([
-          ...JSON.parse(localStorage.getItem("data")),
-          ...response,
-        ])
-      );
-    }
+  const onNextHandler = (e) => {
+    e.preventDefault();
+
+    history.push("/info/page6");
+     const existing = JSON.parse(localStorage.getItem("data"));
+     localStorage.setItem("data", JSON.stringify([...response, ...existing]));
+    localStorage.setItem("count", JSON.stringify(count));
   };
 
   React.useEffect(() => {
@@ -42,7 +41,6 @@ const PageFive = (props: Props) => {
         .getByTitle("Questions")
         .items.get()
         .then((res) => {
-          console.log(res);
           setTotal(res.length);
           setList(
             res.filter(({ section }) => {
@@ -51,7 +49,7 @@ const PageFive = (props: Props) => {
           );
         });
     } catch (e) {
-      console.log(e.message);
+      console.log(e);
     }
   }, []);
 
@@ -60,12 +58,18 @@ const PageFive = (props: Props) => {
     setCount((prev) => prev + list.length);
   }, [list]);
 
+  React.useEffect(() => {
+    setSectionResponses(getResponsesFromTwoSections("worries", "interests"));
+  }, []);
+
+  const getChecked = (opt) => {
+    const answer = sectionResponses.filter(({ answer }) => answer == opt);
+    return answer.length > 0 && answer[0].answer;
+  };
+
   return (
     <div className={styles.screen2__container}>
       <Header />
-      <div>
-        {count} out of {total} | Let's learn about your worries and interests
-      </div>
       <div className={styles.job__info}>
         {list.map((items, index) => {
           return (
@@ -90,20 +94,49 @@ const PageFive = (props: Props) => {
                         <input
                           type={items.type}
                           name={items.type === "radio" ? "yello" : ""}
-                          value={opt ? opt : ""}
+                          value={opt == "Others" ? others : opt ? opt : ""}
                           onChange={(e: any) => {
+                            // ChangeHandlerRadio(e, items);
                             setResponse([
                               ...response,
                               {
                                 answer: e.target.value,
-                                id: items.GUID,
+                                id: items.ID,
                                 section: items.section,
                               },
                             ]);
                           }}
+                          checked={opt == getChecked(opt) ? true : null}
                         />
                         <div className={styles.input__options}>
-                          <div>{opt ? opt : ""}</div>
+                          <div>
+                            {opt == "Others" ? (
+                              <div
+                                onClick={() => {
+                                  setShowField(true);
+                                }}
+                              >
+                                Others
+                                {showField && (
+                                  <input
+                                    type="text"
+                                    value={others}
+                                    onChange={(e) => {
+                                      setOthers(e.target.value);
+                                    }}
+                                    style={{
+                                      border: "none",
+                                      borderBottom: "1px solid grey",
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            ) : opt ? (
+                              opt
+                            ) : (
+                              ""
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
@@ -119,7 +152,7 @@ const PageFive = (props: Props) => {
                         ...response,
                         {
                           answer: e.target.value,
-                          id: items.GUID,
+                          id: items.ID,
                           section: items.section,
                         },
                       ]);
@@ -146,7 +179,7 @@ const PageFive = (props: Props) => {
           <Link to="/info/page4">Previous</Link>
         </button>
         <button className={styles.filled__button} onClick={onNextHandler}>
-          <Link to="/info/page6">Next</Link>
+          Next
         </button>
       </div>
     </div>

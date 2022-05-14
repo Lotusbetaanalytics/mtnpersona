@@ -1,17 +1,15 @@
 import * as React from "react";
 import styles from "./dashboard.module.scss";
-import { AccountCircle, ShareSharp, Cancel } from "@material-ui/icons";
-import CancelIcon from "@material-ui/icons/Cancel";
-import { useParams, useHistory } from "react-router-dom";
+import { AccountCircle } from "@material-ui/icons";
+import { useParams } from "react-router-dom";
 import { sp } from "@pnp/sp";
-import { CommentModal } from "../EXPERIENCETEAM/View Reports/StaffView";
 
 type Params = {
   name: any;
   email: any;
 };
 
-const DashboardFromLink = () => {
+const StaffPersona = () => {
   const user = useParams() as Params;
   const [open, setOpen] = React.useState(false);
   const foundUser = React.useRef(user);
@@ -31,16 +29,6 @@ const DashboardFromLink = () => {
   const [interestGroup, setInterestGroup] = React.useState([]);
   const [attributesGroup, setAttributesGroup] = React.useState([]);
   const [total, setTotal] = React.useState([]);
-
-  const history = useHistory();
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const getNumberofInterests = () => {
     return sp.web.lists
@@ -174,6 +162,7 @@ const DashboardFromLink = () => {
       }
     }
   };
+
   const bio = list.map(({ responses }) => {
     return JSON.parse(responses)
       .filter(({ section }) => {
@@ -484,23 +473,8 @@ const DashboardFromLink = () => {
           </div>
         </div>
       </div>
-      {rejected ? (
-        <button className={styles.rejectBtn} disabled>
-          <Cancel />
-        </button>
-      ) : (
-        <button className={styles.rejectBtn} onClick={handleOpen}>
-          <Cancel />
-        </button>
-      )}
-      <CommentModal
-        open={open}
-        handleClose={handleClose}
-        id={id}
-        history={history}
-      />
     </div>
   );
 };
 
-export default DashboardFromLink;
+export default StaffPersona;

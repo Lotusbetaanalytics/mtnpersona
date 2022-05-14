@@ -54,13 +54,17 @@
 
 .avatarSection {
   display: flex;
-  gap: 5px;
+  gap: 10px;
   justify-content: space-between;
+  font-size: 12px;
 }
 .avatarSection img {
   width: 70px;
   height: 70px;
   border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dashboard__cards {
@@ -81,7 +85,7 @@
   grid-gap: 15px;
 }
 .card__big {
-  height: 200px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -105,13 +109,13 @@
 
 .left__card__2 {
   display: flex;
-  height: 100px;
+  min-height: 100px;
   grid-gap: 10px;
   width: 100%;
 }
 .left__card__3 {
   display: flex;
-  height: 100px;
+  min-height: 100px;
   grid-gap: 10px;
   width: 100%;
 }
@@ -146,12 +150,13 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 20%;
+  min-height: 20%;
   padding: 10px 20px;
   border-radius: 10px;
   background: #ffc423;
   position: relative;
   box-sizing: border-box;
+  gap: 5px;
 }
 
 .card__right__second {
@@ -159,20 +164,21 @@
   position: relative;
   flex-direction: column;
   width: 100%;
-  height: 25%;
+  min-height: 25%;
   padding: 20px;
   border-radius: 10px;
   background: #fff;
   box-sizing: border-box;
+  gap: 5px;
 }
 .card__right__third {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 30%;
+  min-height: 35%;
   padding: 20px;
   border-radius: 10px;
-  background: #fff;
+  gap: 5px;
   box-sizing: border-box;
 }
 
@@ -192,6 +198,16 @@
   color: #ffc423;
   box-sizing: border-box;
 }
+.card__circle img {
+  width: 70%;
+  height: 70%;
+}
+.card__circle div {
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+}
 
 .right__heading {
   background: #ffc423;
@@ -205,6 +221,28 @@
   box-sizing: border-box;
 }
 
+.itemsDisplay {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+progress[value]::-webkit-progress-bar {
+  background: rgba(196, 196, 196, 0.65);
+  border-radius: 100px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+progress[value] {
+  background: rgba(0, 0, 0, 0.53) !important;
+  border-radius: 100px 0px 0px 100px;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 10px;
+}
+progress[value]::-webkit-progress-value {
+  background: rgba(0, 0, 0, 0.53) !important;
+  border-radius: 100px 0px 0px 100px;
+}
 .rejectBtn {
   position: fixed;
   bottom: 0;

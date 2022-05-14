@@ -17,7 +17,7 @@ import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import { Cancel } from "@material-ui/icons";
 import MaterialTable from "material-table";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import ExperienceTeamHeader from "../Experience Team Header/ExperienceTeamHeader";
 import ExperienceTeamNavbar from "../Experience Team Navbar/ExperienceTeamNavbar";
 import styles from "../View Reports/report.module.scss";
@@ -25,6 +25,7 @@ import { sp } from "@pnp/sp";
 import { Spinner } from "office-ui-fabric-react";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { Fade, Modal, Backdrop } from "@material-ui/core/";
+import { useToasts } from "react-toast-notifications";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,7 +48,6 @@ type id = {
 
 const ViewRoles = () => {
   const columns = [
-    { title: "SN", field: "ID", type: "string" as const },
     { title: "Employee Name", field: "Name", type: "string" as const },
     { title: "Email", field: "Email", type: "string" as const },
     { title: "Role", field: "Role" },
@@ -67,7 +67,6 @@ const ViewRoles = () => {
       .getByTitle("Roles")
       .items.get()
       .then((items: any) => {
-        console.log(items);
         setData(items);
         setFindingData(false);
       })
@@ -85,11 +84,16 @@ const ViewRoles = () => {
     setID(id);
     setOpen(true);
   };
+  const handleEdit = (id: any) => {
+    history.push(`/experienceteam/configure/edit/${id}`);
+  };
   return (
     <div className={styles.report__container}>
       <ExperienceTeamNavbar />
       <div className={styles.report__container__content}>
-        <ExperienceTeamHeader title="View Roles" />
+        <div>
+          <ExperienceTeamHeader title="View Roles" />
+        </div>
         {findingData ? (
           <div className={styles.spinner}>
             <Spinner />
@@ -180,19 +184,37 @@ const ViewRoles = () => {
                   tooltip: "Delete",
 
                   onClick: (event, rowData) => {
-                    console.log(rowData.ID, "rowID");
                     handleDelete(rowData.ID);
+                  },
+                },
+                {
+                  icon: "visibility",
+                  iconProps: {
+                    style: { fontSize: "20px", color: "gold" },
+                  },
+                  tooltip: "Edit",
+
+                  onClick: (event, rowData) => {
+                    handleEdit(rowData.ID);
                   },
                 },
               ]}
               components={{
                 Action: (props) => (
-                  <button
-                    onClick={(event) => props.action.onClick(event, props.data)}
-                    className={`${styles.mtn__btn__table} ${styles.mtn__black}`}
-                  >
-                    <span>{props.action.tooltip}</span>
-                  </button>
+                  <>
+                    <button
+                      onClick={(event) =>
+                        props.action.onClick(event, props.data)
+                      }
+                      className={`${styles.mtn__btn__table} ${
+                        props.action.tooltip == "Edit"
+                          ? styles.btn__questions__edit
+                          : styles.mtn__black
+                      }`}
+                    >
+                      <span>{props.action.tooltip}</span>
+                    </button>
+                  </>
                 ),
               }}
             />
@@ -217,6 +239,7 @@ export const TransitionsModal = ({
   id: itemID,
   setData,
 }) => {
+  const { addToast } = useToasts();
   const classes = useStyles();
 
   const noHandler = (e: any) => {
@@ -224,7 +247,6 @@ export const TransitionsModal = ({
     handleClose();
   };
   const yesHandler = (e: any) => {
-    console.log(itemID);
     e.preventDefault();
     sp.web.lists
       .getByTitle("Roles")
@@ -232,6 +254,10 @@ export const TransitionsModal = ({
       .delete()
       .then(() => {
         setData((prev) => prev.filter((item: any) => item.ID !== itemID));
+        return addToast("Delete Successful", {
+          appearance: "success",
+          autoDismiss: true,
+        });
       });
     handleClose();
   };
@@ -272,6 +298,122 @@ export const TransitionsModal = ({
           </div>
         </Fade>
       </Modal>
+    </div>
+  );
+};
+
+export const EditRoles = () => {
+  type link = {
+    id: string;
+  };
+  const user = useParams() as link;
+  const history = useHistory();
+  const { addToast } = useToasts();
+
+  const [foundRole, setFoundRole] = React.useState("");
+  const [foundEmail, setFoundEmail] = React.useState("");
+  const [foundDivision, setFoundDivision] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  React.useEffect(() => {
+    sp.web.lists
+      .getByTitle("Roles")
+      .items.getById(Number(user.id))
+      .get()
+      .then((items) => {
+        setFoundDivision(items.Division);
+        setFoundRole(items.Role);
+        setFoundEmail(items.Email);
+      });
+  }, []);
+
+  const updateHandler = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    sp.web.lists
+      .getByTitle("Roles")
+      .items.getById(Number(user.id))
+      .update({ Email: foundEmail })
+      .then((result) => {
+        setLoading(false);
+        return addToast("Update Successful", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+      })
+      .catch((err) => {
+        setLoading(false);
+        return addToast("An error occured! Please try again", {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      });
+  };
+
+  const backHandler = () => {
+    history.push("/experienceteam/viewroles");
+  };
+
+  return (
+    <div className={styles.report__container}>
+      <ExperienceTeamNavbar />
+      <div className={styles.report__container__content}>
+        <div>
+          <ExperienceTeamHeader title="Edit Roles" />
+        </div>
+        <div>
+          <form
+            style={{
+              width: "100%",
+              height: "100%",
+              margin: "40px auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+              boxSizing: "border-box",
+              padding: "40px",
+            }}
+            onSubmit={updateHandler}
+          >
+            <div className={styles.role__edit__container}>
+              <label htmlFor="">Role</label>
+              <input
+                type="text"
+                value={foundRole}
+                readOnly
+                className={styles.role__edit__input}
+              />
+            </div>
+            <div className={styles.role__edit__container}>
+              <label htmlFor="">Division</label>
+              <input
+                type="text"
+                className={styles.role__edit__input}
+                value={foundDivision}
+                readOnly
+              />
+            </div>
+            <div className={styles.role__edit__container}>
+              <label htmlFor="">Email</label>
+              <input
+                type="text"
+                className={styles.role__edit__input}
+                value={foundEmail}
+                onChange={(e) => {
+                  setFoundEmail(e.target.value);
+                }}
+              />
+            </div>
+            <div className={styles.role__edit__btn}>
+              <button onClick={backHandler}>Go back</button>
+              {loading ? (
+                <button disabled>Updating...</button>
+              ) : (
+                <button type="submit">Update</button>
+              )}
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

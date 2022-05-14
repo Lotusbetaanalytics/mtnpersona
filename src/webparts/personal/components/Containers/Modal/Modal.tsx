@@ -22,22 +22,18 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const TransitionsModal = ({ open, handleClose }) => {
+const TransitionsModal = ({ open, handleClose, history }) => {
   const classes = useStyles();
 
   const noHandler = (e: any) => {
     e.preventDefault();
     handleClose();
-    // setTimeout(() => {
-    //   handleClose();
-    // }, 1000);
   };
   const yesHandler = (e: any) => {
     e.preventDefault();
     localStorage.removeItem("data");
+    history.push("/info/personal");
     handleClose();
-    //submit data to sharepoint List
-    //graph.add(JSON.parse(localStorage.getItem("data")));
   };
 
   return (

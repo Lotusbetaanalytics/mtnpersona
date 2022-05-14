@@ -28,12 +28,12 @@ const RejectedStaff = () => {
   const [proxy, setProxy] = React.useState("");
   const [ID, setID] = React.useState("");
 
-  const href = `${proxy}/info/dashboard/${employeeName}/${employeeEmail}`;
+  const href = `${proxy}#/info/dashboard/${employeeName}/${employeeEmail}`;
 
   React.useEffect(() => {
     setFindingData(true);
     sp.web.lists
-      .getByTitle("personal")
+      .getByTitle("RejectedSurveys")
       .items.getById(user.id)
       .get()
       .then((items: any) => {

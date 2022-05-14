@@ -33,6 +33,7 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
   const [section, setSection] = React.useState("");
   const [type, setType] = React.useState("");
   const [newOption, setNewOption] = React.useState("");
+  const [listOfSections, setListOfSections] = React.useState([]);
 
   React.useEffect(() => {
     setQuestion(item.questions);
@@ -40,8 +41,6 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
     setSection(item.section);
     item.options && setopt(JSON.parse(item.options));
   }, [item]);
-
-  console.log(section);
 
   const yesHandler = () => {
     sp.web.lists
@@ -79,6 +78,15 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
       })
     );
   };
+
+  React.useEffect(() => {
+    sp.web.lists
+      .getByTitle("ApprovedSections")
+      .items.get()
+      .then((res) => {
+        setListOfSections(res);
+      });
+  }, []);
 
   return (
     <div>
@@ -149,54 +157,16 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
                     value={section}
                   >
                     <MenuItem value="">Select</MenuItem>
-                    <MenuItem
-                      value="priorities"
-                      selected={"priorities" == section}
-                    >
-                      Priorities
-                    </MenuItem>
-                    <MenuItem value="goals" selected={"goals" == section}>
-                      Goals
-                    </MenuItem>
-                    <MenuItem
-                      value="interests"
-                      selected={"interests" == section}
-                    >
-                      Interests
-                    </MenuItem>
-                    <MenuItem
-                      value="communication"
-                      selected={"communication" == section}
-                    >
-                      Communication Preference
-                    </MenuItem>
-                    <MenuItem
-                      value="motivator"
-                      selected={"motivator" == section}
-                    >
-                      Motivator
-                    </MenuItem>
-                    <MenuItem value="bio" selected={"bio" == section}>
-                      Short Bio
-                    </MenuItem>
-                    <MenuItem
-                      value="attributes"
-                      selected={"attributes" == section}
-                    >
-                      Super Power and Key Attributes
-                    </MenuItem>
-                    <MenuItem value="worries" selected={"worries" == section}>
-                      Worries
-                    </MenuItem>
-                    <MenuItem
-                      value="demographic"
-                      selected={"demographic" == section}
-                    >
-                      Demographic Information
-                    </MenuItem>
-                    <MenuItem value="learning" selected={"learning" == section}>
-                      Learning Preference
-                    </MenuItem>
+                    {listOfSections.map((item, index) => {
+                      return (
+                        <MenuItem
+                          value={item.SectionType}
+                          selected={item.SectionType == section}
+                        >
+                          {item.SectionType}
+                        </MenuItem>
+                      );
+                    })}
                   </Select>
                 </FormControl>
               </div>

@@ -60,8 +60,8 @@
 
 .pieChart {
   display: flex;
-  width: 75%;
-  height: 75%;
+  width: 70%;
+  height: 70%;
   box-sizing: border-box;
   align-self: flex-start;
   justify-self: flex-start;
@@ -72,11 +72,11 @@
 .barChart {
   display: flex;
   width: 70%;
-  height: 70%;
+  height: 50%;
   box-sizing: border-box;
-  margin: 10px auto;
+  margin: 3px auto;
   position: relative;
-  top: -10%;
+  top: -18%;
 }
 
 .chartContainer {
@@ -87,4 +87,14 @@
   border: 1px solid red;
   position: relative;
   bottom: 130px;
+}
+
+@media screen and (max-width: 600px) {
+  .dashboard__container__cards {
+    flex-direction: column;
+  }
+
+  .dashboard__container__content {
+    left: 0px;
+  }
 }
