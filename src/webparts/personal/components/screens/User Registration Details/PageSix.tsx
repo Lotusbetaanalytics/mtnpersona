@@ -61,10 +61,6 @@ const PageSix = (props: Props) => {
     setCount((prev) => prev + list.length);
   }, [list]);
 
-  const data = JSON.parse(localStorage.getItem("data"));
-  const userData = JSON.parse(localStorage.getItem("userData"));
-  const dp = JSON.parse(localStorage.getItem("dp"));
-
   React.useEffect(() => {
     setSectionResponses(prevHandler("priorities"));
   }, []);
@@ -75,16 +71,29 @@ const PageSix = (props: Props) => {
   };
 
   const submitHandler = async (e: any) => {
-    setLoading(true);
     e.preventDefault();
+    setLoading(true);
 
-    if (!data && !userData) {
+    const data = JSON.parse(localStorage.getItem("data"));
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const dp = JSON.parse(localStorage.getItem("dp"));
+
+    if (!data) {
       setLoading(false);
       setMessage("No answers provided!");
       setShow(true);
       setTimeout(() => {
         history.push("/info/personal");
       }, 1000);
+      return;
+    } else if (!userData) {
+      setLoading(false);
+      setMessage("No user data found!");
+      setShow(true);
+      setTimeout(() => {
+        history.push("/info/personal");
+      }, 1000);
+      return;
     } else {
       const answerData = [...data, ...response];
       sp.web.lists
@@ -97,7 +106,7 @@ const PageSix = (props: Props) => {
           division: userData.division,
           email: userData.email,
           LineManager: userData.LineManager,
-          dp,
+          dp: dp && dp,
         })
         .then(() => {
           setLoading(false);
@@ -122,14 +131,10 @@ const PageSix = (props: Props) => {
   return (
     <div className={styles.screen2__container}>
       <Header />
-      {/* <div>
-        {count}out of {total} | Whoops!! You got to the last page 👍... Please
-        tell us about your priorities
-      </div> */}
-      <div className={styles.job__info}>
-        {list.map((items, index) => {
+      <form className={styles.job__info} onSubmit={submitHandler}>
+        {list.map((items, ind) => {
           return (
-            <form className={styles.job__form} key={index}>
+            <div className={styles.job__form} key={ind}>
               <div>
                 <label
                   className={styles.job__label}
@@ -139,111 +144,79 @@ const PageSix = (props: Props) => {
                   {items.questions}
                 </label>
               </div>
-
-              {items.type === "text" ||
-              items.type === "radio" ||
-              items.type === "checkbox" ? (
-                <div>
-                  {JSON.parse(items.options).map((opt: any, index: any) => {
-                    return (
-                      <div className={styles.input__details} key={index}>
-                        <input
-                          type={items.type}
-                          name={items.type === "radio" ? "yello" : ""}
-                          value={opt == "Others" ? others : opt ? opt : ""}
-                          onChange={(e: any) => {
-                            // ChangeHandlerRadio(e, items);
-                            setResponse([
-                              ...response,
-                              {
-                                answer: e.target.value,
-                                id: items.ID,
-                                section: items.section,
-                              },
-                            ]);
-                          }}
-                          checked={opt == getChecked(opt) ? true : null}
-                        />
-                        <div className={styles.input__options}>
-                          <div>
-                            {opt == "Others" ? (
-                              <div
-                                onClick={() => {
-                                  setShowField(true);
-                                }}
-                              >
-                                Others, specify
-                                {showField && (
-                                  <input
-                                    type="text"
-                                    value={others}
-                                    onChange={(e) => {
-                                      setOthers(e.target.value);
-                                    }}
-                                    style={{
-                                      border: "none",
-                                      borderBottom: "1px solid grey",
-                                    }}
-                                  />
-                                )}
-                              </div>
-                            ) : opt ? (
-                              opt
-                            ) : (
-                              ""
-                            )}
-                          </div>
+              <>
+                {JSON.parse(items.options).map((opt: any, index: any) => {
+                  return (
+                    <div className={styles.input__details} key={index}>
+                      <input
+                        type={items.type}
+                        name={items.type == "radio" ? `${items.questions}` : ``}
+                        value={opt == "Others" ? others : opt ? opt : ""}
+                        checked={opt == getChecked(opt) ? true : null}
+                        required={items.type == "checkbox" ? false : true}
+                        onChange={(e: any) => {
+                          setResponse([
+                            ...response,
+                            {
+                              answer: e.target.value,
+                              id: items.ID,
+                              section: items.section,
+                            },
+                          ]);
+                        }}
+                      />
+                      <div className={styles.input__options}>
+                        <div>
+                          {opt == "Others" ? (
+                            <div
+                              onClick={() => {
+                                setShowField(true);
+                              }}
+                            >
+                              Others, specify
+                              {showField && (
+                                <input
+                                  type="text"
+                                  value={others}
+                                  onChange={(e) => {
+                                    setOthers(e.target.value);
+                                  }}
+                                  style={{
+                                    border: "none",
+                                    borderBottom: "1px solid grey",
+                                  }}
+                                />
+                              )}
+                            </div>
+                          ) : opt ? (
+                            opt
+                          ) : (
+                            ""
+                          )}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className={styles.select}>
-                  <select
-                    name=""
-                    id=""
-                    onChange={(e) => {
-                      setResponse([
-                        ...response,
-                        {
-                          answer: e.target.value,
-                          id: items.ID,
-                          section: items.section,
-                        },
-                      ]);
-                    }}
-                  >
-                    {JSON.parse(items.options).map((opt: any, index: any) => {
-                      return (
-                        <div key={index}>
-                          <option>Select...</option>
-                          <option value={opt}>{opt}</option>
-                        </div>
-                      );
-                    })}
-                  </select>
-                  <span className={styles.focus}></span>
-                </div>
-              )}
-            </form>
+                    </div>
+                  );
+                })}
+              </>
+            </div>
           );
         })}
-      </div>
-      <div className={styles.nav__buttons} style={{ bottom: "-10px" }}>
-        <button className={styles.nobackground__button} onClick={handleOpen}>
-          Cancel
-        </button>
-        {loading ? (
-          <button className={styles.filled__button}>Submitting...</button>
-        ) : (
-          <button className={styles.filled__button} onClick={submitHandler}>
-            Submit
+        <div className={styles.nav__buttons} style={{ bottom: "-10px" }}>
+          <button className={styles.nobackground__button} onClick={handleOpen}>
+            Cancel
           </button>
-        )}
-      </div>
-      <MyModal open={open} handleClose={handleClose} history={history} />
-      <Toast show={show} setShow={setShow} message={message} />
+          {loading ? (
+            <button className={styles.filled__button}>Submitting...</button>
+          ) : (
+            <button className={styles.filled__button} type="submit">
+              Submit
+            </button>
+          )}
+        </div>
+        <MyModal open={open} handleClose={handleClose} history={history} />
+        <Toast show={show} setShow={setShow} message={message} />
+      </form>
     </div>
   );
 };

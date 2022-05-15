@@ -44,6 +44,7 @@ import PageNotFound from "./screens/PageNotFound";
 import { ToastProvider } from "react-toast-notifications";
 import AnalyticsReport from "./screens/EXPERIENCETEAM/View Reports/Analytics";
 import DivisionAnalyticsReport from "./screens/EXPERIENCETEAM/View Reports/DivisionsAnalytics";
+import QuestionCategories from "./screens/EXPERIENCETEAM/View Reports/Categories";
 
 export default class Personal extends React.Component<
   IPersonalProps,
@@ -252,6 +253,11 @@ export default class Personal extends React.Component<
                   exact
                   path="/experienceteam/division/analytics"
                   component={DivisionAnalyticsReport}
+                />
+                <Route
+                  exact
+                  path="/experienceteam/division/categories"
+                  component={QuestionCategories}
                 />
                 <Route
                   exact

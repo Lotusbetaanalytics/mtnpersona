@@ -150,8 +150,8 @@ select:focus + .focus {
   align-items: center;
   justify-content: flex-end;
   position: absolute;
-  bottom: 10px;
-  height: 20%;
+  bottom: 5px;
+  height: 10%;
   right: 200px;
 }
 .nav__buttons button {
@@ -188,6 +188,8 @@ button a {
 }
 .filled__button {
   background: rgba(255, 196, 35, 1);
+  box-sizing: border-box;
+  padding: 5px;
 }
 .filled__button a {
   color: inherit;

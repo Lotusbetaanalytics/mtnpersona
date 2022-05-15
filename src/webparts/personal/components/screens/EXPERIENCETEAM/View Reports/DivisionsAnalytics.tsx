@@ -329,8 +329,6 @@ const DivisionAnalyticsReport = () => {
             style={{
               width: "100%",
               height: "100%",
-              display: "flex",
-              flexDirection: "column",
             }}
           >
             <div className={styles.tabs}>
@@ -358,15 +356,9 @@ const DivisionAnalyticsReport = () => {
               })}
             </div>
 
-            <div style={{ display: "flex", gap: "20px" }}>
-              <div className={styles.barChart}>
-                {/* <BarChart data={barData} /> */}
-                <PieChart data={pieChartData} />
-              </div>
-              <div className={styles.barChart}>
-                {/* <BarChart data={barData} /> */}
-                <PieChart data={pieChartData} />
-              </div>
+            <div className={styles.barChart}>
+              {/* <BarChart data={barData} /> */}
+              <PieChart data={pieChartData} />
             </div>
           </div>
         )}
@@ -461,7 +453,7 @@ export const PieChart = ({ data }) => {
         "#3A3845",
         "#4D77FF",
       ]}
-      radius={100}
+      radius={200}
       style={{ labels: { fontSize: "12px" } }}
       labelComponent={
         <VictoryTooltip

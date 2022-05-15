@@ -77,7 +77,7 @@ const ExperienceTeamNavbar = () => {
           </div>
           <div
             onClick={() => {
-              history.push("/experienceteam/report");
+              history.push("/experienceteam/analytics");
             }}
           >
             <span>
@@ -87,7 +87,7 @@ const ExperienceTeamNavbar = () => {
           </div>
           <div
             onClick={() => {
-              history.push("/experienceteam/analytics");
+              history.push("/experienceteam/rejected");
             }}
           >
             <span>

@@ -26,24 +26,29 @@ ChartJS.register(
   Legend
 );
 
-const AnalyticsReport = () => {
+const QuestionCategories = () => {
   const [data, setData] = React.useState([]);
   const [findingData, setFindingData] = React.useState(false);
-  const [okoye, setOkoye] = React.useState(0);
-  const [superMan, setSuperMan] = React.useState(0);
-  const [blackPanther, setBlackPanther] = React.useState(0);
-  const [captainAmerica, setCaptainAmerica] = React.useState(0);
-  const [ironMan, setIronMan] = React.useState(0);
-  const [kingQueenFun, setKingQueenFun] = React.useState(0);
-  const [batMan, setBatMan] = React.useState(0);
+  const [worries, setworries] = React.useState(0);
+  const [interests, setinterests] = React.useState(0);
+  const [goals, setgoals] = React.useState(0);
+  const [motivator, setmotivator] = React.useState(0);
+  const [communication, setcommunication] = React.useState(0);
+  const [bio, setbio] = React.useState(0);
+  const [learning, setlearning] = React.useState(0);
+  const [attributes, setattributes] = React.useState(0);
+  const [priorities, setpriorities] = React.useState(0);
+
   const barData = {
-    okoye,
-    superMan,
-    blackPanther,
-    captainAmerica,
-    ironMan,
-    kingQueenFun,
-    batMan,
+    motivator,
+    worries,
+    priorities,
+    interests,
+    communication,
+    attributes,
+    learning,
+    goals,
+    bio,
   };
 
   const history = useHistory();
@@ -52,18 +57,18 @@ const AnalyticsReport = () => {
     setFindingData(true);
     sp.web.lists
       .getByTitle("personal")
-      .items.select("division", "AvatarGroup")
+      .items.select("division", "responses")
       .get()
       .then((items) => {
-        setOkoye(getGroups(items).okoye());
-        setSuperMan(getGroups(items).superMan());
-        setBlackPanther(getGroups(items).blackPanther());
-        setCaptainAmerica(getGroups(items).captainAmerica());
-        setIronMan(getGroups(items).ironMan());
-        setKingQueenFun(getGroups(items).kingQueenFun());
-        setIronMan(getGroups(items).ironMan());
-        setBatMan(getGroups(items).batMan());
-        setData(items);
+        setinterests(getGroups(items).interests());
+        setworries(getGroups(items).worries());
+        setgoals(getGroups(items).goals());
+        setcommunication(getGroups(items).communication());
+        setbio(getGroups(items).bio());
+        setlearning(getGroups(items).learning());
+        setattributes(getGroups(items).attributes());
+        setpriorities(getGroups(items).priorities());
+        setmotivator(getGroups(items).motivator());
         setFindingData(false);
       })
       .catch((err) => {
@@ -74,107 +79,117 @@ const AnalyticsReport = () => {
 
   const getGroups = (arr) => {
     return {
-      blackPanther: () => {
-        let blackPantherCount = 0;
-        for (let { AvatarGroup } of arr) {
-          if (AvatarGroup == "Black Panther") {
-            blackPantherCount = blackPantherCount + 1;
-          }
+      interests: () => {
+        for (let { responses } of arr) {
+          return JSON.parse(responses).filter(
+            ({ section }) => section == "interests"
+          ).length;
         }
-        return blackPantherCount;
       },
-      superMan: () => {
-        let superManCount = 0;
-        for (let { AvatarGroup } of arr) {
-          if (AvatarGroup == "Super Man") {
-            superManCount = superManCount + 1;
-          }
+      learning: () => {
+        for (let { responses } of arr) {
+          return JSON.parse(responses).filter(
+            ({ section }) => section == "learning"
+          ).length;
         }
-        return superManCount;
       },
-      okoye: () => {
-        let okoyeCount = 0;
-        for (let { AvatarGroup } of arr) {
-          if (AvatarGroup == "Okoye") {
-            okoyeCount = okoyeCount + 1;
-          }
+      bio: () => {
+        for (let { responses } of arr) {
+          return JSON.parse(responses).filter(({ section }) => section == "bio")
+            .length;
         }
-        return okoyeCount;
       },
-      ironMan: () => {
-        let ironManCount = 0;
-        for (let { AvatarGroup } of arr) {
-          if (AvatarGroup == "Iron Man") {
-            ironManCount = ironManCount + 1;
-          }
+      attributes: () => {
+        for (let { responses } of arr) {
+          return JSON.parse(responses).filter(
+            ({ section }) => section == "attributes"
+          ).length;
         }
-        return ironManCount;
       },
-      batMan: () => {
-        let batManCount = 0;
-        for (let { AvatarGroup } of arr) {
-          if (AvatarGroup == "Bat Man") {
-            batManCount = batManCount + 1;
-          }
+      communication: () => {
+        for (let { responses } of arr) {
+          return JSON.parse(responses).filter(
+            ({ section }) => section == "communication"
+          ).length;
         }
-        return batManCount;
       },
-      captainAmerica: () => {
-        let captainAmericaCount = 0;
-        for (let { AvatarGroup } of arr) {
-          if (AvatarGroup == "Captain America") {
-            captainAmericaCount = captainAmericaCount + 1;
-          }
+      motivator: () => {
+        for (let { responses } of arr) {
+          return JSON.parse(responses).filter(
+            ({ section }) => section == "motivator"
+          ).length;
         }
-        return captainAmericaCount;
       },
-      kingQueenFun: () => {
-        let kingQueenFunCount = 0;
-        for (let { AvatarGroup } of arr) {
-          if (AvatarGroup == "Super Man") {
-            kingQueenFunCount = kingQueenFunCount + 1;
-          }
+      goals: () => {
+        for (let { responses } of arr) {
+          return JSON.parse(responses).filter(
+            ({ section }) => section == "goals"
+          ).length;
         }
-        return kingQueenFunCount;
+      },
+      worries: () => {
+        for (let { responses } of arr) {
+          return JSON.parse(responses).filter(
+            ({ section }) => section == "worries"
+          ).length;
+        }
+      },
+      priorities: () => {
+        for (let { responses } of arr) {
+          return JSON.parse(responses).filter(
+            ({ section }) => section == "priorities"
+          ).length;
+        }
       },
     };
   };
 
   const pieChartData = [
     {
-      x: 1,
-      y: okoye || 0,
-      label: `Okoye: ${okoye}`,
-    },
-    {
       x: 2,
-      y: ironMan || 0,
-      label: `Iron Man: ${ironMan}`,
+      y: goals || 0,
+      label: `Goals: ${goals}`,
     },
     {
       x: 3,
-      y: superMan || 0,
-      label: `Super Man: ${superMan}`,
+      y: motivator || 0,
+      label: `Motivator: ${motivator}`,
     },
     {
       x: 4,
-      y: captainAmerica || 0,
-      label: `Captain America: ${captainAmerica}`,
-    },
-    {
-      x: 5,
-      y: kingQueenFun || 0,
-      label: `King/Queen of Fun: ${kingQueenFun}`,
-    },
-    {
-      x: 6,
-      y: batMan || 0,
-      label: `Bat Man: ${batMan}`,
+      y: bio || 0,
+      label: `Short Bio: ${bio}`,
     },
     {
       x: 7,
-      y: blackPanther || 0,
-      label: `Black Panther: ${blackPanther}`,
+      y: communication || 0,
+      label: `Communication Preference: ${communication}`,
+    },
+    {
+      x: 8,
+      y: learning || 0,
+      label: `Learning Style: ${learning}`,
+    },
+    {
+      x: 9,
+      y: attributes || 0,
+      label: `Super Power and Key Attributes: ${attributes}`,
+    },
+    {
+      x: 10,
+      y: worries || 0,
+      label: `Worries: ${worries}`,
+    },
+    {
+      x: 11,
+      y: interests || 0,
+      label: `Interests: ${interests}`,
+    },
+
+    {
+      x: 14,
+      y: priorities || 0,
+      label: `Priorities: ${priorities}`,
     },
   ];
 
@@ -190,7 +205,12 @@ const AnalyticsReport = () => {
             <Spinner />
           </div>
         ) : (
-          <div style={{ width: "100%", height: "100%" }}>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          >
             <div className={styles.tabs}>
               {ReportTabs.map((tab, index) => {
                 return (
@@ -227,7 +247,7 @@ const AnalyticsReport = () => {
   );
 };
 
-export default AnalyticsReport;
+export default QuestionCategories;
 
 export const options = {
   responsive: true,
@@ -252,23 +272,23 @@ export function BarChart({ data }) {
     labels,
     datasets: [
       {
-        label: "Iron Man",
-        data: data.ironMan,
+        label: "Learning",
+        data: data.learning,
         backgroundColor: "rgba(255, 196, 35, 1)",
       },
       {
-        label: "Super Man",
-        data: data.superMan,
+        label: "Goals",
+        data: data.goals,
         backgroundColor: "#006993",
       },
       {
-        label: "Okoye",
-        data: data.okoye,
+        label: "Motivator",
+        data: data.motivator,
         backgroundColor: "#C4C4C4",
       },
       {
-        label: "Bat Man",
-        data: data.batMan,
+        label: "Short Bio",
+        data: data.bio,
         backgroundColor: "#F73D93",
       },
       {
@@ -305,13 +325,20 @@ export const PieChart = ({ data }) => {
         "#2F8F9D",
         "#F73D93",
         "#6D8B74",
+        "#F9CEEE",
+        "#112B3C",
+        "#9900F0",
+        "#A97155",
+        "#FF8080",
+        "#3A3845",
+        "#4D77FF",
       ]}
       radius={200}
       style={{ labels: { fontSize: "12px" } }}
       labelComponent={
         <VictoryTooltip
           cornerRadius={({ datum }) => datum.x * 2}
-          flyoutStyle={{ fontSize: "12px" }}
+          flyoutStyle={{ fontSize: "12px", padding: "10px" }}
         />
       }
     />

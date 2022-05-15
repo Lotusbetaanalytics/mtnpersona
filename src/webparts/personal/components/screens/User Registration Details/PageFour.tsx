@@ -68,11 +68,10 @@ const PageFour = (props: Props) => {
   return (
     <div className={styles.screen2__container}>
       <Header />
-
-      <div className={styles.job__info}>
-        {list.map((items, index) => {
+      <form className={styles.job__info} onSubmit={onNextHandler}>
+        {list.map((items, ind) => {
           return (
-            <form className={styles.job__form} key={index}>
+            <div className={styles.job__form} key={ind}>
               <div>
                 <label
                   className={styles.job__label}
@@ -82,106 +81,73 @@ const PageFour = (props: Props) => {
                   {items.questions}
                 </label>
               </div>
-
-              {items.type === "text" ||
-              items.type === "radio" ||
-              items.type === "checkbox" ? (
-                <div>
-                  {JSON.parse(items.options).map((opt: any, index: any) => {
-                    return (
-                      <div className={styles.input__details} key={index}>
-                        <input
-                          type={items.type}
-                          name={items.type === "radio" ? "yello" : ""}
-                          value={opt == "Others" ? others : opt ? opt : ""}
-                          checked={opt == getChecked(opt) ? true : null}
-                          onChange={(e: any) => {
-                            // ChangeHandlerRadio(e, items);
-                            setResponse([
-                              ...response,
-                              {
-                                answer: e.target.value,
-                                id: items.ID,
-                                question: items.questions,
-                                section: items.section,
-                              },
-                            ]);
-                          }}
-                        />
-                        <div className={styles.input__options}>
-                          <div>
-                            {opt == "Others" ? (
-                              <div
-                                onClick={() => {
-                                  setShowField(true);
-                                }}
-                              >
-                                Others
-                                {showField && (
-                                  <input
-                                    type="text"
-                                    value={others}
-                                    onChange={(e) => {
-                                      setOthers(e.target.value);
-                                    }}
-                                    style={{
-                                      border: "none",
-                                      borderBottom: "1px solid grey",
-                                    }}
-                                  />
-                                )}
-                              </div>
-                            ) : opt ? (
-                              opt
-                            ) : (
-                              ""
-                            )}
-                          </div>
+              <>
+                {JSON.parse(items.options).map((opt: any, index: any) => {
+                  return (
+                    <div className={styles.input__details} key={index}>
+                      <input
+                        type={items.type}
+                        name={items.type == "radio" ? `${items.questions}` : ``}
+                        value={opt == "Others" ? others : opt ? opt : ""}
+                        checked={opt == getChecked(opt) ? true : null}
+                        required={items.type == "checkbox" ? false : true}
+                        onChange={(e: any) => {
+                          setResponse([
+                            ...response,
+                            {
+                              answer: e.target.value,
+                              id: items.ID,
+                              section: items.section,
+                            },
+                          ]);
+                        }}
+                      />
+                      <div className={styles.input__options}>
+                        <div>
+                          {opt == "Others" ? (
+                            <div
+                              onClick={() => {
+                                setShowField(true);
+                              }}
+                            >
+                              Others, specify
+                              {showField && (
+                                <input
+                                  type="text"
+                                  value={others}
+                                  onChange={(e) => {
+                                    setOthers(e.target.value);
+                                  }}
+                                  style={{
+                                    border: "none",
+                                    borderBottom: "1px solid grey",
+                                  }}
+                                />
+                              )}
+                            </div>
+                          ) : opt ? (
+                            opt
+                          ) : (
+                            ""
+                          )}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className={styles.select}>
-                  <select
-                    name=""
-                    id=""
-                    onChange={(e) => {
-                      setResponse([
-                        ...response,
-                        {
-                          answer: e.target.value,
-                          id: items.GUID,
-                          section: items.section,
-                        },
-                      ]);
-                    }}
-                  >
-                    <option>Select...</option>
-                    {JSON.parse(items.options).map((opt: any, index: any) => {
-                      return (
-                        <>
-                          <option value={opt}>{opt}</option>
-                        </>
-                      );
-                    })}
-                  </select>
-                  <span className={styles.focus}></span>
-                </div>
-              )}
-            </form>
+                    </div>
+                  );
+                })}
+              </>
+            </div>
           );
         })}
-      </div>
-      <div className={styles.nav__buttons}>
-        <button className={styles.nobackground__button}>
-          <Link to="/info/page3">Previous</Link>
-        </button>
-        <button className={styles.filled__button} onClick={onNextHandler}>
-          Next
-        </button>
-      </div>
+        <div className={styles.nav__buttons}>
+          <button className={styles.nobackground__button}>
+            <Link to="/info/page3">Previous</Link>
+          </button>
+          <button type="submit" className={styles.filled__button}>
+            Next
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
