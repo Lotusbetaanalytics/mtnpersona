@@ -23,11 +23,11 @@ const ViewQuestions = ({ itemsPerPage, list, setList }) => {
       <table>
         <thead>
           <tr>
-            <th style={{ right: "6%", position: "relative" }}>Questions</th>
-            <th style={{ right: "3%", position: "relative" }}>Response Type</th>
-            <th style={{ right: "2%", position: "relative" }}>Answers</th>
-            <th>Section</th>
-            <th>Required Status</th>
+            <th style={{ textAlign: "center" }}>Questions</th>
+            <th style={{ textAlign: "center" }}>Response Type</th>
+            <th style={{ textAlign: "center" }}>Answers</th>
+            <th style={{ textAlign: "center" }}>Section</th>
+            <th style={{ textAlign: "center" }}>Required Status</th>
             <th></th>
           </tr>
         </thead>

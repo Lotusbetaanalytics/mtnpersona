@@ -119,10 +119,10 @@ const Dashboard = () => {
       } of arr1) {
         for (let i = 0; i < arr2.length; i++) {
           if (
-            SuperPower.includes(arr2[i]) ||
-            (Interests && Interests.includes(arr2[i])) ||
-            (Evp && Evp.includes(arr2[i])) ||
-            (Adjective && Adjective.includes(arr2[i]))
+            SuperPower.includes(arr2[i].trim()) ||
+            (Interests && Interests.includes(arr2[i].trim())) ||
+            (Evp && Evp.includes(arr2[i].trim())) ||
+            (Adjective && Adjective.includes(arr2[i].trim()))
           ) {
             setAvatarDp(JSON.parse(Avatar).serverRelativeUrl); //set dp
             setAvatarName(AvatarName); //set avatar name
@@ -151,9 +151,9 @@ const Dashboard = () => {
           Adjective,
         } of arr3) {
           if (
-            (Interests && Interests.includes(arr2[i])) ||
-            (Evp && Evp.includes(arr2[i])) ||
-            (Adjective && Adjective.includes(arr2[i]))
+            (Interests && Interests.includes(arr2[i].trim())) ||
+            (Evp && Evp.includes(arr2[i].trim())) ||
+            (Adjective && Adjective.includes(arr2[i].trim()))
           ) {
             setAvatarDp(JSON.parse(Avatar).serverRelativeUrl); //set dp
             setAvatarName(AvatarName); //set avatar name

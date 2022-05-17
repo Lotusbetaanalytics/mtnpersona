@@ -127,6 +127,7 @@ const PageFive = (props: Props) => {
                                   style={{
                                     border: "none",
                                     borderBottom: "1px solid grey",
+                                    margin: "0px 10px",
                                   }}
                                 />
                               )}

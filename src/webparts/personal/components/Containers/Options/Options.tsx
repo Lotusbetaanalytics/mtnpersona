@@ -16,8 +16,13 @@ export const ReportTabs = [
   {
     id: 3,
     title: "Divisions",
-
     url: "/experienceteam/division/analytics",
+    active: false,
+  },
+  {
+    id: 4,
+    title: "Regions",
+    url: "/experienceteam/regions/analytics",
     active: false,
   },
 ];

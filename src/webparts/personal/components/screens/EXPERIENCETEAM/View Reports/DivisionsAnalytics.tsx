@@ -64,7 +64,7 @@ const DivisionAnalyticsReport = () => {
   const [internalAudit, setInternalAudit] = React.useState(0);
   const [networks, setNetworks] = React.useState(0);
   const [humanResource, setHumanResource] = React.useState(0);
-  const [show, setShow] = React.useState("Chart");
+  const [show, setShow] = React.useState("Table");
 
   const barData = {
     enterpriseBusiness,
@@ -425,7 +425,7 @@ const DivisionAnalyticsReport = () => {
               >
                 Show {`${show}`}
               </button>
-              {show === "Table" ? (
+              {show === "Chart" ? (
                 <div>
                   <MaterialTable
                     icons={{
@@ -481,7 +481,7 @@ const DivisionAnalyticsReport = () => {
                         <ViewColumn {...props} ref={ref} />
                       )),
                     }}
-                    title={`Persona Categories`}
+                    title={`Divisions`}
                     columns={columns}
                     data={tableData}
                     options={{

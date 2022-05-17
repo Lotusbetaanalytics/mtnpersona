@@ -125,6 +125,7 @@ const JobInfo = (props: Props) => {
                                   style={{
                                     border: "none",
                                     borderBottom: "1px solid grey",
+                                    margin: "0 10px",
                                   }}
                                 />
                               )}

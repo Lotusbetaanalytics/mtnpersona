@@ -267,7 +267,7 @@ const AnalyticsReport = () => {
               >
                 Show {`${show}`}
               </button>
-              {show === "Table" ? (
+              {show === "Chart" ? (
                 <div>
                   <MaterialTable
                     icons={{
@@ -385,7 +385,6 @@ export const PieChart = ({ data }) => {
         "#F73D93",
         "#6D8B74",
       ]}
-      radius={100}
       style={{ labels: { fontSize: "12px" } }}
       labelComponent={
         <VictoryTooltip

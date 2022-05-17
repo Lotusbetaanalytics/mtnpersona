@@ -20,7 +20,6 @@ import {
 import MaterialTable from "material-table";
 import { useHistory } from "react-router-dom";
 import ExperienceTeamHeader from "../Experience Team Header/ExperienceTeamHeader";
-
 import ExperienceTeamNavbar from "../Experience Team Navbar/ExperienceTeamNavbar";
 import styles from "./report.module.scss";
 import { sp } from "@pnp/sp";
@@ -46,45 +45,16 @@ ChartJS.register(
   Legend
 );
 
-const QuestionCategories = () => {
+const Regions = () => {
   const [data, setData] = React.useState([]);
   const [questionData, setQuestionData] = React.useState([]);
   const [findingData, setFindingData] = React.useState(false);
-  const [worries, setworries] = React.useState(0);
-  const [interests, setinterests] = React.useState(0);
-  const [goals, setgoals] = React.useState(0);
-  const [motivator, setmotivator] = React.useState(0);
-  const [communication, setcommunication] = React.useState(0);
-  const [bio, setbio] = React.useState(0);
-  const [learning, setlearning] = React.useState(0);
-  const [attributes, setattributes] = React.useState(0);
-  const [priorities, setpriorities] = React.useState(0);
   const [show, setShow] = React.useState("Table");
-
-  const barData = {
-    motivator,
-    worries,
-    priorities,
-    interests,
-    communication,
-    attributes,
-    learning,
-    goals,
-    bio,
-  };
-
-  const tableData = [];
+  const { numberOfStaff } = React.useContext(Context);
 
   const history = useHistory();
 
-  const getSimilarAnswers = (userResponses, questionID) => {
-    let similarAnswers = [];
-
-    // for (let { responses } of userResponses) {
-    //   let question = JSON.parse(responses).filter((r) => r.id === questionID);
-    //   console.log(question.length > 0 && question[0]);
-    // }
-
+  const getRegions = (userResponses, questionID = 2) => {
     const question = userResponses.map(
       ({ responses }) =>
         (JSON.parse(responses).filter((r) => r.id === questionID).length > 0 &&
@@ -97,52 +67,78 @@ const QuestionCategories = () => {
     console.log(question);
 
     function findSimilarAnswer(arr) {
-      let start = 0;
-      let count = 0;
       let countArr = [];
+      let hqArray = [];
+      let lswArray = [];
+      let easternArray = [];
+      let northArray = [];
 
-      while (start < arr.length) {
-        for (let i = start + 1; i < arr.length; i++) {
-          if (arr[start].answer == arr[i].answer) {
-            countArr.push(arr[start].answer);
-            count = Math.max(count + 1, count);
-          }
+      for (let i = 0; i < arr.length; i++) {
+        if (
+          arr[i].answer.trim() ==
+          "HQ (MTN Plaza, MTN Penthouse, Y’ellodrome Annex and Akin Adesola)"
+        ) {
+          hqArray.push(arr[i].answer);
+        } else if (
+          arr[i].answer.trim() ==
+          "LSW (Aromire, Matori, Ojota, Opebi/MM2, Allen, Apapa Switch, VGC, Y’ello City, Ibadan, Benin, Abeokuta)"
+        ) {
+          lswArray.push(arr[i].answer);
+        } else if (
+          arr[i].answer.trim() ==
+          "Eastern Region (All locations in the Eastern Region)"
+        ) {
+          easternArray.push(arr[i].answer);
+        } else if (
+          arr[i].answer.trim() ==
+          "Northern Region (All locations in the Northern Region)"
+        ) {
+          northArray.push(arr[i].answer);
+        } else {
+          countArr.push(arr[i].answer);
         }
-        start++;
       }
 
-      let freq = {};
-      for (let val of countArr) {
-        freq[val] = (freq[val] || 0) + 1;
-      }
-
-      const keys = Object.keys(freq);
-
-      const values = keys.map((key) => {
-        return freq[key];
-      });
-
-      const max = Math.max.apply(null, values);
-
-      return Math.round(max);
+      return [
+        {
+          region: "Eastern Region (All locations in the Eastern Region)",
+          id: 1,
+          count: (easternArray.length / numberOfStaff) * 100,
+        },
+        {
+          region:
+            "HQ (MTN Plaza, MTN Penthouse, Y’ellodrome Annex and Akin Adesola)",
+          id: 2,
+          count: (hqArray.length / numberOfStaff) * 100,
+        },
+        {
+          region:
+            "LSW (Aromire, Matori, Ojota, Opebi/MM2, Allen, Apapa Switch, VGC, Y’ello City, Ibadan, Benin, Abeokuta)",
+          id: 3,
+          count: (lswArray.length / numberOfStaff) * 100,
+        },
+        {
+          region: "Northern Region (All locations in the Northern Region)",
+          id: 4,
+          count: (northArray.length / numberOfStaff) * 100,
+        },
+      ];
     }
 
     return findSimilarAnswer(question);
   };
 
   const columns = [
-    { title: "Question", field: "questions", type: "string" as const },
+    { title: "SN", field: "id", type: "string" as const },
     {
-      title: "Similar Answer Count",
-      field: "ID",
+      title: "Region",
+      field: "region",
       type: "string" as const,
-      render: (rowData) => (
-        <div>
-          {getSimilarAnswers(data, rowData.ID) == Number(-Infinity)
-            ? 0
-            : getSimilarAnswers(data, rowData.ID)}
-        </div>
-      ),
+    },
+    {
+      title: "Submission Count %",
+      field: "count",
+      type: "string" as const,
     },
   ];
 
@@ -163,143 +159,34 @@ const QuestionCategories = () => {
       });
   }, []);
 
-  React.useEffect(() => {
-    setFindingData(true);
-    sp.web.lists
-      .getByTitle("personal")
-      .items.select("division", "responses")
-      .get()
-      .then((items) => {
-        setinterests(getGroups(items).interests());
-        setworries(getGroups(items).worries());
-        setgoals(getGroups(items).goals());
-        setcommunication(getGroups(items).communication());
-        setbio(getGroups(items).bio());
-        setlearning(getGroups(items).learning());
-        setattributes(getGroups(items).attributes());
-        setpriorities(getGroups(items).priorities());
-        setmotivator(getGroups(items).motivator());
-        setFindingData(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setFindingData(false);
-      });
-  }, []);
-
-  const getGroups = (arr) => {
-    return {
-      interests: () => {
-        for (let { responses } of arr) {
-          return JSON.parse(responses).filter(
-            ({ section }) => section == "interests"
-          ).length;
-        }
-      },
-      learning: () => {
-        for (let { responses } of arr) {
-          return JSON.parse(responses).filter(
-            ({ section }) => section == "learning"
-          ).length;
-        }
-      },
-      bio: () => {
-        for (let { responses } of arr) {
-          return JSON.parse(responses).filter(({ section }) => section == "bio")
-            .length;
-        }
-      },
-      attributes: () => {
-        for (let { responses } of arr) {
-          return JSON.parse(responses).filter(
-            ({ section }) => section == "attributes"
-          ).length;
-        }
-      },
-      communication: () => {
-        for (let { responses } of arr) {
-          return JSON.parse(responses).filter(
-            ({ section }) => section == "communication"
-          ).length;
-        }
-      },
-      motivator: () => {
-        for (let { responses } of arr) {
-          return JSON.parse(responses).filter(
-            ({ section }) => section == "motivator"
-          ).length;
-        }
-      },
-      goals: () => {
-        for (let { responses } of arr) {
-          return JSON.parse(responses).filter(
-            ({ section }) => section == "goals"
-          ).length;
-        }
-      },
-      worries: () => {
-        for (let { responses } of arr) {
-          return JSON.parse(responses).filter(
-            ({ section }) => section == "worries"
-          ).length;
-        }
-      },
-      priorities: () => {
-        for (let { responses } of arr) {
-          return JSON.parse(responses).filter(
-            ({ section }) => section == "priorities"
-          ).length;
-        }
-      },
-    };
-  };
-
   const pieChartData = [
     {
       x: 2,
-      y: goals || 0,
-      label: `Goals: ${goals}`,
+      y: getRegions(data)[0].count || 0,
+      label: `Eastern Region (All locations in the Eastern Region): ${
+        getRegions(data)[0].count
+      }%`,
     },
     {
       x: 3,
-      y: motivator || 0,
-      label: `Motivator: ${motivator}`,
+      y: getRegions(data)[1].count || 0,
+      label: `HQ (MTN Plaza, MTN Penthouse, Y’ellodrome Annex and Akin Adesola): ${
+        getRegions(data)[1].count
+      }%`,
     },
     {
       x: 4,
-      y: bio || 0,
-      label: `Short Bio: ${bio}`,
+      y: getRegions(data)[2].count || 0,
+      label: `LSW (Aromire, Matori, Ojota, Opebi/MM2, Allen, Apapa Switch, VGC, Y’ello City, Ibadan, Benin, Abeokuta): ${
+        getRegions(data)[2].count
+      }%`,
     },
     {
       x: 7,
-      y: communication || 0,
-      label: `Communication Preference: ${communication}`,
-    },
-    {
-      x: 8,
-      y: learning || 0,
-      label: `Learning Style: ${learning}`,
-    },
-    {
-      x: 9,
-      y: attributes || 0,
-      label: `Super Power and Key Attributes: ${attributes}`,
-    },
-    {
-      x: 10,
-      y: worries || 0,
-      label: `Worries: ${worries}`,
-    },
-    {
-      x: 11,
-      y: interests || 0,
-      label: `Interests: ${interests}`,
-    },
-
-    {
-      x: 14,
-      y: priorities || 0,
-      label: `Priorities: ${priorities}`,
+      y: getRegions(data)[3].count || 0,
+      label: `Northern Region (All locations in the Northern Region): ${
+        getRegions(data)[3].count
+      }%`,
     },
   ];
 
@@ -414,9 +301,9 @@ const QuestionCategories = () => {
                         <ViewColumn {...props} ref={ref} />
                       )),
                     }}
-                    title={`Question-Answer Report`}
+                    title={`Regions Submission Report`}
                     columns={columns}
-                    data={questionData}
+                    data={getRegions(data)}
                     options={{
                       exportButton: true,
                       actionsCellStyle: {
@@ -461,7 +348,7 @@ const QuestionCategories = () => {
   );
 };
 
-export default QuestionCategories;
+export default Regions;
 
 export const options = {
   responsive: true,
@@ -536,6 +423,7 @@ export function BarChart({ data }) {
 }
 
 import { VictoryPie, VictoryTooltip, VictoryBar } from "victory";
+import { Context } from "../../../Personal";
 
 export const PieChart = ({ data }) => {
   return (
