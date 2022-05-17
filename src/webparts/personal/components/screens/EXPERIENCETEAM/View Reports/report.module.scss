@@ -160,11 +160,11 @@
 
 .barChart {
   display: flex;
-  width: 70%;
-  height: 70%;
+  width: 50%;
+  height: 50%;
   box-sizing: border-box;
-  flex: 1;
-  padding: 30px;
+  position: relative;
+  border: 1px solid #000;
 }
 
 .tabs {

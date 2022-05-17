@@ -26,7 +26,8 @@ const ViewQuestions = ({ itemsPerPage, list, setList }) => {
             <th style={{ right: "6%", position: "relative" }}>Questions</th>
             <th style={{ right: "3%", position: "relative" }}>Response Type</th>
             <th style={{ right: "2%", position: "relative" }}>Answers</th>
-            <th>Assign Response To</th>
+            <th>Section</th>
+            <th>Required Status</th>
             <th></th>
           </tr>
         </thead>
@@ -53,6 +54,7 @@ const ViewQuestions = ({ itemsPerPage, list, setList }) => {
                   })}
                 </td>
                 <td>{item.section}</td>
+                <td>{item.required}</td>
                 <td>
                   <div
                     style={{

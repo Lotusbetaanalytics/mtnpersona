@@ -6,7 +6,7 @@ const PieChart = ({ data }) => {
     <VictoryPie
       data={data}
       colorScale={["#006993", "#C4C4C4", "#FFC423"]}
-      radius={100}
+      radius={110}
       style={{ labels: { fontSize: "12px" } }}
       labelComponent={
         <VictoryTooltip

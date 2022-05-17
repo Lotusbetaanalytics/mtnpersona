@@ -153,7 +153,11 @@ const PageSix = (props: Props) => {
                         name={items.type == "radio" ? `${items.questions}` : ``}
                         value={opt == "Others" ? others : opt ? opt : ""}
                         checked={opt == getChecked(opt) ? true : null}
-                        required={items.type == "checkbox" ? false : true}
+                        required={
+                          items.type == "checkbox"
+                            ? false
+                            : JSON.parse(items.required)
+                        }
                         onChange={(e: any) => {
                           setResponse([
                             ...response,

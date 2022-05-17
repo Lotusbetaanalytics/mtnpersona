@@ -54,6 +54,7 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
             questions: questionList.question,
             section: section,
             type: questionList.type,
+            required: JSON.stringify(questionList.required),
             options: JSON.stringify(questionList.options),
           })
           .then(() => {
@@ -61,7 +62,6 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
             setShow(true);
             setMessage("Question Added!");
             setLoading(false);
-
             setTimeout(() => {
               closeModal();
             }, 500);
@@ -70,13 +70,13 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
             setLoading(false);
             setShow(true);
             setMessage("Something went wrong");
-            console.log(e.message);
+            console.log(e);
           });
       } catch (e) {
         setLoading(false);
         setShow(true);
         setMessage("Something went wrong");
-        console.log(e.message);
+        console.log(e);
       }
     }
   };

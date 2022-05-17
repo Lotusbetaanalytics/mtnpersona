@@ -27,11 +27,17 @@ const ModalTwo = ({ open: newOpen, handleClose }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [type, setType] = React.useState("");
+  const [required, setRequired] = React.useState(false);
+  const [requiredValue, setRequiredValue] = React.useState("");
   const history = useHistory();
   const onNextHandler = () => {
     localStorage.setItem(
       "hr",
-      JSON.stringify({ ...JSON.parse(localStorage.getItem("hr")), type })
+      JSON.stringify({
+        ...JSON.parse(localStorage.getItem("hr")),
+        type,
+        required,
+      })
     );
     history.push("/hr/page3");
   };
@@ -98,18 +104,40 @@ const ModalTwo = ({ open: newOpen, handleClose }) => {
                       <MenuItem value="radio">Radio</MenuItem>
                       <MenuItem value="checkbox">Check Box</MenuItem>
                     </Select>
-                    {/* <select
-                      name=""
-                      id=""
-                      onChange={(e) => {
-                        setType(e.target.value);
+                  </FormControl>
+                  <span className={styles.focus}></span>
+                </>
+                <h5>Make Required</h5>
+                <>
+                  <FormControl
+                    fullWidth
+                    style={{
+                      borderRadius: "100px",
+                      marginTop: "10px",
+                    }}
+                    className={styles.formControl}
+                  >
+                    <Select
+                      onChange={(e: any) => {
+                        setRequiredValue(e.target.value);
+                        if (e.target.value === "yes") {
+                          setRequired(true);
+                        } else {
+                          setRequired(false);
+                        }
+                      }}
+                      fullWidth
+                      variant="outlined"
+                      value={requiredValue}
+                      className={styles.formControl}
+                      style={{
+                        borderRadius: "100px",
                       }}
                     >
-                      <option>Select...</option>
-                      <option value="radio">Radio Input</option>
-                      <option value="checkbox">Check Box</option>
-                      <option value="text">Text</option>
-                    </select> */}
+                      {/* <MenuItem value="">--Select--</MenuItem> */}
+                      <MenuItem value="yes">Yes</MenuItem>
+                      <MenuItem value="no">No</MenuItem>
+                    </Select>
                   </FormControl>
                   <span className={styles.focus}></span>
                 </>

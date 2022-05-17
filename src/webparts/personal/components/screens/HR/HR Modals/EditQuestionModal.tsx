@@ -32,13 +32,16 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
   const [opt, setopt] = React.useState([]);
   const [section, setSection] = React.useState("");
   const [type, setType] = React.useState("");
+  const [requiredValue, setRequiredValue] = React.useState("");
   const [newOption, setNewOption] = React.useState("");
   const [listOfSections, setListOfSections] = React.useState([]);
+  const [required, setRequired] = React.useState(false);
 
   React.useEffect(() => {
     setQuestion(item.questions);
     setType(item.type);
     setSection(item.section);
+    setRequired(item.required);
     item.options && setopt(JSON.parse(item.options));
   }, [item]);
 
@@ -50,6 +53,7 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
         questions: question,
         type: type,
         options: JSON.stringify(opt),
+        required: JSON.stringify(required),
         section: section,
       })
       .then(() => {
@@ -127,6 +131,32 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                 />
+              </div>
+              <div>
+                <p>Change Required Status</p>
+                <FormControl fullWidth variant="outlined">
+                  <Select
+                    onChange={(e: any) => {
+                      setRequiredValue(e.target.value);
+                      if (e.target.value === "true") {
+                        setRequired(true);
+                      } else {
+                        setRequired(false);
+                      }
+                    }}
+                    fullWidth
+                    variant="outlined"
+                    value={requiredValue}
+                  >
+                    <MenuItem value="">Select</MenuItem>
+                    <MenuItem value="true" selected={required ? true : false}>
+                      Yes
+                    </MenuItem>
+                    <MenuItem value="false" selected={required ? true : false}>
+                      No
+                    </MenuItem>
+                  </Select>
+                </FormControl>
               </div>
               <div>
                 <p>Option Type</p>

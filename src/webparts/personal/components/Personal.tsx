@@ -59,6 +59,7 @@ export default class Personal extends React.Component<
     surveyId: string;
     rejectedSurvey: any[];
     allQuestions: any[];
+    numberOfStaff: number;
   }
 > {
   constructor(props: IPersonalProps) {
@@ -74,60 +75,47 @@ export default class Personal extends React.Component<
       surveyId: "",
       rejectedSurvey: [],
       allQuestions: [],
+      numberOfStaff: 0,
     };
   }
 
   componentDidMount(): void {
-    sp.profiles.myProperties.get().then(({ Email }) => {
-      // Email = Email.toLowerCase();
+    try {
       this.props.context.spHttpClient
         .get(
-          `https://lotusbetaanalytics.sharepoint.com/sites/business_solutions/_api/lists/GetByTitle('CURRENT HCM STAFF LIST-test')/items?$filter=field_8 eq '${Email}'`,
+          `https://lotusbetaanalytics.sharepoint.com/sites/business_solutions/_api/lists/GetByTitle('CURRENT HCM STAFF LIST-test')/items?$filter=field_20 eq 'Permanent Employee'&$count=true`,
           SPHttpClient.configurations.v1
         )
         .then((response: SPHttpClientResponse) => {
           response.json().then((responseJSON: any) => {
-            this.setState({ lineManager: responseJSON.value[0].field_18 });
+            this.setState({
+              numberOfStaff: responseJSON.value.length,
+            });
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
 
-            if (responseJSON.value.length === 0) {
-              swal({
-                title: "You are not authorized to access this application.",
-                text: "Please contact your manager",
-                icon: "error",
-                closeOnClickOutside: false,
-                closeOnEsc: false,
-                buttons: [false],
-              });
-              this.setState({ notFound: true });
-              return;
-            }
+    try {
+      sp.profiles.myProperties.get().then(({ Email }) => {
+        // Email = Email.toLowerCase();
+        this.props.context.spHttpClient
+          .get(
+            `https://lotusbetaanalytics.sharepoint.com/sites/business_solutions/_api/lists/GetByTitle('CURRENT HCM STAFF LIST-test')/items?$filter=field_8 eq '${Email}'`,
+            SPHttpClient.configurations.v1
+          )
+          .then((response: SPHttpClientResponse) => {
+            response.json().then((responseJSON: any) => {
+              this.setState({ lineManager: responseJSON.value[0].field_18 });
 
-            const findPermanentStaff = responseJSON.value.filter(
-              ({ field_20 }) => {
-                return (
-                  field_20 === "Permanent Employee" || field_20 === "Permanent"
-                ); //find all permanent employees
-              }
-            );
-
-            if (findPermanentStaff.length < 1) {
-              swal({
-                title: "You are not authorized to access this application.",
-                text: "Please contact your manager",
-                icon: "error",
-                closeOnClickOutside: false,
-                closeOnEsc: false,
-                buttons: [false],
-              });
-              this.setState({ notFound: true });
-              return;
-            }
-            //search the array to find a matching record
-            for (let { field_8 } of findPermanentStaff) {
-              if (field_8 != Email) {
+              if (responseJSON.value.length === 0) {
                 swal({
                   title: "You are not authorized to access this application.",
-                  text: "Please contact your Manager",
+                  text: "Please contact your manager",
                   icon: "error",
                   closeOnClickOutside: false,
                   closeOnEsc: false,
@@ -135,19 +123,59 @@ export default class Personal extends React.Component<
                 });
                 this.setState({ notFound: true });
                 return;
-              } else {
-                this.setState({ checkStatus: true });
+              }
+
+              const findPermanentStaff = responseJSON.value.filter(
+                ({ field_20 }) => {
+                  return (
+                    field_20 === "Permanent Employee" ||
+                    field_20 === "Permanent"
+                  ); //find all permanent employees
+                }
+              );
+
+              if (findPermanentStaff.length < 1) {
+                swal({
+                  title: "You are not authorized to access this application.",
+                  text: "Please contact your manager",
+                  icon: "error",
+                  closeOnClickOutside: false,
+                  closeOnEsc: false,
+                  buttons: [false],
+                });
+                this.setState({ notFound: true });
                 return;
               }
-            }
+              //search the array to find a matching record
+              for (let { field_8 } of findPermanentStaff) {
+                if (field_8 != Email) {
+                  swal({
+                    title: "You are not authorized to access this application.",
+                    text: "Please contact your Manager",
+                    icon: "error",
+                    closeOnClickOutside: false,
+                    closeOnEsc: false,
+                    buttons: [false],
+                  });
+                  this.setState({ notFound: true });
+                  return;
+                } else {
+                  this.setState({ checkStatus: true });
+                  return;
+                }
+              }
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            this.setState({ notFound: true });
+            return;
           });
-        })
-        .catch((error) => {
-          console.log(error);
-          this.setState({ notFound: true });
-          return;
-        });
-    });
+      });
+    } catch (error) {
+      console.log(error);
+      swal("Error", "An error occured. Try again", "error");
+    }
 
     sp.web.lists
       .getByTitle("personal")
@@ -191,6 +219,7 @@ export default class Personal extends React.Component<
             setState: this.setState,
             rejectedSurvey: this.state.rejectedSurvey,
             allQuestions: this.state.allQuestions,
+            numberOfStaff: this.state.numberOfStaff,
           }}
         >
           {this.state.checkStatus ? (
@@ -316,4 +345,5 @@ export const Context = React.createContext({
   setState: null,
   rejectedSurvey: null,
   allQuestions: null,
+  numberOfStaff: null,
 });

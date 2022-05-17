@@ -28,7 +28,6 @@ const HrPageSix = () => {
       .getByTitle("Questions")
       .items.get()
       .then((res) => {
-        console.log(res);
         setList(res);
       });
   }, []);
