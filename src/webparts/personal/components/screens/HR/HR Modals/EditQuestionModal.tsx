@@ -76,11 +76,20 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
   };
 
   const deleteOptionHandler = (i) => {
+    if (opt[i] == "Others") {
+      setShowBtn(true);
+    }
     setopt(
       opt.filter((item, index) => {
         return index !== i;
       })
     );
+  };
+
+  const [showBtn, setShowBtn] = React.useState(true);
+  const onAddOthers = (text = "Others") => {
+    setShowBtn(false);
+    setopt([...opt, text]);
   };
 
   React.useEffect(() => {
@@ -214,6 +223,15 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
                 >
                   Add Option
                 </button>
+                {showBtn && (
+                  <button
+                    onClick={() => {
+                      onAddOthers();
+                    }}
+                  >
+                    Add other
+                  </button>
+                )}
               </div>
               <div className={styles.input__opt}>
                 {opt.map((i, index) => {

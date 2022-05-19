@@ -121,6 +121,7 @@ const ViewReport = () => {
             data={data}
             options={{
               exportButton: true,
+              exportAllData: true,
               actionsCellStyle: {
                 color: "#FF00dd",
               },

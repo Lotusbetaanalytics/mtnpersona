@@ -22,7 +22,10 @@ const PageTwo = (props: Props) => {
   const [sectionResponses, setSectionResponses] = React.useState([]);
   const [total, setTotal] = React.useState(0);
   const [others, setOthers] = React.useState("");
-  const [showField, setShowField] = React.useState(false);
+  const [ot, setOt] = React.useState({});
+  const [test, setTest] = React.useState([]);
+  let arr = [];
+  const prevArrGet = [];
 
   React.useEffect(() => {
     sp.web.lists
@@ -38,9 +41,20 @@ const PageTwo = (props: Props) => {
 
   const onNextHandler = (e) => {
     e.preventDefault();
+    getItems();
     history.push("/info/page3");
     const existing = JSON.parse(localStorage.getItem("data"));
-    localStorage.setItem("data", JSON.stringify([...response, ...existing]));
+    if (prevArrGet.length > 0) {
+      localStorage.setItem(
+        "data",
+        JSON.stringify([...arr, ...prevArrGet, ...response, ...existing])
+      );
+    } else {
+      localStorage.setItem(
+        "data",
+        JSON.stringify([...arr, ...response, ...existing])
+      );
+    }
     localStorage.setItem("count", JSON.stringify(count));
   };
 
@@ -69,14 +83,24 @@ const PageTwo = (props: Props) => {
         ? JSON.parse(localStorage.getItem("count")) + list.length
         : list.length
     );
+    for (let i = 0; i < list.length; i++) {
+      test.push({ [i]: "", show: false });
+    }
   }, [list]);
 
   React.useEffect(() => {
     setSectionResponses(getResponsesFromTwoSections("attributes", "learning"));
   }, []);
 
+  const getItems = () => {
+    for (let item in ot) {
+      arr.push(ot[item]);
+    }
+  };
+
   const getChecked = (opt) => {
     const answer = sectionResponses.filter(({ answer }) => answer == opt);
+    if (answer.length > 0) prevArrGet.push(answer[0]);
     return answer.length > 0 && answer[0].answer;
   };
 
@@ -111,36 +135,60 @@ const PageTwo = (props: Props) => {
                             : JSON.parse(items.required)
                         }
                         onChange={(e: any) => {
-                          setResponse([
-                            ...response,
-                            {
+                          if (opt == "Others") {
+                            test[ind]["show"] = true;
+                            test[ind][ind] = e.target.value;
+                            let thisReponse = {
+                              answer: test[ind][ind],
+                              id: items.ID,
+                              section: items.section,
+                            };
+                            setOt({ ...ot, [ind]: thisReponse });
+                          } else if (items.type == "checkbox") {
+                            setResponse([
+                              ...response,
+                              {
+                                answer: e.target.value,
+                                id: items.ID,
+                                section: items.section,
+                              },
+                            ]);
+                          } else {
+                            test[ind]["show"] = false;
+                            let thisReponse = {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
-                            },
-                          ]);
+                            };
+                            setOt({ ...ot, [ind]: thisReponse });
+                          }
                         }}
                       />
                       <div className={styles.input__options}>
                         <div>
                           {opt == "Others" ? (
-                            <div
-                              onClick={() => {
-                                setShowField(true);
-                              }}
-                            >
+                            <div>
                               Others, specify
-                              {showField && (
+                              {test.length > 0 && test[ind]["show"] && (
                                 <input
                                   type="text"
-                                  value={others}
+                                  key={index}
+                                  data-key={index}
+                                  value={test.length > 0 && test[ind][ind]}
                                   onChange={(e) => {
-                                    setOthers(e.target.value);
+                                    test[ind][ind] = e.target.value;
+
+                                    let thisReponse = {
+                                      answer: test[ind][ind],
+                                      id: items.ID,
+                                      section: items.section,
+                                    };
+                                    setOt({ ...ot, [ind]: thisReponse });
                                   }}
                                   style={{
                                     border: "none",
                                     borderBottom: "1px solid grey",
-                                    margin: "0px 10px",
+                                    margin: "0 10px",
                                   }}
                                 />
                               )}

@@ -64,6 +64,9 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
 
   //delete an option
   const onDeleteOption = (i) => {
+    if (optionsShow[i] == "Others") {
+      setShowBtn(true);
+    }
     const newOptions = optionsShow.filter((_, index) => index !== i);
     setOptionsShow(newOptions);
   };
@@ -77,7 +80,7 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
   const [showBtn, setShowBtn] = React.useState(true);
   const onAddOthers = (text = "Others") => {
     setShowBtn(false);
-    setOptionsShow([text, ...optionsShow]);
+    setOptionsShow([...optionsShow, text]);
   };
 
   return (

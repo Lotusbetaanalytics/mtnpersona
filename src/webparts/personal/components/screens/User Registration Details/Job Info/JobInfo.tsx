@@ -18,10 +18,11 @@ const JobInfo = (props: Props) => {
   const [count, setCount] = React.useState(0);
   const [total, setTotal] = React.useState(0);
   const [sectionResponses, setSectionResponses] = React.useState([]);
-  const [answered, setAnswered] = React.useState(false);
-  const [showPrompts, setShowPrompts] = React.useState(false);
   const [others, setOthers] = React.useState("");
-  const [showField, setShowField] = React.useState(false);
+  const [ot, setOt] = React.useState({});
+  const [test, setTest] = React.useState([]);
+  let arr = [];
+  const prevArrGet = [];
 
   React.useEffect(() => {
     try {
@@ -43,15 +44,36 @@ const JobInfo = (props: Props) => {
 
   React.useEffect(() => {
     setCount(list.length);
+    for (let i = 0; i < list.length; i++) {
+      test.push({ [i]: "", show: false });
+    }
   }, [list]);
 
   const history = useHistory();
 
+  const getItems = () => {
+    for (let item in ot) {
+      arr.push(ot[item]);
+    }
+  };
+
   const onNextHandler = (e) => {
     e.preventDefault();
+    console.log(response);
+    getItems();
     history.push("/info/page2");
     const existing = JSON.parse(localStorage.getItem("data"));
-    localStorage.setItem("data", JSON.stringify([...response, ...existing]));
+    if (prevArrGet.length > 0) {
+      localStorage.setItem(
+        "data",
+        JSON.stringify([...arr, ...prevArrGet, ...response, ...existing])
+      );
+    } else {
+      localStorage.setItem(
+        "data",
+        JSON.stringify([...arr, ...response, ...existing])
+      );
+    }
     localStorage.setItem("count", JSON.stringify(count));
   };
 
@@ -62,6 +84,11 @@ const JobInfo = (props: Props) => {
 
   const getChecked = (opt, index) => {
     const answer = sectionResponses.filter(({ answer }) => answer == opt);
+
+    if (answer.length > 0) {
+      prevArrGet.push(answer[0]);
+    }
+
     return answer.length > 0 && answer[0].answer;
   };
 
@@ -84,9 +111,10 @@ const JobInfo = (props: Props) => {
               <>
                 {JSON.parse(items.options).map((opt: any, index: any) => {
                   return (
-                    <div className={styles.input__details} key={index}>
+                    <div className={styles.input__details}>
                       <input
                         type={items.type}
+                        data-id={index}
                         name={items.type == "radio" ? `${items.questions}` : ``}
                         value={opt == "Others" ? others : opt ? opt : ""}
                         checked={opt == getChecked(opt, ind) ? true : null}
@@ -96,31 +124,55 @@ const JobInfo = (props: Props) => {
                             : JSON.parse(items.required)
                         }
                         onChange={(e: any) => {
-                          setResponse([
-                            ...response,
-                            {
+                          if (opt == "Others") {
+                            test[ind]["show"] = true;
+                            test[ind][ind] = e.target.value;
+                            let thisReponse = {
+                              answer: test[ind][ind],
+                              id: items.ID,
+                              section: items.section,
+                            };
+                            setOt({ ...ot, [ind]: thisReponse });
+                          } else if (items.type == "checkbox") {
+                            setResponse([
+                              ...response,
+                              {
+                                answer: e.target.value,
+                                id: items.ID,
+                                section: items.section,
+                              },
+                            ]);
+                          } else {
+                            test[ind]["show"] = false;
+                            let thisReponse = {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
-                            },
-                          ]);
+                            };
+                            setOt({ ...ot, [ind]: thisReponse });
+                          }
                         }}
                       />
                       <div className={styles.input__options}>
                         <div>
                           {opt == "Others" ? (
-                            <div
-                              onClick={() => {
-                                setShowField(true);
-                              }}
-                            >
+                            <div>
                               Others, specify
-                              {showField && (
+                              {test.length > 0 && test[ind]["show"] && (
                                 <input
                                   type="text"
-                                  value={others}
+                                  key={index}
+                                  data-key={index}
+                                  value={test.length > 0 && test[ind][ind]}
                                   onChange={(e) => {
-                                    setOthers(e.target.value);
+                                    test[ind][ind] = e.target.value;
+
+                                    let thisReponse = {
+                                      answer: test[ind][ind],
+                                      id: items.ID,
+                                      section: items.section,
+                                    };
+                                    setOt({ ...ot, [ind]: thisReponse });
                                   }}
                                   style={{
                                     border: "none",

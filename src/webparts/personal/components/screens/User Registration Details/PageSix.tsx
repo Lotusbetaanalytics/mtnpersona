@@ -29,6 +29,9 @@ const PageSix = (props: Props) => {
   const [total, setTotal] = React.useState(0);
   const [others, setOthers] = React.useState("");
   const [showField, setShowField] = React.useState(false);
+  const [ot, setOt] = React.useState({});
+  const [test, setTest] = React.useState([]);
+  let arr = [];
 
   const handleOpen = () => {
     setOpen(true);
@@ -59,11 +62,20 @@ const PageSix = (props: Props) => {
   React.useEffect(() => {
     setQuestions(list.length);
     setCount((prev) => prev + list.length);
+    for (let i = 0; i < list.length; i++) {
+      test.push({ [i]: "", show: false });
+    }
   }, [list]);
 
   React.useEffect(() => {
     setSectionResponses(prevHandler("priorities"));
   }, []);
+
+  const getItems = () => {
+    for (let item in ot) {
+      arr.push(ot[item]);
+    }
+  };
 
   const getChecked = (opt) => {
     const answer = sectionResponses.filter(({ answer }) => answer == opt);
@@ -73,13 +85,15 @@ const PageSix = (props: Props) => {
   const submitHandler = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-
+    getItems();
     const data = JSON.parse(localStorage.getItem("data"));
     const userData = JSON.parse(localStorage.getItem("userData"));
     const dp = JSON.parse(localStorage.getItem("dp"));
 
     if (!data) {
       setLoading(false);
+      localStorage.removeItem("userData");
+      localStorage.removeItem("dp");
       setMessage("No answers provided!");
       setShow(true);
       setTimeout(() => {
@@ -88,6 +102,8 @@ const PageSix = (props: Props) => {
       return;
     } else if (!userData) {
       setLoading(false);
+      localStorage.removeItem("data");
+      localStorage.removeItem("dp");
       setMessage("No user data found!");
       setShow(true);
       setTimeout(() => {
@@ -95,7 +111,7 @@ const PageSix = (props: Props) => {
       }, 1000);
       return;
     } else {
-      const answerData = [...data, ...response];
+      const answerData = [...data, ...response, ...arr];
       sp.web.lists
         .getByTitle("personal")
         .items.add({
@@ -159,36 +175,60 @@ const PageSix = (props: Props) => {
                             : JSON.parse(items.required)
                         }
                         onChange={(e: any) => {
-                          setResponse([
-                            ...response,
-                            {
+                          if (opt == "Others") {
+                            test[ind]["show"] = true;
+                            test[ind][ind] = e.target.value;
+                            let thisReponse = {
+                              answer: test[ind][ind],
+                              id: items.ID,
+                              section: items.section,
+                            };
+                            setOt({ ...ot, [ind]: thisReponse });
+                          } else if (items.type == "checkbox") {
+                            setResponse([
+                              ...response,
+                              {
+                                answer: e.target.value,
+                                id: items.ID,
+                                section: items.section,
+                              },
+                            ]);
+                          } else {
+                            test[ind]["show"] = false;
+                            let thisReponse = {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
-                            },
-                          ]);
+                            };
+                            setOt({ ...ot, [ind]: thisReponse });
+                          }
                         }}
                       />
                       <div className={styles.input__options}>
                         <div>
                           {opt == "Others" ? (
-                            <div
-                              onClick={() => {
-                                setShowField(true);
-                              }}
-                            >
+                            <div>
                               Others, specify
-                              {showField && (
+                              {test.length > 0 && test[ind]["show"] && (
                                 <input
                                   type="text"
-                                  value={others}
+                                  key={index}
+                                  data-key={index}
+                                  value={test.length > 0 && test[ind][ind]}
                                   onChange={(e) => {
-                                    setOthers(e.target.value);
+                                    test[ind][ind] = e.target.value;
+
+                                    let thisReponse = {
+                                      answer: test[ind][ind],
+                                      id: items.ID,
+                                      section: items.section,
+                                    };
+                                    setOt({ ...ot, [ind]: thisReponse });
                                   }}
                                   style={{
                                     border: "none",
                                     borderBottom: "1px solid grey",
-                                    margin: "0px 10px",
+                                    margin: "0 10px",
                                   }}
                                 />
                               )}
