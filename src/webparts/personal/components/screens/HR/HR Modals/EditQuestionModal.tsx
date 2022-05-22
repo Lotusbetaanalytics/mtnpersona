@@ -225,6 +225,8 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
                 </button>
                 {showBtn && (
                   <button
+                    className={styles.addoption__btn}
+                    style={{ margin: "0 10px" }}
                     onClick={() => {
                       onAddOthers();
                     }}

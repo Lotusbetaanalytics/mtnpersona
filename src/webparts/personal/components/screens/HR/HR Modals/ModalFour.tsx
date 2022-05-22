@@ -37,6 +37,12 @@ const ModalFour = ({ open: newOpen, handleClose }) => {
 
   React.useEffect(() => {
     setOpen(true);
+    if (
+      localStorage.getItem("hr") &&
+      JSON.parse(localStorage.getItem("hr"))["options"]
+    ) {
+      const options = JSON.parse(localStorage.getItem("hr"))["options"];
+    }
   }, []);
 
   const closeModal = () => {

@@ -32,6 +32,7 @@ const PageSix = (props: Props) => {
   const [ot, setOt] = React.useState({});
   const [test, setTest] = React.useState([]);
   let arr = [];
+  const prevArrGet = [];
 
   const handleOpen = () => {
     setOpen(true);
@@ -77,8 +78,18 @@ const PageSix = (props: Props) => {
     }
   };
 
-  const getChecked = (opt) => {
+  const getChecked = (opt, id) => {
+    if (opt == "Others") {
+      const findOthers = sectionResponses.filter(
+        (item, i) => item.type == "Others" && item.id == id
+      );
+      if (findOthers.length > 0) {
+        prevArrGet.push(findOthers[0]);
+        return "Others";
+      }
+    }
     const answer = sectionResponses.filter(({ answer }) => answer == opt);
+    if (answer.length > 0) prevArrGet.push(answer[0]);
     return answer.length > 0 && answer[0].answer;
   };
 
@@ -168,7 +179,7 @@ const PageSix = (props: Props) => {
                         type={items.type}
                         name={items.type == "radio" ? `${items.questions}` : ``}
                         value={opt == "Others" ? others : opt ? opt : ""}
-                        checked={opt == getChecked(opt) ? true : null}
+                        checked={opt == getChecked(opt, items.ID) ? true : null}
                         required={
                           items.type == "checkbox"
                             ? false
@@ -182,6 +193,7 @@ const PageSix = (props: Props) => {
                               answer: test[ind][ind],
                               id: items.ID,
                               section: items.section,
+                              type: "Others",
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           } else if (items.type == "checkbox") {
@@ -191,6 +203,7 @@ const PageSix = (props: Props) => {
                                 answer: e.target.value,
                                 id: items.ID,
                                 section: items.section,
+                                type: items.type,
                               },
                             ]);
                           } else {
@@ -199,6 +212,7 @@ const PageSix = (props: Props) => {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
+                              type: items.type,
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           }
@@ -222,6 +236,7 @@ const PageSix = (props: Props) => {
                                       answer: test[ind][ind],
                                       id: items.ID,
                                       section: items.section,
+                                      type: "Others",
                                     };
                                     setOt({ ...ot, [ind]: thisReponse });
                                   }}

@@ -37,6 +37,7 @@ const ModalTwo = ({ open: newOpen, handleClose }) => {
         ...JSON.parse(localStorage.getItem("hr")),
         type,
         required,
+        requiredValue,
       })
     );
     history.push("/hr/page3");
@@ -44,6 +45,15 @@ const ModalTwo = ({ open: newOpen, handleClose }) => {
 
   React.useEffect(() => {
     setOpen(true);
+    if (
+      localStorage.getItem("hr") &&
+      JSON.parse(localStorage.getItem("hr"))["type"]
+    ) {
+      const type = JSON.parse(localStorage.getItem("hr"))["type"];
+      const required = JSON.parse(localStorage.getItem("hr"))["requiredValue"];
+      setType(type);
+      setRequiredValue(required);
+    }
   }, []);
 
   const closeModal = () => {

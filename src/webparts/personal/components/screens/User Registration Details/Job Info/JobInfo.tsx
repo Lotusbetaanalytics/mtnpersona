@@ -47,6 +47,10 @@ const JobInfo = (props: Props) => {
     for (let i = 0; i < list.length; i++) {
       test.push({ [i]: "", show: false });
     }
+    if (localStorage.getItem("page1")) {
+      const foundText = JSON.parse(localStorage.getItem("page1"));
+      setTest(Object.assign(test, foundText));
+    }
   }, [list]);
 
   const history = useHistory();
@@ -59,7 +63,6 @@ const JobInfo = (props: Props) => {
 
   const onNextHandler = (e) => {
     e.preventDefault();
-    console.log(response);
     getItems();
     history.push("/info/page2");
     const existing = JSON.parse(localStorage.getItem("data"));
@@ -82,7 +85,17 @@ const JobInfo = (props: Props) => {
     setSectionResponses(sectionResponse);
   }, []);
 
-  const getChecked = (opt, index) => {
+  const getChecked = (opt, id) => {
+    if (opt == "Others") {
+      const findOthers = sectionResponses.filter(
+        (item, i) => item.type == "Others" && item.id == id
+      );
+      if (findOthers.length > 0) {
+        prevArrGet.push(findOthers[0]);
+        return "Others";
+      }
+    }
+
     const answer = sectionResponses.filter(({ answer }) => answer == opt);
 
     if (answer.length > 0) {
@@ -116,8 +129,14 @@ const JobInfo = (props: Props) => {
                         type={items.type}
                         data-id={index}
                         name={items.type == "radio" ? `${items.questions}` : ``}
-                        value={opt == "Others" ? others : opt ? opt : ""}
-                        checked={opt == getChecked(opt, ind) ? true : null}
+                        value={
+                          opt == "Others"
+                            ? test.length > 0 && test[ind][ind]
+                            : opt
+                            ? opt
+                            : ""
+                        }
+                        checked={opt == getChecked(opt, items.ID) ? true : null}
                         required={
                           items.type == "checkbox"
                             ? false
@@ -131,7 +150,9 @@ const JobInfo = (props: Props) => {
                               answer: test[ind][ind],
                               id: items.ID,
                               section: items.section,
+                              type: "Others",
                             };
+
                             setOt({ ...ot, [ind]: thisReponse });
                           } else if (items.type == "checkbox") {
                             setResponse([
@@ -140,6 +161,7 @@ const JobInfo = (props: Props) => {
                                 answer: e.target.value,
                                 id: items.ID,
                                 section: items.section,
+                                type: "checkbox",
                               },
                             ]);
                           } else {
@@ -148,6 +170,7 @@ const JobInfo = (props: Props) => {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
+                              type: "radio",
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           }
@@ -171,6 +194,7 @@ const JobInfo = (props: Props) => {
                                       answer: test[ind][ind],
                                       id: items.ID,
                                       section: items.section,
+                                      type: "Others",
                                     };
                                     setOt({ ...ot, [ind]: thisReponse });
                                   }}

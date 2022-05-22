@@ -77,14 +77,7 @@ const QuestionCategories = () => {
 
   const history = useHistory();
 
-  const getSimilarAnswers = (userResponses, questionID) => {
-    let similarAnswers = [];
-
-    // for (let { responses } of userResponses) {
-    //   let question = JSON.parse(responses).filter((r) => r.id === questionID);
-    //   console.log(question.length > 0 && question[0]);
-    // }
-
+  const getAnswers = (userResponses, questionID) => {
     const question = userResponses.map(
       ({ responses }) =>
         (JSON.parse(responses).filter((r) => r.id === questionID).length > 0 &&
@@ -94,7 +87,26 @@ const QuestionCategories = () => {
           id: questionID,
         }
     );
-    console.log(question);
+
+    let countArr = [];
+
+    for (let i = 0; i < question.length; i++) {
+      countArr.push(question[i].answer);
+    }
+
+    return countArr.length;
+  };
+
+  const getSimilarAnswers = (userResponses, questionID) => {
+    const question = userResponses.map(
+      ({ responses }) =>
+        (JSON.parse(responses).filter((r) => r.id === questionID).length > 0 &&
+          JSON.parse(responses).filter((r) => r.id === questionID)[0]) || {
+          answer: "",
+          section: "",
+          id: questionID,
+        }
+    );
 
     function findSimilarAnswer(arr) {
       let start = 0;
@@ -143,6 +155,12 @@ const QuestionCategories = () => {
             : getSimilarAnswers(data, rowData.ID)}
         </div>
       ),
+    },
+    {
+      title: "Answer Count",
+      field: "ID",
+      type: "string" as const,
+      render: (rowData) => <div>{getAnswers(data, rowData.ID)}</div>,
     },
   ];
 

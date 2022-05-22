@@ -32,11 +32,20 @@ const ModalOne = ({ open, handleClose }) => {
       JSON.stringify({
         ...JSON.parse(localStorage.getItem("hr")),
         question,
-        options: [],
       })
     );
     history.push("/hr/page2");
   };
+
+  React.useEffect(() => {
+    if (
+      localStorage.getItem("hr") &&
+      JSON.parse(localStorage.getItem("hr"))["question"]
+    ) {
+      const question = JSON.parse(localStorage.getItem("hr"))["question"];
+      setQuestion(question);
+    }
+  }, []);
 
   return (
     <div>

@@ -34,9 +34,7 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
   const [clicked, setClicked] = React.useState(false);
   const [other, setOther] = React.useState("");
   const [options, setOptions] = React.useState("");
-  const [optionsShow, setOptionsShow] = React.useState(
-    [] || JSON.parse(localStorage.getItem("hr")).options
-  );
+  const [optionsShow, setOptionsShow] = React.useState([]);
   const history = useHistory();
   const onNextHandler = () => {
     localStorage.setItem(
@@ -51,6 +49,14 @@ const ModalThree = ({ open: newOpen, handleClose }) => {
 
   React.useEffect(() => {
     setOpen(true);
+
+    if (
+      localStorage.getItem("hr") &&
+      JSON.parse(localStorage.getItem("hr"))["options"]
+    ) {
+      const options = JSON.parse(localStorage.getItem("hr"))["options"];
+      setOptionsShow(options);
+    }
   }, []);
 
   const closeModal = () => {

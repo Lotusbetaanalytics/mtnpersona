@@ -44,17 +44,12 @@ const PageTwo = (props: Props) => {
     getItems();
     history.push("/info/page3");
     const existing = JSON.parse(localStorage.getItem("data"));
-    if (prevArrGet.length > 0) {
-      localStorage.setItem(
-        "data",
-        JSON.stringify([...arr, ...prevArrGet, ...response, ...existing])
-      );
-    } else {
-      localStorage.setItem(
-        "data",
-        JSON.stringify([...arr, ...response, ...existing])
-      );
-    }
+
+    localStorage.setItem(
+      "data",
+      JSON.stringify([...arr, ...response, ...existing])
+    );
+
     localStorage.setItem("count", JSON.stringify(count));
   };
 
@@ -98,7 +93,16 @@ const PageTwo = (props: Props) => {
     }
   };
 
-  const getChecked = (opt) => {
+  const getChecked = (opt, id) => {
+    if (opt == "Others") {
+      const findOthers = sectionResponses.filter(
+        (item, i) => item.type == "Others" && item.id == id
+      );
+      if (findOthers.length > 0) {
+        prevArrGet.push(findOthers[0]);
+        return "Others";
+      }
+    }
     const answer = sectionResponses.filter(({ answer }) => answer == opt);
     if (answer.length > 0) prevArrGet.push(answer[0]);
     return answer.length > 0 && answer[0].answer;
@@ -128,7 +132,7 @@ const PageTwo = (props: Props) => {
                         type={items.type}
                         name={items.type == "radio" ? `${items.questions}` : ``}
                         value={opt == "Others" ? others : opt ? opt : ""}
-                        checked={opt == getChecked(opt) ? true : null}
+                        checked={opt == getChecked(opt, items.ID) ? true : null}
                         required={
                           items.type == "checkbox"
                             ? false
@@ -142,6 +146,7 @@ const PageTwo = (props: Props) => {
                               answer: test[ind][ind],
                               id: items.ID,
                               section: items.section,
+                              type: "Others",
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           } else if (items.type == "checkbox") {
@@ -151,6 +156,7 @@ const PageTwo = (props: Props) => {
                                 answer: e.target.value,
                                 id: items.ID,
                                 section: items.section,
+                                type: items.type,
                               },
                             ]);
                           } else {
@@ -159,6 +165,7 @@ const PageTwo = (props: Props) => {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
+                              type: items.type,
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           }
@@ -182,6 +189,7 @@ const PageTwo = (props: Props) => {
                                       answer: test[ind][ind],
                                       id: items.ID,
                                       section: items.section,
+                                      type: "Others",
                                     };
                                     setOt({ ...ot, [ind]: thisReponse });
                                   }}

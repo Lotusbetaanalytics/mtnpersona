@@ -16,6 +16,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
+import { useHistory } from "react-router-dom";
 
 const ConfigureRoles = ({ context }) => {
   const useStyles = makeStyles((theme) => ({
@@ -29,6 +30,7 @@ const ConfigureRoles = ({ context }) => {
   }));
 
   const classes = useStyles();
+  const history = useHistory();
   const { spHttpClient } = React.useContext(Context);
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -89,6 +91,11 @@ const ConfigureRoles = ({ context }) => {
         setAllDivisions(response);
       });
   }, []);
+
+  const cancelHandler = () => {
+    //
+    history.push("/experienceteam/dashboard");
+  };
 
   return (
     <div className={styles.dashboard__container}>
@@ -229,6 +236,14 @@ const ConfigureRoles = ({ context }) => {
               )}
             </>
           )}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              cancelHandler();
+            }}
+          >
+            Cancel
+          </button>
         </form>
         <DisplayModal
           handleClose={handleCloseModal}
