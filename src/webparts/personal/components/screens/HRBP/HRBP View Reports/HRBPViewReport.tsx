@@ -26,12 +26,281 @@ import { FormControl, MenuItem, Select } from "@material-ui/core";
 import Filter from "../../../Containers/Filter/Filter";
 
 const HrbpViewReport = () => {
+  const getSection = (res, item) => {
+    const sectionResponses = res.filter(({ section }) => section === item);
+
+    return sectionResponses;
+  };
+
   const columns = [
-    { title: "Employee Name", field: "name", type: "string" as const },
-    { title: "Email", field: "email", type: "string" as const },
-    { title: "Employee Alias", field: "alias", type: "string" as const },
-    { title: "Division", field: "division", type: "string" as const },
-    { title: "Approval Status", field: "EXApprovalStatus" },
+    {
+      title: "Photo",
+      field: "dp",
+      type: "string" as const,
+      searchable: true,
+      render: (rowData) => {
+        return (
+          <img
+            src={rowData.dp}
+            alt="DP"
+            style={{ width: "100px", height: "100px" }}
+          />
+        );
+      },
+    },
+    {
+      title: "Employee Name",
+      field: "name",
+      type: "string" as const,
+      searchable: true,
+    },
+    {
+      title: "Email",
+      field: "email",
+      type: "string" as const,
+      searchable: true,
+    },
+    {
+      title: "Employee Alias",
+      field: "alias",
+      type: "string" as const,
+      searchable: true,
+    },
+    {
+      title: "Division",
+      field: "division",
+      type: "string" as const,
+      searchable: true,
+    },
+    {
+      title: "Avatar Group",
+      field: "AvatarGroup",
+      type: "string" as const,
+      searchable: true,
+    },
+    // { title: "Approval Status", field: "EXApprovalStatus", searchable: true },
+    {
+      title: "Short Bio",
+      field: "responses",
+      searchable: true,
+      cellStyle: {
+        width: "150%",
+      },
+      grouping: false,
+      render: (rowData) => {
+        return (
+          <ul>
+            {getSection(JSON.parse(rowData.responses), "bio").length > 0 ? (
+              getSection(JSON.parse(rowData.responses), "bio").map(
+                ({ answer }) => {
+                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
+                }
+              )
+            ) : (
+              <li>No Response</li>
+            )}
+          </ul>
+        );
+      },
+    },
+    {
+      title: "Communication Preference",
+      field: "responses",
+      searchable: true,
+      cellStyle: {
+        width: "150%",
+      },
+      grouping: false,
+      render: (rowData) => {
+        return (
+          <ul>
+            {getSection(JSON.parse(rowData.responses), "communication").length >
+            0 ? (
+              getSection(JSON.parse(rowData.responses), "communication").map(
+                ({ answer }) => {
+                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
+                }
+              )
+            ) : (
+              <li>No Response</li>
+            )}
+          </ul>
+        );
+      },
+    },
+    {
+      title: "Worries",
+      field: "responses",
+      searchable: true,
+      cellStyle: {
+        width: "150%",
+      },
+      grouping: false,
+      render: (rowData) => {
+        return (
+          <ul>
+            {getSection(JSON.parse(rowData.responses), "worries").length > 0 ? (
+              getSection(JSON.parse(rowData.responses), "worries").map(
+                ({ answer }) => {
+                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
+                }
+              )
+            ) : (
+              <li>No Response</li>
+            )}
+          </ul>
+        );
+      },
+    },
+    {
+      title: "Interests",
+      field: "responses",
+      searchable: true,
+      cellStyle: {
+        width: "150%",
+      },
+      grouping: false,
+      render: (rowData) => {
+        return (
+          <ul>
+            {getSection(JSON.parse(rowData.responses), "interests").length >
+            0 ? (
+              getSection(JSON.parse(rowData.responses), "interests").map(
+                ({ answer }) => {
+                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
+                }
+              )
+            ) : (
+              <li>No Response</li>
+            )}
+          </ul>
+        );
+      },
+    },
+    {
+      title: "Priorities",
+      field: "responses",
+      searchable: true,
+      cellStyle: {
+        width: "150%",
+      },
+      grouping: false,
+      render: (rowData) => {
+        return (
+          <ul>
+            {getSection(JSON.parse(rowData.responses), "priorities").length >
+            0 ? (
+              getSection(JSON.parse(rowData.responses), "priorities").map(
+                ({ answer }) => {
+                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
+                }
+              )
+            ) : (
+              <li>No Response</li>
+            )}
+          </ul>
+        );
+      },
+    },
+    {
+      title: "Goals",
+      field: "responses",
+      searchable: true,
+      cellStyle: {
+        width: "150%",
+      },
+      grouping: false,
+      render: (rowData) => {
+        return (
+          <ul>
+            {getSection(JSON.parse(rowData.responses), "goals").length > 0 ? (
+              getSection(JSON.parse(rowData.responses), "goals").map(
+                ({ answer }) => {
+                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
+                }
+              )
+            ) : (
+              <li>No Response</li>
+            )}
+          </ul>
+        );
+      },
+    },
+    {
+      title: "Motivators",
+      field: "responses",
+      searchable: true,
+      cellStyle: {
+        width: "150%",
+      },
+      grouping: false,
+      render: (rowData) => {
+        return (
+          <ul>
+            {getSection(JSON.parse(rowData.responses), "motivator").length >
+            0 ? (
+              getSection(JSON.parse(rowData.responses), "motivator").map(
+                ({ answer }) => {
+                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
+                }
+              )
+            ) : (
+              <li>No Response</li>
+            )}
+          </ul>
+        );
+      },
+    },
+    {
+      title: "Learning Styles",
+      field: "responses",
+      searchable: true,
+      cellStyle: {
+        width: "150%",
+      },
+      grouping: false,
+      render: (rowData) => {
+        return (
+          <ul>
+            {getSection(JSON.parse(rowData.responses), "learning").length >
+            0 ? (
+              getSection(JSON.parse(rowData.responses), "learning").map(
+                ({ answer }) => {
+                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
+                }
+              )
+            ) : (
+              <li>No Response</li>
+            )}
+          </ul>
+        );
+      },
+    },
+    {
+      title: "Attributes",
+      field: "responses",
+      searchable: true,
+      cellStyle: {
+        width: "150%",
+      },
+      grouping: false,
+      render: (rowData) => {
+        return (
+          <ul>
+            {getSection(JSON.parse(rowData.responses), "attributes").length >
+            0 ? (
+              getSection(JSON.parse(rowData.responses), "attributes").map(
+                ({ answer }) => {
+                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
+                }
+              )
+            ) : (
+              <li>No Response</li>
+            )}
+          </ul>
+        );
+      },
+    },
   ];
 
   const [data, setData] = React.useState([]);
@@ -190,7 +459,7 @@ const HrbpViewReport = () => {
                   <ViewColumn {...props} ref={ref} />
                 )),
               }}
-              title={`Total Submitted Surveys: ${filtered.length}`}
+              title={`Total Submitted Surveys: ${data.length}`}
               columns={columns}
               data={data}
               options={{
@@ -199,6 +468,9 @@ const HrbpViewReport = () => {
                   color: "#FF00dd",
                 },
                 actionsColumnIndex: -1,
+                pageSize: 1,
+                pageSizeOptions: [1, 2, 5, 10, 20],
+                exportAllData: true,
 
                 headerStyle: {
                   backgroundColor: "rgba(196, 196, 196, 0.32)",

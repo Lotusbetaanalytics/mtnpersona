@@ -17,9 +17,9 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
 import { DisplayModal, SimpleSnackbar } from "./ConfigureRoles";
+import { useParams } from "react-router-dom";
 
-
-const EditRoles = ({ context }) => {
+const EditRolesEdit = ({ context }) => {
   const useStyles = makeStyles((theme) => ({
     formControl: {
       margin: theme.spacing(1),
@@ -48,6 +48,8 @@ const EditRoles = ({ context }) => {
   const [openModal, setOpenModal] = React.useState(false);
   const [data, setData] = React.useState({});
   const [showDivisionField, setShowField] = React.useState(divisionRequired);
+  //@ts-ignore
+  const { id } = useParams();
 
   const handleOpenModal = (e) => {
     e.preventDefault();
@@ -89,6 +91,18 @@ const EditRoles = ({ context }) => {
       .items.get()
       .then((response) => {
         setAllDivisions(response);
+      });
+  }, []);
+
+  React.useEffect(() => {
+    sp.web.lists
+      .getByTitle("Roles")
+      .items.filter(`ID eq '${id}'`)
+      .get()
+      .then((response) => {
+        setRole(response[0].Role);
+        setDivision(response[0].Division);
+        setEmployeeEmail(response[0].Email);
       });
   }, []);
 
@@ -249,4 +263,4 @@ const EditRoles = ({ context }) => {
   );
 };
 
-export default EditRoles;
+export default EditRolesEdit;

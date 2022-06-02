@@ -134,6 +134,7 @@ const PageFive = (props: Props) => {
                               id: items.ID,
                               section: items.section,
                               type: "Others",
+                              question: items.questions,
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           } else if (items.type == "checkbox") {
@@ -144,6 +145,7 @@ const PageFive = (props: Props) => {
                                 id: items.ID,
                                 section: items.section,
                                 type: items.type,
+                                question: items.questions,
                               },
                             ]);
                           } else {
@@ -153,6 +155,7 @@ const PageFive = (props: Props) => {
                               id: items.ID,
                               section: items.section,
                               type: items.type,
+                              question: items.questions,
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           }
@@ -176,6 +179,7 @@ const PageFive = (props: Props) => {
                                       answer: test[ind][ind],
                                       id: items.ID,
                                       section: items.section,
+                                      question: items.questions,
                                       type: "Others",
                                     };
                                     setOt({ ...ot, [ind]: thisReponse });

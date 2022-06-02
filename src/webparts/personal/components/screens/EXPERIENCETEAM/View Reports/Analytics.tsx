@@ -35,8 +35,17 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { VictoryPie, VictoryTooltip, VictoryBar } from "victory";
 import { Context } from "../../../Personal";
+import { MenuItem, Select } from "@material-ui/core";
+import QuestionCategories from "./Categories";
+import DivisionAnalyticsReport from "./DivisionsAnalytics";
+import Regions from "./Regions";
+import {
+  AntPieChart,
+  AntBarChart,
+} from "../../../Containers/AntChart/PieChart";
+import BarChart from "../../../Containers/Bar Chart/BarChart";
+import DataPie from "../../../Containers/Pie Chart/PieChart";
 
 ChartJS.register(
   CategoryScale,
@@ -58,15 +67,17 @@ const AnalyticsReport = () => {
   const [kingQueenFun, setKingQueenFun] = React.useState(0);
   const [batMan, setBatMan] = React.useState(0);
   const [show, setShow] = React.useState("Table");
-  const barData = {
+  const [analyticsData, setAnalyticsData] = React.useState(1);
+  const [selectValue, setSelectValue] = React.useState("");
+  const barData = [
     okoye,
-    superMan,
     blackPanther,
-    captainAmerica,
+    superMan,
     ironMan,
+    captainAmerica,
     kingQueenFun,
     batMan,
-  };
+  ];
   const tableData = [
     { id: 1, Category: "Okoye", count: okoye },
     { id: 2, Category: "Black Panther", count: blackPanther },
@@ -179,43 +190,101 @@ const AnalyticsReport = () => {
     };
   };
 
-  const pieChartData = [
+  const label = [
+    "Okoye",
+    "Black Panther",
+    "Super Man",
+    "Iron Man",
+    "Captain America",
+    "King/Queen of Fun",
+    "Bat Man",
+  ];
+
+  const analyticData = [
     {
-      x: 1,
-      y: okoye || 0,
-      label: `Okoye: ${okoye}%`,
+      label: "Okoye",
+      data: [okoye],
+      backgroundColor: "#006993",
     },
     {
-      x: 2,
-      y: ironMan || 0,
-      label: `Iron Man: ${ironMan}%`,
+      label: "Black Panther",
+      data: [blackPanther],
+      backgroundColor: "#91CC75",
     },
     {
-      x: 3,
-      y: superMan || 0,
-      label: `Super Man: ${superMan}%`,
+      label: "Super Man",
+      data: [superMan],
+      backgroundColor: "#FAC858",
     },
     {
-      x: 4,
-      y: captainAmerica || 0,
-      label: `Captain America: ${captainAmerica}%`,
+      label: "Iron Man",
+      data: [ironMan],
+      backgroundColor: "#EE6666",
     },
     {
-      x: 5,
-      y: kingQueenFun || 0,
-      label: `King/Queen of Fun: ${kingQueenFun}%`,
+      label: "Captain America",
+      data: [captainAmerica],
+      backgroundColor: "#73C0DE",
     },
     {
-      x: 6,
-      y: batMan || 0,
-      label: `Bat Man: ${batMan}%`,
+      label: "Bat Man",
+      data: [batMan],
+      backgroundColor: "#FC8452",
     },
     {
-      x: 7,
-      y: blackPanther || 0,
-      label: `Black Panther: ${blackPanther}%`,
+      label: "King/Queen of Fun",
+      data: [kingQueenFun],
+      backgroundColor: "#3BA272",
     },
   ];
+
+  const barLabel = ["Avatar Groups"];
+
+  const fill = [
+    "#006993",
+    "#91CC75",
+    "#FAC858",
+    "#EE6666",
+    "#73C0DE",
+    "#FC8452",
+    "#3BA272",
+  ];
+  const pieChartData = [
+    {
+      value: okoye,
+    },
+    {
+      value: blackPanther,
+    },
+    {
+      value: superMan,
+    },
+    {
+      value: ironMan,
+    },
+    {
+      value: captainAmerica,
+    },
+    {
+      value: kingQueenFun,
+    },
+    {
+      value: batMan,
+    },
+  ];
+
+  const changeHandler = (e) => {
+    setSelectValue(e.target.value);
+    if (e.target.value == "Avatar Groups") {
+      setAnalyticsData(1);
+    } else if (e.target.value === "Question Categories") {
+      setAnalyticsData(2);
+    } else if (e.target.value === "Divisions") {
+      setAnalyticsData(3);
+    } else if (e.target.value === "Regions") {
+      setAnalyticsData(4);
+    }
+  };
 
   return (
     <div className={styles.report__container}>
@@ -230,139 +299,142 @@ const AnalyticsReport = () => {
           </div>
         ) : (
           <div style={{ width: "100%", height: "100%" }}>
-            <div className={styles.tabs}>
-              {ReportTabs.map((tab, index) => {
-                return (
-                  <div
-                    className={`${styles.tabBtn} ${
-                      tab.active && styles.active
-                    }`}
-                    onClick={() => {
-                      history.push(tab.url);
-                      ReportTabs.filter(({ id }) => {
-                        return id === tab.id;
-                      })[0].active = true;
-                      ReportTabs.filter(({ id }) => {
-                        return id !== tab.id;
-                      }).map((tab) => {
-                        return (tab.active = false);
-                      });
-                    }}
-                  >
-                    {tab.title}
-                  </div>
-                );
-              })}
+            <div
+              style={{ float: "left", boxSizing: "border-box", margin: "20px" }}
+            >
+              <div>Search</div>
+              <Select value={selectValue} onChange={changeHandler} fullWidth>
+                <MenuItem value="" selected disabled>
+                  Select a search criteria
+                </MenuItem>
+                {ReportTabs.map((tab) => {
+                  return <MenuItem value={tab.title}>{tab.title}</MenuItem>;
+                })}
+              </Select>
             </div>
 
-            <div>
-              <button
-                className={`${styles.mtn__btn__table} ${styles.mtn__black}`}
-                style={{ margin: "20px", boxSizing: "border-box" }}
-                onClick={() => {
-                  setShow((prev) => {
-                    return prev == "Chart" ? "Table" : "Chart";
-                  });
-                }}
-              >
-                Show {`${show}`}
-              </button>
-              {show === "Chart" ? (
-                <div>
-                  <MaterialTable
-                    icons={{
-                      Add: forwardRef((props: any, ref: any) => (
-                        <AddBox {...props} ref={ref} />
-                      )),
-                      Check: forwardRef((props: any, ref: any) => (
-                        <Check {...props} ref={ref} />
-                      )),
-                      Clear: forwardRef((props: any, ref: any) => (
-                        <Clear {...props} ref={ref} />
-                      )),
-                      Delete: forwardRef((props: any, ref: any) => (
-                        <DeleteOutline {...props} ref={ref} />
-                      )),
-                      DetailPanel: forwardRef((props: any, ref: any) => (
-                        <ChevronRight {...props} ref={ref} />
-                      )),
-                      Edit: forwardRef((props: any, ref: any) => (
-                        <Edit {...props} ref={ref} />
-                      )),
-                      Export: forwardRef((props: any, ref: any) => (
-                        <SaveAlt {...props} ref={ref} />
-                      )),
-                      Filter: forwardRef((props: any, ref: any) => (
-                        <FilterList {...props} ref={ref} />
-                      )),
-                      FirstPage: forwardRef((props: any, ref: any) => (
-                        <FirstPage {...props} ref={ref} />
-                      )),
-                      LastPage: forwardRef((props: any, ref: any) => (
-                        <LastPage {...props} ref={ref} />
-                      )),
-                      NextPage: forwardRef((props: any, ref: any) => (
-                        <ChevronRight {...props} ref={ref} />
-                      )),
-                      PreviousPage: forwardRef((props: any, ref: any) => (
-                        <ChevronLeft {...props} ref={ref} />
-                      )),
-                      ResetSearch: forwardRef((props: any, ref: any) => (
-                        <Clear {...props} ref={ref} />
-                      )),
-                      Search: forwardRef((props: any, ref: any) => (
-                        <Search {...props} ref={ref} />
-                      )),
-                      SortArrow: forwardRef((props: any, ref: any) => (
-                        <ArrowDownward {...props} ref={ref} />
-                      )),
-                      ThirdStateCheck: forwardRef((props: any, ref: any) => (
-                        <Remove {...props} ref={ref} />
-                      )),
-                      ViewColumn: forwardRef((props: any, ref: any) => (
-                        <ViewColumn {...props} ref={ref} />
-                      )),
-                    }}
-                    title={`Persona Categories`}
-                    columns={columns}
-                    data={tableData}
-                    options={{
-                      exportButton: true,
-                      actionsCellStyle: {
-                        color: "#FF00dd",
-                      },
-
-                      headerStyle: {
-                        backgroundColor: "rgba(196, 196, 196, 0.32)",
-                        color: "black",
-                      },
-                    }}
-                    style={{
-                      boxShadow: "none",
-                      width: "80%",
-                      boxSizing: "border-box",
-                      paddingLeft: "30px",
-                    }}
-                  />
-                </div>
-              ) : (
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "10px",
-                    width: "80%",
-                    height: "70%",
+            {analyticsData == 1 ? (
+              <div>
+                <button
+                  className={`${styles.mtn__btn__table} ${styles.mtn__black}`}
+                  style={{ margin: "20px", boxSizing: "border-box" }}
+                  onClick={() => {
+                    setShow((prev) => {
+                      return prev == "Chart" ? "Table" : "Chart";
+                    });
                   }}
                 >
-                  <div className={styles.barChart}>
-                    <PieChart data={pieChartData} />
+                  Show {`${show}`}
+                </button>
+                {show === "Chart" ? (
+                  <div>
+                    <MaterialTable
+                      icons={{
+                        Add: forwardRef((props: any, ref: any) => (
+                          <AddBox {...props} ref={ref} />
+                        )),
+                        Check: forwardRef((props: any, ref: any) => (
+                          <Check {...props} ref={ref} />
+                        )),
+                        Clear: forwardRef((props: any, ref: any) => (
+                          <Clear {...props} ref={ref} />
+                        )),
+                        Delete: forwardRef((props: any, ref: any) => (
+                          <DeleteOutline {...props} ref={ref} />
+                        )),
+                        DetailPanel: forwardRef((props: any, ref: any) => (
+                          <ChevronRight {...props} ref={ref} />
+                        )),
+                        Edit: forwardRef((props: any, ref: any) => (
+                          <Edit {...props} ref={ref} />
+                        )),
+                        Export: forwardRef((props: any, ref: any) => (
+                          <SaveAlt {...props} ref={ref} />
+                        )),
+                        Filter: forwardRef((props: any, ref: any) => (
+                          <FilterList {...props} ref={ref} />
+                        )),
+                        FirstPage: forwardRef((props: any, ref: any) => (
+                          <FirstPage {...props} ref={ref} />
+                        )),
+                        LastPage: forwardRef((props: any, ref: any) => (
+                          <LastPage {...props} ref={ref} />
+                        )),
+                        NextPage: forwardRef((props: any, ref: any) => (
+                          <ChevronRight {...props} ref={ref} />
+                        )),
+                        PreviousPage: forwardRef((props: any, ref: any) => (
+                          <ChevronLeft {...props} ref={ref} />
+                        )),
+                        ResetSearch: forwardRef((props: any, ref: any) => (
+                          <Clear {...props} ref={ref} />
+                        )),
+                        Search: forwardRef((props: any, ref: any) => (
+                          <Search {...props} ref={ref} />
+                        )),
+                        SortArrow: forwardRef((props: any, ref: any) => (
+                          <ArrowDownward {...props} ref={ref} />
+                        )),
+                        ThirdStateCheck: forwardRef((props: any, ref: any) => (
+                          <Remove {...props} ref={ref} />
+                        )),
+                        ViewColumn: forwardRef((props: any, ref: any) => (
+                          <ViewColumn {...props} ref={ref} />
+                        )),
+                      }}
+                      title={`Persona Categories`}
+                      columns={columns}
+                      data={tableData}
+                      options={{
+                        exportButton: true,
+                        exportAllData: true,
+                        actionsCellStyle: {
+                          color: "#FF00dd",
+                        },
+
+                        headerStyle: {
+                          backgroundColor: "rgba(196, 196, 196, 0.32)",
+                          color: "black",
+                        },
+                      }}
+                      style={{
+                        boxShadow: "none",
+                        width: "80%",
+                        boxSizing: "border-box",
+                        paddingLeft: "30px",
+                      }}
+                    />
                   </div>
-                  <div className={styles.barChart}>
-                    <NewBarChart data={pieChartData} />
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      width: "60%",
+                      height: "70%",
+                    }}
+                  >
+                    <div className={styles.barChart}>
+                      <DataPie
+                        series={barData}
+                        labels={label}
+                        label="Avatar Groups"
+                        fill={fill}
+                      />
+                    </div>
+                    <div className={styles.barChart}>
+                      count <BarChart data={analyticData} labels={barLabel} />
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            ) : analyticsData == 2 ? (
+              <QuestionCategories />
+            ) : analyticsData == 3 ? (
+              <DivisionAnalyticsReport />
+            ) : (
+              <Regions />
+            )}
           </div>
         )}
       </div>
@@ -371,55 +443,3 @@ const AnalyticsReport = () => {
 };
 
 export default AnalyticsReport;
-
-export const PieChart = ({ data }) => {
-  return (
-    <VictoryPie
-      data={data}
-      colorScale={[
-        "#006993",
-        "#C4C4C4",
-        "#FFC423",
-        "#F66B0E",
-        "#2F8F9D",
-        "#F73D93",
-        "#6D8B74",
-      ]}
-      style={{ labels: { fontSize: "12px" } }}
-      labelComponent={
-        <VictoryTooltip
-          cornerRadius={({ datum }) => datum.x * 2}
-          flyoutStyle={{ fontSize: "12px" }}
-        />
-      }
-    />
-  );
-};
-export const NewBarChart = ({ data }) => {
-  return (
-    <VictoryBar
-      minDomain={0}
-      data={data}
-      colorScale={[
-        "#006993",
-        "#C4C4C4",
-        "#FFC423",
-        "#F66B0E",
-        "#2F8F9D",
-        "#F73D93",
-        "#6D8B74",
-      ]}
-      style={{ labels: { fontSize: "12px" }, data: { fill: "#006993" } }}
-      labelComponent={
-        <VictoryTooltip
-          cornerRadius={({ datum }) => datum.x * 2}
-          dy={({ datum }) => datum.y * -5}
-        />
-      }
-      name="Avatar Groups"
-      width={600}
-      height={400}
-      labels={({ datum }) => `${datum.label}`}
-    />
-  );
-};

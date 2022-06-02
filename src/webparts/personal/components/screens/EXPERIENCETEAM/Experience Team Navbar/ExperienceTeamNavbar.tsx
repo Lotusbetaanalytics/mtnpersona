@@ -8,6 +8,8 @@ import {
   AiOutlineSetting,
   AiOutlineEye,
   AiOutlineUserAdd,
+  AiFillCalendar,
+  AiOutlineTable,
 } from "react-icons/ai";
 import { useHistory } from "react-router-dom";
 import { sp } from "@pnp/sp";
@@ -87,13 +89,23 @@ const ExperienceTeamNavbar = () => {
           </div>
           <div
             onClick={() => {
-              history.push("/experienceteam/rejected");
+              history.push("/experienceteam/date");
             }}
           >
             <span>
-              <AiOutlineClose />
+              <AiFillCalendar />
             </span>
-            <span> Rejected Survey</span>
+            <span> Configure Date</span>
+          </div>
+          <div
+            onClick={() => {
+              history.push("/experienceteam/date/view");
+            }}
+          >
+            <span>
+              <AiOutlineTable />
+            </span>
+            <span> View Dates</span>
           </div>
           <div
             onClick={() => {

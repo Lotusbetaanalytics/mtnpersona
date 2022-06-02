@@ -1,8 +1,11 @@
 import { BookSharp, CancelOutlined, QuestionAnswer } from "@material-ui/icons";
 import * as React from "react";
+import { AiFillProfile } from "react-icons/ai";
 import { sp } from "sp-pnp-js";
+import { AntPieChart } from "../../../Containers/AntChart/PieChart";
 import BarChart from "../../../Containers/Bar Chart/BarChart";
 import Card from "../../../Containers/Card/Card";
+import DataPie from "../../../Containers/Pie Chart/PieChart";
 import PieChart from "../../../Containers/Pie Chart/PieChart";
 import { Context } from "../../../Personal";
 import ExperienceTeamHeader from "../Experience Team Header/ExperienceTeamHeader";
@@ -10,30 +13,35 @@ import ExperienceTeamNavbar from "../Experience Team Navbar/ExperienceTeamNavbar
 import styles from "./dashboard.module.scss";
 
 const ExperienceTeamDashboard = () => {
-  const { allSurvey, rejectedSurvey, allQuestions } = React.useContext(Context);
+  const { allSurvey, rejectedSurvey, allQuestions, confirmedStaff } =
+    React.useContext(Context);
   const [numberofSurvey, setNumberOfSurvey] = React.useState(0);
   const [pendingSurvey, setPendingSurvey] = React.useState(0);
 
-  const data = {
-    numberofSurvey: [numberofSurvey + rejectedSurvey.length],
-    rejected: [rejectedSurvey.length],
-    pending: [pendingSurvey],
-  };
+  const data = [
+    {
+      label: "Number Yet to Complete Survey",
+      data: [confirmedStaff.length - pendingSurvey],
+      backgroundColor: "#006993",
+    },
+    {
+      label: "Completed Surveys",
+      data: [pendingSurvey],
+      backgroundColor: "#C4C4C4",
+    },
+  ];
+
+  const barLabel = ["Employee Surveys"];
+
+  const label = ["Surveys"];
   const pieChartData = [
     {
-      x: 2,
-      y: numberofSurvey + rejectedSurvey.length || 0,
-      label: `All Surveys: ${numberofSurvey + rejectedSurvey.length}`,
+      value: pendingSurvey || 0,
+      name: `Completed Surveys`,
     },
     {
-      x: 3,
-      y: pendingSurvey || 0,
-      label: `Pending Surveys: ${pendingSurvey}`,
-    },
-    {
-      x: 4,
-      y: rejectedSurvey.length || 0,
-      label: `Rejected Surveys: ${rejectedSurvey.length}`,
+      value: confirmedStaff.length - pendingSurvey || 0,
+      name: `Number Yet to Complete Survey`,
     },
   ];
   const [showChart, setShowChart] = React.useState(false);
@@ -42,16 +50,23 @@ const ExperienceTeamDashboard = () => {
   const showBarChart = () => {
     return (
       <>
-        <BarChart data={data} />
+        <BarChart data={data} labels={barLabel} height={160} />
       </>
     );
   };
+
+  const barData = [pendingSurvey, confirmedStaff.length - pendingSurvey];
+
+  const labels = ["Completed Surveys", "Number Yet to Complete Survey"];
+
+  const fill = ["#C4C4C4", "#006993"];
 
   //Create Pie chart component
   const showPieChart = () => {
     return (
       <>
-        <PieChart data={pieChartData} />
+        {/* <AntPieChart data={pieChartData} label={label} title="" /> */}
+        <DataPie series={barData} fill={fill} label="" labels={labels} />
       </>
     );
   };
@@ -74,13 +89,13 @@ const ExperienceTeamDashboard = () => {
           <div className={styles.dashboard__container__cards}>
             <Card
               title="Number of Survey"
-              number={numberofSurvey + rejectedSurvey.length}
+              number={numberofSurvey}
               icon={<BookSharp style={{ fontSize: 60 }} />}
             />
             <Card
-              title="Rejected Surveys"
-              number={rejectedSurvey.length}
-              icon={<CancelOutlined style={{ fontSize: 60 }} />}
+              title="Number of Staff"
+              number={confirmedStaff.length}
+              icon={<AiFillProfile style={{ fontSize: 60 }} />}
             />
             <Card
               title="Total Questions"
@@ -107,9 +122,9 @@ const ExperienceTeamDashboard = () => {
                 Bar Chart
               </div>
             </div>
-            <div>
+            <div style={{ width: "80%", height: "80%" }}>
               {showChart ? (
-                <div className={styles.barChart}>{showBarChart()}</div>
+                <div className={styles.barChart}>Count{showBarChart()}</div>
               ) : (
                 <div className={styles.pieChart}>{showPieChart()}</div>
               )}

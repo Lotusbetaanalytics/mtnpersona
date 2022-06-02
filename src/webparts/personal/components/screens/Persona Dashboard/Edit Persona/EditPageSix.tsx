@@ -1,19 +1,19 @@
 import * as React from "react";
 import { useHistory } from "react-router-dom";
-import { Header } from "../../Containers";
-import MyModal from "../../Containers/Modal/Modal";
+import { Header } from "../../../Containers";
+import MyModal, { EditModal } from "../../../Containers/Modal/Modal";
 import styles from "./userRegistration.module.scss";
 import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
-import Toast from "../../Containers/Toast";
-import { prevHandler } from "./Job Info/JobInfo";
+import Toast from "../../../Containers/Toast";
+import { getAnswers, prevHandler } from "./EditJobInfo/EditJobInfo";
 import swal from "sweetalert";
 
 type Props = {};
 
-const PageSix = (props: Props) => {
+const EditPageSix = (props: Props) => {
   const history = useHistory();
   const [open, setOpen] = React.useState(false);
   const [show, setShow] = React.useState(false);
@@ -33,6 +33,23 @@ const PageSix = (props: Props) => {
   const [test, setTest] = React.useState([]);
   let arr = [];
   const prevArrGet = [];
+  const [userResponse, setUserResponse] = React.useState({});
+  const [responseId, setResponseId] = React.useState("");
+  const [myResponses, setMyResponses] = React.useState([]);
+  React.useEffect(() => {
+    sp.profiles.myProperties.get().then((profile) => {
+      sp.web.lists
+        .getByTitle("personal")
+        .items.filter(`email eq '${profile.Email}'`)
+        .select("responses,email,name,ID")
+        .get()
+        .then((response) => {
+          setMyResponses(JSON.parse(response[0].responses));
+          response.length > 0 && setUserResponse(response[0]);
+          response.length > 0 && setResponseId(response[0].ID);
+        });
+    });
+  }, []);
 
   const handleOpen = () => {
     setOpen(true);
@@ -79,8 +96,28 @@ const PageSix = (props: Props) => {
   };
 
   const getChecked = (opt, id) => {
+    if (sectionResponses.length > 0) {
+      if (opt == "Others") {
+        const findOthers = sectionResponses.filter(
+          (item, i) => item.type == "Others" && item.id == id
+        );
+        if (findOthers.length > 0) {
+          prevArrGet.push(findOthers[0]);
+          return "Others";
+        }
+      }
+
+      const answer = sectionResponses.filter(({ answer }) => answer == opt);
+
+      if (answer.length > 0) {
+        prevArrGet.push(answer[0]);
+      }
+
+      return answer.length > 0 && answer[0].answer;
+    }
+
     if (opt == "Others") {
-      const findOthers = sectionResponses.filter(
+      const findOthers = myResponses.filter(
         (item, i) => item.type == "Others" && item.id == id
       );
       if (findOthers.length > 0) {
@@ -88,8 +125,13 @@ const PageSix = (props: Props) => {
         return "Others";
       }
     }
-    const answer = sectionResponses.filter(({ answer }) => answer == opt);
-    if (answer.length > 0) prevArrGet.push(answer[0]);
+
+    const answer = myResponses.filter(({ answer }) => answer == opt);
+
+    if (answer.length > 0) {
+      prevArrGet.push(answer[0]);
+    }
+
     return answer.length > 0 && answer[0].answer;
   };
 
@@ -97,50 +139,49 @@ const PageSix = (props: Props) => {
     e.preventDefault();
     setLoading(true);
     getItems();
-    const data = JSON.parse(localStorage.getItem("data"));
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const dp = JSON.parse(localStorage.getItem("dp"));
+    const data = JSON.parse(localStorage.getItem("editdata"));
+    const userData = JSON.parse(localStorage.getItem("edituserData"));
+    const dp = JSON.parse(localStorage.getItem("editdp"));
 
     if (!data) {
       setLoading(false);
-      localStorage.removeItem("userData");
-      localStorage.removeItem("dp");
+      localStorage.removeItem("edituserData");
+      localStorage.removeItem("editdp");
       setMessage("No answers provided!");
       setShow(true);
       setTimeout(() => {
-        history.push("/info/personal");
+        history.push("/dashboard/edit/start");
       }, 1000);
       return;
     } else if (!userData) {
       setLoading(false);
-      localStorage.removeItem("data");
-      localStorage.removeItem("dp");
+      localStorage.removeItem("editdata");
+      localStorage.removeItem("editdp");
       setMessage("No user data found!");
       setShow(true);
       setTimeout(() => {
-        history.push("/info/personal");
+        history.push("/dashboard/edit/start");
       }, 1000);
       return;
     } else {
       const answerData = [...data, ...response, ...arr];
+
       sp.web.lists
         .getByTitle("personal")
-        .items.add({
-          Title: `${Math.random()}`,
-          name: userData.name,
+        .items.getById(Number(responseId))
+        .update({
           alias: userData.alias,
           responses: JSON.stringify(answerData),
           division: userData.division,
-          email: userData.email,
           LineManager: userData.LineManager,
           dp: dp && dp,
         })
         .then(() => {
           setLoading(false);
-          localStorage.removeItem("data");
-          localStorage.removeItem("userData");
-          localStorage.removeItem("dp");
-          setMessage("Answers Submitted!");
+          localStorage.removeItem("editdata");
+          localStorage.removeItem("edituserData");
+          localStorage.removeItem("editdp");
+          setMessage("Update Successful!");
           setShow(true);
           setTimeout(() => {
             history.push("/info/dashboard");
@@ -170,6 +211,11 @@ const PageSix = (props: Props) => {
                 >
                   {items.questions}
                 </label>
+              </div>
+              <div className={styles.selectedResponse}>
+                <strong>Your selected response:</strong>
+                {/* @ts-ignore:*/}
+                {getAnswers(userResponse, items.questions, items.ID)}
               </div>
               <>
                 {JSON.parse(items.options).map((opt: any, index: any) => {
@@ -280,18 +326,19 @@ const PageSix = (props: Props) => {
             </span>
           )}
           {loading ? (
-            <button className={styles.filled__button}>Submitting...</button>
+            <button className={styles.filled__button}>updating...</button>
           ) : (
             <button className={styles.filled__button} type="submit">
-              Submit
+              Update
             </button>
           )}
         </div>
-        <MyModal open={open} handleClose={handleClose} history={history} />
+
+        <EditModal open={open} handleClose={handleClose} history={history} />
         <Toast show={show} setShow={setShow} message={message} />
       </form>
     </div>
   );
 };
 
-export default PageSix;
+export default EditPageSix;

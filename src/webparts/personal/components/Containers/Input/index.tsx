@@ -55,6 +55,7 @@ export const SelectInput = ({
   label,
   children,
   required = false,
+  value = "",
 }) => {
   return (
     <div className={`${styles.input__container}`}>
@@ -63,6 +64,7 @@ export const SelectInput = ({
         className={`${styles.input}`}
         onChange={onChange}
         required={required}
+        value={value}
       >
         <option value="" disabled selected>
           Select Division...

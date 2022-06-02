@@ -108,13 +108,13 @@ const StaffView = () => {
               />
             </div>
             <div></div>
-            <div>
+            {/* <div>
               {rejected ? (
                 <div>Staff already rejected!</div>
               ) : (
                 <button onClick={handleOpen}>Reject</button>
               )}
-            </div>
+            </div> */}
             <div>
               <a href={href} target="_Blank">
                 More...
@@ -153,28 +153,39 @@ const useStyles = makeStyles((theme: Theme) =>
 export const CommentModal = ({ open, handleClose, id, history }) => {
   const [comment, setComment] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [yesOpen, setYesOpen] = React.useState(false);
+
+  const yesClose = () => {
+    setYesOpen(false);
+  };
+
+  const handleYesOpen = () => {
+    setYesOpen(true);
+  };
+
   const classes = useStyles();
 
   const yesHandler = (e: any) => {
     e.preventDefault();
-    setLoading(true);
-    sp.web.lists
-      .getByTitle("personal")
-      .items.getById(id)
-      .update({
-        EXApprovalStatus: "Declined",
-        Comments_x002f_RejectionReason: comment,
-      })
-      .then(() => {
-        setLoading(false);
-        handleClose();
-        setComment("");
-        history.push("/experienceteam/report");
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoading(false);
-      });
+    handleYesOpen();
+    // setLoading(true);
+    // sp.web.lists
+    //   .getByTitle("personal")
+    //   .items.getById(id)
+    //   .update({
+    //     EXApprovalStatus: "Declined",
+    //     Comments_x002f_RejectionReason: comment,
+    //   })
+    //   .then(() => {
+    //     setLoading(false);
+    //     handleClose();
+    //     setComment("");
+    //     history.push("/experienceteam/report");
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //     setLoading(false);
+    //   });
   };
 
   const noHandler = (e) => {
@@ -250,7 +261,122 @@ export const CommentModal = ({ open, handleClose, id, history }) => {
                   }}
                 >
                   <button onClick={noHandler}>Cancel</button>
-                  <button type="submit">Submit</button>
+                  <button type="submit">Reject</button>
+                </div>
+              )}
+              <YesModal
+                open={yesOpen}
+                handleClose={yesClose}
+                id={id}
+                history={history}
+                comment={comment}
+                setComment={setComment}
+              />
+            </form>
+          </div>
+        </Fade>
+      </Modal>
+    </div>
+  );
+};
+export const YesModal = ({
+  open,
+  handleClose,
+  id,
+  history,
+  comment,
+  setComment,
+}) => {
+  const [loading, setLoading] = React.useState(false);
+  const classes = useStyles();
+
+  const yesHandler = (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+    sp.web.lists
+      .getByTitle("personal")
+      .items.getById(id)
+      .update({
+        EXApprovalStatus: "Declined",
+        Comments_x002f_RejectionReason: comment,
+      })
+      .then(() => {
+        setLoading(false);
+        handleClose();
+        setComment("");
+        history.push("/experienceteam/report");
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+      });
+  };
+
+  const noHandler = (e) => {
+    e.preventDefault();
+    handleClose();
+  };
+
+  const btnFlex = () => {
+    return {
+      display: "flex",
+      gap: "5px",
+      width: "100%",
+      height: "50%",
+      boxSizing: "border-box",
+      paddingLeft: "20%",
+      justifyItems: "flex-end",
+      alignItems: "center",
+    };
+  };
+
+  return (
+    <div>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes.modal}
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <div className={`${classes.paper} ${styles2.container3}`}>
+            <div
+              style={{
+                position: "relative",
+                left: "50%",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                handleClose();
+              }}
+            >
+              <Cancel />
+            </div>
+            <form className={styles2.modal__container2} onSubmit={yesHandler}>
+              Are you sure you want to reject this report?
+              {loading ? (
+                <button disabled>Submitting...</button>
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "5px",
+                    width: "100%",
+                    height: "50%",
+                    boxSizing: "border-box",
+                    paddingLeft: "20%",
+                    justifyItems: "flex-end",
+                    alignItems: "center",
+                  }}
+                >
+                  <button onClick={noHandler}>No</button>
+                  <button type="submit">Yes</button>
                 </div>
               )}
             </form>

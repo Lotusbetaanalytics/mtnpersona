@@ -1,45 +1,59 @@
 import * as React from "react";
-import { useHistory } from "react-router-dom";
-import { Header } from "../../Containers";
-import MyModal from "../../Containers/Modal/Modal";
-import styles from "./userRegistration.module.scss";
+import { Link, useHistory } from "react-router-dom";
+import { Header } from "../../../Containers";
 import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
-import Toast from "../../Containers/Toast";
-import { prevHandler } from "./Job Info/JobInfo";
+import styles from "./userRegistration.module.scss";
+import {
+  getAnswers,
+  getResponsesFromTwoSections,
+} from "./EditJobInfo/EditJobInfo";
 import swal from "sweetalert";
 
 type Props = {};
 
-const PageSix = (props: Props) => {
-  const history = useHistory();
-  const [open, setOpen] = React.useState(false);
-  const [show, setShow] = React.useState(false);
-  const [message, setMessage] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
+const EditPageThree = (props: Props) => {
+  const [sectionResponses, setSectionResponses] = React.useState([]);
   const [list, setList] = React.useState([]);
   const [response, setResponse] = React.useState([]);
-  const [sectionResponses, setSectionResponses] = React.useState([]);
-  const [count, setCount] = React.useState(
-    0 || JSON.parse(localStorage.getItem("count"))
-  );
+  const [count, setCount] = React.useState(0);
   const [questions, setQuestions] = React.useState(0);
-  const [total, setTotal] = React.useState(0);
   const [others, setOthers] = React.useState("");
-  const [showField, setShowField] = React.useState(false);
+  const [total, setTotal] = React.useState(0);
   const [ot, setOt] = React.useState({});
   const [test, setTest] = React.useState([]);
   let arr = [];
   const prevArrGet = [];
+  const history = useHistory();
+  const [myResponses, setMyResponses] = React.useState([]);
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  const [userResponse, setUserResponse] = React.useState({});
+  React.useEffect(() => {
+    sp.profiles.myProperties.get().then((profile) => {
+      sp.web.lists
+        .getByTitle("personal")
+        .items.filter(`email eq '${profile.Email}'`)
+        .select("responses,email,name,ID")
+        .get()
+        .then((response) => {
+          setMyResponses(JSON.parse(response[0].responses));
+          response.length > 0 && setUserResponse(response[0]);
+        });
+    });
+  }, []);
 
-  const handleClose = () => {
-    setOpen(false);
+  const onNextHandler = (e) => {
+    e.preventDefault();
+    getItems();
+    history.push("/dashboard/edit/page4");
+    const existing = JSON.parse(localStorage.getItem("editdata"));
+
+    localStorage.setItem(
+      "editdata",
+      JSON.stringify([...arr, ...response, ...existing])
+    );
   };
 
   React.useEffect(() => {
@@ -51,7 +65,7 @@ const PageSix = (props: Props) => {
           setTotal(res.length);
           setList(
             res.filter(({ section }) => {
-              return section === "priorities";
+              return section === "communication" || section === "goals";
             })
           );
         });
@@ -62,14 +76,18 @@ const PageSix = (props: Props) => {
 
   React.useEffect(() => {
     setQuestions(list.length);
-    setCount((prev) => prev + list.length);
+    setCount(
+      JSON.parse(localStorage.getItem("count"))
+        ? JSON.parse(localStorage.getItem("count")) + list.length
+        : list.length
+    );
     for (let i = 0; i < list.length; i++) {
       test.push({ [i]: "", show: false });
     }
   }, [list]);
 
   React.useEffect(() => {
-    setSectionResponses(prevHandler("priorities"));
+    setSectionResponses(getResponsesFromTwoSections("communication", "goals"));
   }, []);
 
   const getItems = () => {
@@ -79,8 +97,28 @@ const PageSix = (props: Props) => {
   };
 
   const getChecked = (opt, id) => {
+    if (sectionResponses.length > 0) {
+      if (opt == "Others") {
+        const findOthers = sectionResponses.filter(
+          (item, i) => item.type == "Others" && item.id == id
+        );
+        if (findOthers.length > 0) {
+          prevArrGet.push(findOthers[0]);
+          return "Others";
+        }
+      }
+
+      const answer = sectionResponses.filter(({ answer }) => answer == opt);
+
+      if (answer.length > 0) {
+        prevArrGet.push(answer[0]);
+      }
+
+      return answer.length > 0 && answer[0].answer;
+    }
+
     if (opt == "Others") {
-      const findOthers = sectionResponses.filter(
+      const findOthers = myResponses.filter(
         (item, i) => item.type == "Others" && item.id == id
       );
       if (findOthers.length > 0) {
@@ -88,77 +126,20 @@ const PageSix = (props: Props) => {
         return "Others";
       }
     }
-    const answer = sectionResponses.filter(({ answer }) => answer == opt);
-    if (answer.length > 0) prevArrGet.push(answer[0]);
-    return answer.length > 0 && answer[0].answer;
-  };
 
-  const submitHandler = async (e: any) => {
-    e.preventDefault();
-    setLoading(true);
-    getItems();
-    const data = JSON.parse(localStorage.getItem("data"));
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const dp = JSON.parse(localStorage.getItem("dp"));
+    const answer = myResponses.filter(({ answer }) => answer == opt);
 
-    if (!data) {
-      setLoading(false);
-      localStorage.removeItem("userData");
-      localStorage.removeItem("dp");
-      setMessage("No answers provided!");
-      setShow(true);
-      setTimeout(() => {
-        history.push("/info/personal");
-      }, 1000);
-      return;
-    } else if (!userData) {
-      setLoading(false);
-      localStorage.removeItem("data");
-      localStorage.removeItem("dp");
-      setMessage("No user data found!");
-      setShow(true);
-      setTimeout(() => {
-        history.push("/info/personal");
-      }, 1000);
-      return;
-    } else {
-      const answerData = [...data, ...response, ...arr];
-      sp.web.lists
-        .getByTitle("personal")
-        .items.add({
-          Title: `${Math.random()}`,
-          name: userData.name,
-          alias: userData.alias,
-          responses: JSON.stringify(answerData),
-          division: userData.division,
-          email: userData.email,
-          LineManager: userData.LineManager,
-          dp: dp && dp,
-        })
-        .then(() => {
-          setLoading(false);
-          localStorage.removeItem("data");
-          localStorage.removeItem("userData");
-          localStorage.removeItem("dp");
-          setMessage("Answers Submitted!");
-          setShow(true);
-          setTimeout(() => {
-            history.push("/info/dashboard");
-          }, 1000);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-          setShow(true);
-          setMessage("An error occurred! Try again...");
-        });
+    if (answer.length > 0) {
+      prevArrGet.push(answer[0]);
     }
+
+    return answer.length > 0 && answer[0].answer;
   };
 
   return (
     <div className={styles.screen2__container}>
       <Header />
-      <form className={styles.job__info} onSubmit={submitHandler}>
+      <form className={styles.job__info} onSubmit={onNextHandler}>
         {list.map((items, ind) => {
           return (
             <div className={styles.job__form} key={ind}>
@@ -170,6 +151,11 @@ const PageSix = (props: Props) => {
                 >
                   {items.questions}
                 </label>
+              </div>
+              <div className={styles.selectedResponse}>
+                <strong>Your selected response:</strong>
+                {/* @ts-ignore:*/}
+                {getAnswers(userResponse, items.questions, items.ID)}
               </div>
               <>
                 {JSON.parse(items.options).map((opt: any, index: any) => {
@@ -204,8 +190,8 @@ const PageSix = (props: Props) => {
                                 answer: e.target.value,
                                 id: items.ID,
                                 section: items.section,
-                                question: items.questions,
                                 type: items.type,
+                                question: items.questions,
                               },
                             ]);
                           } else {
@@ -214,8 +200,8 @@ const PageSix = (props: Props) => {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
-                              question: items.questions,
                               type: items.type,
+                              question: items.questions,
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           }
@@ -239,8 +225,8 @@ const PageSix = (props: Props) => {
                                       answer: test[ind][ind],
                                       id: items.ID,
                                       section: items.section,
-                                      question: items.questions,
                                       type: "Others",
+                                      question: items.questions,
                                     };
                                     setOt({ ...ot, [ind]: thisReponse });
                                   }}
@@ -266,32 +252,17 @@ const PageSix = (props: Props) => {
             </div>
           );
         })}
-        <div className={styles.nav__buttons} style={{ bottom: "-10px" }}>
-          {loading ? (
-            <span className={`${styles.nobackground__button} ${styles.btn}`}>
-              Cancel
-            </span>
-          ) : (
-            <span
-              className={`${styles.nobackground__button} ${styles.btn}`}
-              onClick={handleOpen}
-            >
-              Cancel
-            </span>
-          )}
-          {loading ? (
-            <button className={styles.filled__button}>Submitting...</button>
-          ) : (
-            <button className={styles.filled__button} type="submit">
-              Submit
-            </button>
-          )}
+        <div className={styles.nav__buttons}>
+          <button className={styles.nobackground__button}>
+            <Link to="/dashboard/edit/page2">Previous</Link>
+          </button>
+          <button type="submit" className={styles.filled__button}>
+            Next
+          </button>
         </div>
-        <MyModal open={open} handleClose={handleClose} history={history} />
-        <Toast show={show} setShow={setShow} message={message} />
       </form>
     </div>
   );
 };
 
-export default PageSix;
+export default EditPageThree;

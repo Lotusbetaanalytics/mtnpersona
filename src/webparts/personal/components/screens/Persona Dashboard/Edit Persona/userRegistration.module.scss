@@ -234,6 +234,15 @@ button a {
   margin: 5px 0px;
 }
 
+.selectedResponse {
+  width: 90%;
+  height: 100%;
+  border-radius: 20px;
+  box-sizing: border-box;
+  padding: 10px;
+  background: rgba(255, 196, 35, 1);
+}
+
 @media screen and (max-width: 768px) {
   .nav__buttons {
     bottom: -100px;

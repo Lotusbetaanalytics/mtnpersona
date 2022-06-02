@@ -20,31 +20,17 @@ import {
 import MaterialTable from "material-table";
 import { useHistory } from "react-router-dom";
 import ExperienceTeamHeader from "../Experience Team Header/ExperienceTeamHeader";
-
+import {
+  AntBarChart,
+  AntPieChart,
+} from "../../../Containers/AntChart/PieChart";
 import ExperienceTeamNavbar from "../Experience Team Navbar/ExperienceTeamNavbar";
 import styles from "./report.module.scss";
 import { sp } from "@pnp/sp";
 import { Spinner } from "office-ui-fabric-react";
 import { ReportTabs } from "../../../Containers/Options/Options";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Bar } from "react-chartjs-2";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import BarChart from "../../../Containers/Bar Chart/BarChart";
+import DataPie from "../../../Containers/Pie Chart/PieChart";
 
 const QuestionCategories = () => {
   const [data, setData] = React.useState([]);
@@ -60,18 +46,6 @@ const QuestionCategories = () => {
   const [attributes, setattributes] = React.useState(0);
   const [priorities, setpriorities] = React.useState(0);
   const [show, setShow] = React.useState("Table");
-
-  const barData = {
-    motivator,
-    worries,
-    priorities,
-    interests,
-    communication,
-    attributes,
-    learning,
-    goals,
-    bio,
-  };
 
   const tableData = [];
 
@@ -274,60 +248,133 @@ const QuestionCategories = () => {
 
   const pieChartData = [
     {
-      x: 2,
-      y: goals || 0,
-      label: `Goals: ${goals}`,
+      value: goals,
+      name: `Goals`,
     },
     {
-      x: 3,
-      y: motivator || 0,
-      label: `Motivator: ${motivator}`,
+      value: motivator,
+      name: `Motivator`,
     },
     {
-      x: 4,
-      y: bio || 0,
-      label: `Short Bio: ${bio}`,
+      value: bio,
+      name: `Short Bio`,
     },
     {
-      x: 7,
-      y: communication || 0,
-      label: `Communication Preference: ${communication}`,
+      value: communication,
+      name: `Communication Preference`,
     },
     {
-      x: 8,
-      y: learning || 0,
-      label: `Learning Style: ${learning}`,
+      value: learning,
+      name: `Learning Style`,
     },
     {
-      x: 9,
-      y: attributes || 0,
-      label: `Super Power and Key Attributes: ${attributes}`,
+      value: attributes,
+      name: `Super Power and Key Attributes`,
     },
     {
-      x: 10,
-      y: worries || 0,
-      label: `Worries: ${worries}`,
+      value: worries,
+      name: `Worries`,
     },
     {
-      x: 11,
-      y: interests || 0,
-      label: `Interests: ${interests}`,
+      value: interests,
+      name: `Interests`,
     },
 
     {
-      x: 14,
-      y: priorities || 0,
-      label: `Priorities: ${priorities}`,
+      value: priorities,
+      name: `Priorities`,
     },
   ];
 
+  const label = [
+    "Goals",
+    "Motivator",
+    "Short Bio",
+    "Communication Preference",
+    "Learning Style",
+    "Super Power and Key Attributes",
+    "Worries",
+    "Interests",
+    "Priorities",
+  ];
+
+  const barData = [
+    goals,
+    motivator,
+    bio,
+    communication,
+    learning,
+    attributes,
+    worries,
+    interests,
+    priorities,
+  ];
+
+  const analyticData = [
+    {
+      label: "Goals",
+      data: [goals],
+      backgroundColor: "#006993",
+    },
+    {
+      label: "Motivator",
+      data: [motivator],
+      backgroundColor: "#91CC75",
+    },
+    {
+      label: "Short Bio",
+      data: [bio],
+      backgroundColor: "#FAC858",
+    },
+    {
+      label: "Communication Preference",
+      data: [communication],
+      backgroundColor: "#EE6666",
+    },
+    {
+      label: "Learning Style",
+      data: [learning],
+      backgroundColor: "#73C0DE",
+    },
+    {
+      label: "Super Power and Key Attributes",
+      data: [attributes],
+      backgroundColor: "#FC8452",
+    },
+    {
+      label: "Worries",
+      data: [worries],
+      backgroundColor: "#15133C",
+    },
+    {
+      label: "Interests",
+      data: [interests],
+      backgroundColor: "purple",
+    },
+    {
+      label: "Priorities",
+      data: [priorities],
+      backgroundColor: "pink",
+    },
+  ];
+
+  const fill = [
+    "#006993",
+    "#91CC75",
+    "#FAC858",
+    "#EE6666",
+    "#73C0DE",
+    "#FC8452",
+    "#15133C",
+    "purple",
+    "pink",
+  ];
+
+  const barLabel = ["Categories"];
+
   return (
-    <div className={styles.report__container}>
-      <ExperienceTeamNavbar />
-      <div className={styles.report__container__content}>
-        <div>
-          <ExperienceTeamHeader title="Analytical Report" />
-        </div>
+    <>
+      <>
         {findingData ? (
           <div className={styles.spinner}>
             <Spinner />
@@ -339,31 +386,6 @@ const QuestionCategories = () => {
               height: "100%",
             }}
           >
-            <div className={styles.tabs}>
-              {ReportTabs.map((tab, index) => {
-                return (
-                  <div
-                    className={`${styles.tabBtn} ${
-                      tab.active && styles.active
-                    }`}
-                    onClick={() => {
-                      history.push(tab.url);
-                      ReportTabs.filter(({ id }) => {
-                        return id === tab.id;
-                      })[0].active = true;
-                      ReportTabs.filter(({ id }) => {
-                        return id !== tab.id;
-                      }).map((tab) => {
-                        return (tab.active = false);
-                      });
-                    }}
-                  >
-                    {tab.title}
-                  </div>
-                );
-              })}
-            </div>
-
             <div>
               <button
                 className={`${styles.mtn__btn__table} ${styles.mtn__black}`}
@@ -437,6 +459,7 @@ const QuestionCategories = () => {
                     data={questionData}
                     options={{
                       exportButton: true,
+                      exportAllData: true,
                       actionsCellStyle: {
                         color: "#FF00dd",
                       },
@@ -459,159 +482,34 @@ const QuestionCategories = () => {
                   style={{
                     display: "flex",
                     gap: "10px",
-                    width: "80%",
+                    width: "60%",
                     height: "70%",
                   }}
                 >
                   <div className={styles.barChart}>
-                    <PieChart data={pieChartData} />
+                    <DataPie
+                      series={barData}
+                      fill={fill}
+                      labels={label}
+                      label=""
+                    />
                   </div>
                   <div className={styles.barChart}>
-                    <NewBarChart data={pieChartData} />
+                    Count <BarChart labels={barLabel} data={analyticData} />
+                    {/* <AntBarChart
+                      data={barData}
+                      label={label}
+                      title="Categories"
+                    /> */}
                   </div>
                 </div>
               )}
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </>
+    </>
   );
 };
 
 export default QuestionCategories;
-
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top" as const,
-    },
-    title: {
-      display: true,
-      text: "",
-    },
-    toolbar: {
-      display: true,
-    },
-  },
-};
-
-const labels = ["Question Groups"];
-
-export function BarChart({ data }) {
-  const alldata = {
-    labels,
-    datasets: [
-      {
-        label: "Learning",
-        data: data.learning,
-        backgroundColor: "rgba(255, 196, 35, 1)",
-      },
-      {
-        label: "Goals",
-        data: data.goals,
-        backgroundColor: "#006993",
-      },
-      {
-        label: "Motivator",
-        data: data.motivator,
-        backgroundColor: "#C4C4C4",
-      },
-      {
-        label: "Short Bio",
-        data: data.bio,
-        backgroundColor: "#F73D93",
-      },
-      {
-        label: "Priorities",
-        data: data.priorities,
-        backgroundColor: "#2F8F9D",
-      },
-      {
-        label: "Worries",
-        data: data.worries,
-        backgroundColor: "#F66B0E",
-      },
-      {
-        label: "Interests",
-        data: data.interests,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Communication",
-        data: data.communication,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Super Power and Key Attributes",
-        data: data.attributes,
-        backgroundColor: "#6D8B74",
-      },
-    ],
-  };
-  return <Bar options={options} data={alldata} height={180} />;
-}
-
-import { VictoryPie, VictoryTooltip, VictoryBar } from "victory";
-
-export const PieChart = ({ data }) => {
-  return (
-    <VictoryPie
-      data={data}
-      colorScale={[
-        "#006993",
-        "#C4C4C4",
-        "#FFC423",
-        "#F66B0E",
-        "#2F8F9D",
-        "#F73D93",
-        "#6D8B74",
-        "#F9CEEE",
-        "#112B3C",
-        "#9900F0",
-        "#A97155",
-        "#FF8080",
-        "#3A3845",
-        "#4D77FF",
-      ]}
-      radius={100}
-      style={{ labels: { fontSize: "12px" } }}
-      labelComponent={
-        <VictoryTooltip
-          cornerRadius={({ datum }) => datum.x * 2}
-          flyoutStyle={{ fontSize: "12px", padding: "10px" }}
-        />
-      }
-    />
-  );
-};
-
-export const NewBarChart = ({ data }) => {
-  return (
-    <VictoryBar
-      minDomain={0}
-      data={data}
-      colorScale={[
-        "#006993",
-        "#C4C4C4",
-        "#FFC423",
-        "#F66B0E",
-        "#2F8F9D",
-        "#F73D93",
-        "#6D8B74",
-      ]}
-      style={{ labels: { fontSize: "12px" }, data: { fill: "#006993" } }}
-      labelComponent={
-        <VictoryTooltip
-          cornerRadius={({ datum }) => datum.x * 2}
-          dy={({ datum }) => datum.y * -5}
-        />
-      }
-      name="Avatar Groups"
-      width={600}
-      height={400}
-      labels={({ datum }) => `${datum.label}`}
-    />
-  );
-};

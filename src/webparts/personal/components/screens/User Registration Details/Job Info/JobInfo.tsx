@@ -150,6 +150,7 @@ const JobInfo = (props: Props) => {
                               answer: test[ind][ind],
                               id: items.ID,
                               section: items.section,
+                              question: items.questions,
                               type: "Others",
                             };
 
@@ -161,6 +162,7 @@ const JobInfo = (props: Props) => {
                                 answer: e.target.value,
                                 id: items.ID,
                                 section: items.section,
+                                question: items.questions,
                                 type: "checkbox",
                               },
                             ]);
@@ -170,6 +172,7 @@ const JobInfo = (props: Props) => {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
+                              question: items.questions,
                               type: "radio",
                             };
                             setOt({ ...ot, [ind]: thisReponse });
@@ -194,6 +197,7 @@ const JobInfo = (props: Props) => {
                                       answer: test[ind][ind],
                                       id: items.ID,
                                       section: items.section,
+                                      question: items.questions,
                                       type: "Others",
                                     };
                                     setOt({ ...ot, [ind]: thisReponse });

@@ -17,8 +17,11 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
 import { useHistory } from "react-router-dom";
+import * as _ from "lodash";
+import swal from "sweetalert";
+import { generateArrayOfDates } from "../../Landing Page";
 
-const ConfigureRoles = ({ context }) => {
+const ConfigureDate = ({ context }) => {
   const useStyles = makeStyles((theme) => ({
     formControl: {
       margin: theme.spacing(1),
@@ -37,7 +40,7 @@ const ConfigureRoles = ({ context }) => {
   const [employeeEmail, setEmployeeEmail] = React.useState("");
   const [role, setRole] = React.useState("");
   const [divisions, setDivision] = React.useState("");
-  const [allRoles, setAllRoles] = React.useState([]);
+  const [allDates, setAllDates] = React.useState([]);
   const [allDivisions, setAllDivisions] = React.useState([]);
   const [showSelect, setShowSelection] = React.useState(false);
   const [showDivisionSelect, setShowDivisionSelection] = React.useState(false);
@@ -48,17 +51,85 @@ const ConfigureRoles = ({ context }) => {
   const [openModal, setOpenModal] = React.useState(false);
   const [data, setData] = React.useState({});
   const [showDivisionField, setShowField] = React.useState(divisionRequired);
+  const [startDate, setStartDate] = React.useState("");
+  const [endDate, setEndDate] = React.useState("");
+  const [getDayBtw, setGetDayBtw] = React.useState("");
+  const [check, setCheck] = React.useState(false);
+  const [getDates, setGetDates] = React.useState([]);
+
+  function getStatus(arr) {
+    for (let datesArr of arr) {
+      if (
+        datesArr.includes(new Date(startDate).toLocaleDateString()) ||
+        datesArr.includes(new Date(endDate).toLocaleDateString())
+      ) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   const handleOpenModal = (e) => {
     e.preventDefault();
-    setOpenModal(true);
-    setData({
-      Email: employeeEmail,
-      Name: name,
-      Division: divisions,
-      Role: role,
-      Title: randomstring.generate(6),
-    });
+    const baseDate = new Date(Date.now()).getTime();
+    const date1 = new Date(startDate).getTime();
+    const date2 = new Date(endDate).getTime();
+
+    sp.web.lists
+      .getByTitle("Survey Sessions")
+      .items.get()
+      .then((items) => {
+        const getDates = items.map(({ StartDate, EndDate }) => {
+          return generateArrayOfDates(EndDate, StartDate);
+        });
+
+        setGetDates(getDates);
+        if (getStatus(getDates)) {
+          if (baseDate > date1) {
+            swal(
+              "Error",
+              "You have selected a past date! Change the start date and try again.",
+              "error"
+            );
+            return;
+          }
+          if (baseDate > date2) {
+            swal(
+              "Error",
+              "You have selected a past date! Change the end date and try again.",
+              "error"
+            );
+            return;
+          }
+
+          if (date1 > date2) {
+            swal(
+              "Error",
+              "You have selected a wrong start date! Change the start date and try again.",
+              "error"
+            );
+            return;
+          }
+
+          const getDay = (date2 - date1) / (1000 * 3600 * 24);
+          setGetDayBtw(getDay.toString());
+
+          setData({
+            StartDate: startDate,
+            EndDate: endDate,
+            Title: randomstring.generate(5),
+            EXTeamName: name,
+            EXTeamEmail: email,
+          });
+          setOpenModal(true);
+        } else {
+          swal(
+            "Error",
+            "The selected date is already existing. Change the date and try again!",
+            "error"
+          );
+        }
+      });
   };
 
   const handleCloseModal = () => {
@@ -72,31 +143,11 @@ const ConfigureRoles = ({ context }) => {
     setError(false);
   };
 
-  //Get all roles
-  React.useEffect(() => {
-    sp.web.lists
-      .getByTitle("Configured Roles")
-      .items.get()
-      .then((response) => {
-        setAllRoles(response);
-      });
-  }, []);
-
   React.useEffect(() => {
     sp.profiles.myProperties.get().then((response) => {
       setName(response.DisplayName);
       setEmail(response.Email);
     });
-  }, []);
-
-  //Get all divisions
-  React.useEffect(() => {
-    sp.web.lists
-      .getByTitle("MTN DIVISION")
-      .items.get()
-      .then((response) => {
-        setAllDivisions(response);
-      });
   }, []);
 
   const cancelHandler = () => {
@@ -108,13 +159,13 @@ const ConfigureRoles = ({ context }) => {
     <div className={styles.dashboard__container}>
       <ExperienceTeamNavbar />
       <div className={styles.dashboard__container__content}>
-        <ExperienceTeamHeader title="Configure Roles" />
+        <ExperienceTeamHeader title="Configure Survey Date" />
         <form
           onSubmit={handleOpenModal}
           className={styles.container__content__form}
         >
           <div className={styles.input__area}>
-            <div>Employee Name</div>
+            <div>EX Team Name</div>
             <input
               type="text"
               className={styles.container__content__form_input}
@@ -125,7 +176,7 @@ const ConfigureRoles = ({ context }) => {
             />
           </div>
           <div className={styles.input__area}>
-            <div>Employee Email</div>
+            <div>EX Team Email</div>
             <input
               type="email"
               className={styles.container__content__form_input}
@@ -136,139 +187,45 @@ const ConfigureRoles = ({ context }) => {
             />
           </div>
           <div className={styles.input__area}>
-            <div>Enter Email</div>
+            <div>Survey Start Date</div>
             <div>
               <input
-                type="email"
+                type="date"
                 className={styles.container__content__form_input}
-                onChange={(e) => setEmployeeEmail(e.target.value)}
-                value={employeeEmail}
+                onChange={(e) => setStartDate(e.target.value)}
+                value={startDate}
                 required
-                list="people"
               />
-              <datalist id="people">
-                {confirmedStaff.map(({ field_8 }) => {
-                  return <option value={field_8}></option>;
-                })}
-              </datalist>
             </div>
           </div>
           <div className={styles.input__area}>
-            <div>Choose Role</div>
+            <div>End Date</div>
             <div>
-              <Select
-                value={role}
-                showSelect={showSelect}
-                setShowSelection={setShowSelection}
-              >
-                <div
-                  style={{
-                    maxHeight: "450px",
-                    border: "1px solid rgba(0, 0, 0, 0.31)",
-                    overflowY: "scroll",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  {allRoles.map(({ Role }) => {
-                    return (
-                      <div
-                        className={styles.container__content__select}
-                        onClick={() => {
-                          setShowSelection(false);
-                          setRole(Role);
-                          Role == "HRBP"
-                            ? setDivisionRequired(true)
-                            : setDivisionRequired(false);
-                        }}
-                      >
-                        <div
-                          style={{
-                            flex: 1,
-                          }}
-                        >
-                          {Role}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Select>
+              <input
+                type="date"
+                className={styles.container__content__form_input}
+                onChange={(e) => setEndDate(e.target.value)}
+                value={endDate}
+                required
+              />
             </div>
           </div>
-          {divisionRequired && (
-            <div className={styles.input__area}>
-              <div>Choose Division</div>
-              <div>
-                <Select
-                  value={divisions}
-                  showSelect={showDivisionSelect}
-                  setShowSelection={setShowDivisionSelection}
-                  required={divisionRequired}
-                >
-                  <div
-                    style={{
-                      maxHeight: "450px",
-                      border: "1px solid rgba(0, 0, 0, 0.31)",
-                      overflowY: "scroll",
-                      backgroundColor: "#fff",
-                    }}
-                  >
-                    {allDivisions.map(({ Division: division }) => {
-                      return (
-                        <div
-                          className={styles.container__content__select}
-                          onClick={() => {
-                            setShowDivisionSelection(false);
-                            setDivision(division);
-                          }}
-                        >
-                          <div
-                            style={{
-                              flex: 1,
-                            }}
-                          >
-                            {division}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </Select>
-              </div>
-            </div>
-          )}
           <div></div>
           {loading ? (
-            <button disabled>Adding...</button>
+            <button disabled>Configuring...</button>
           ) : (
             <>
-              {divisionRequired && divisions.length < 1 ? (
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <span
-                    className={styles.cancelBtn}
-                    onClick={(e) => {
-                      cancelHandler();
-                    }}
-                  >
-                    Cancel
-                  </span>
-                  <button type="submit" disabled>
-                    Submit
-                  </button>
-                </div>
-              ) : (
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <span
-                    className={styles.cancelBtn}
-                    onClick={(e) => {
-                      cancelHandler();
-                    }}
-                  >
-                    Cancel
-                  </span>
-                  <button type="submit">Submit</button>
-                </div>
-              )}
+              <div style={{ display: "flex", gap: "10px" }}>
+                <span
+                  className={styles.cancelBtn}
+                  onClick={(e) => {
+                    cancelHandler();
+                  }}
+                >
+                  Cancel
+                </span>
+                <button type="submit">Configure</button>
+              </div>
             </>
           )}
         </form>
@@ -281,15 +238,16 @@ const ConfigureRoles = ({ context }) => {
           setEmail={setEmail}
           loading={loading}
           setLoading={setLoading}
+          days={getDayBtw}
         />
       </div>
-      <SimpleSnackbar open={open} handleClose={handleClose} />
-      <SimpleSnackbar open={error} handleClose={handleError} />
+      {/* <SimpleSnackbar open={open} handleClose={handleClose} /> */}
+      {/* <SimpleSnackbar open={error} handleClose={handleError} /> */}
     </div>
   );
 };
 
-export default ConfigureRoles;
+export default ConfigureDate;
 
 export function SimpleSnackbar({ open, handleClose }) {
   return (
@@ -302,7 +260,7 @@ export function SimpleSnackbar({ open, handleClose }) {
         open={open}
         autoHideDuration={6000}
         onClose={handleClose}
-        message="Data Successfully Added..."
+        message="Date Added"
         action={
           <>
             <IconButton onClick={() => handleClose()}>
@@ -372,6 +330,7 @@ export function DisplayModal({
   setOpen,
   setEmail,
   setError,
+  days = "",
 }) {
   const classes = useStyles();
 
@@ -379,21 +338,39 @@ export function DisplayModal({
   const onSubmitHandler = (e) => {
     e.preventDefault();
     setLoading(true);
+
+    console.log(data.StartDate);
+
     sp.web.lists
-      .getByTitle("Roles")
-      .items.add(data)
-      .then((res) => {
-        setOpen(true);
-        setLoading(false);
-        setEmail("");
-        setTimeout(() => {
-          setOpen(false);
-          handleClose();
-        }, 1000);
-      })
-      .catch((err) => {
-        setLoading(false);
-        setError(true);
+      .getByTitle("Survey Sessions")
+      .items.filter(`StartDate eq '${new Date(data.StartDate).toISOString()}'`)
+      .get()
+      .then((item) => {
+        if (item.length > 0) {
+          setLoading(false);
+          swal("Error", "Start Date already exists!", "error");
+          setTimeout(() => {
+            setOpen(false);
+            handleClose();
+          }, 1000);
+          return;
+        }
+        sp.web.lists
+          .getByTitle("Survey Sessions")
+          .items.add(data)
+          .then((res) => {
+            setLoading(false);
+            swal("Success", "Session Added", "success");
+            setTimeout(() => {
+              setOpen(false);
+              handleClose();
+            }, 1000);
+          })
+          .catch((err) => {
+            setLoading(false);
+            swal("", "An error occured! Try again", "error");
+            setError(true);
+          });
       });
   };
 
@@ -404,7 +381,8 @@ export function DisplayModal({
   const body = (
     <div style={getModalStyle()} className={classes.paper}>
       <p id="simple-modal-description">
-        Are you sure you want to add this user?
+        Are you sure you want to configure &nbsp;
+        {Number(days) > 1 ? `${days} days` : `${days} day`} for this session?
       </p>
       <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
         <button
@@ -440,7 +418,7 @@ export function DisplayModal({
             }}
             disabled
           >
-            Adding user...
+            Adding date...
           </button>
         ) : (
           <button

@@ -146,6 +146,7 @@ const PageTwo = (props: Props) => {
                               answer: test[ind][ind],
                               id: items.ID,
                               section: items.section,
+                              question: items.questions,
                               type: "Others",
                             };
                             setOt({ ...ot, [ind]: thisReponse });
@@ -157,6 +158,7 @@ const PageTwo = (props: Props) => {
                                 id: items.ID,
                                 section: items.section,
                                 type: items.type,
+                                question: items.questions,
                               },
                             ]);
                           } else {
@@ -166,6 +168,7 @@ const PageTwo = (props: Props) => {
                               id: items.ID,
                               section: items.section,
                               type: items.type,
+                              question: items.questions,
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           }
@@ -189,6 +192,7 @@ const PageTwo = (props: Props) => {
                                       answer: test[ind][ind],
                                       id: items.ID,
                                       section: items.section,
+                                      question: items.questions,
                                       type: "Others",
                                     };
                                     setOt({ ...ot, [ind]: thisReponse });

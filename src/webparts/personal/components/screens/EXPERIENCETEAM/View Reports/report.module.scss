@@ -81,6 +81,12 @@
 .mtn__black {
   background: #000;
 }
+.btn__questions__stop {
+  background: #f01b0c;
+}
+.btn__questions__start {
+  background: #04b846;
+}
 
 .spinner {
   display: flex;
@@ -162,6 +168,15 @@
   display: flex;
   width: 80%;
   height: 80%;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+.customChart {
+  display: flex;
+  width: 50%;
+  height: 50%;
   box-sizing: border-box;
   align-items: flex-start;
   justify-content: flex-start;

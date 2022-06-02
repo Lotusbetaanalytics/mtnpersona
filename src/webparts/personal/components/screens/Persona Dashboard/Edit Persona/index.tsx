@@ -1,15 +1,15 @@
 import * as React from "react";
 import { Link, useHistory } from "react-router-dom";
-import { Header, Input } from "../../Containers";
-import { FileInput, SelectInput } from "../../Containers/Input";
+import { Header, Input } from "../../../Containers";
+import { FileInput, SelectInput } from "../../../Containers/Input";
 import { sp, spGet, spPost } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import styles from "./userRegistration.module.scss";
-import { Context } from "../../Personal";
+import { Context } from "../../../Personal";
 import swal from "sweetalert";
 
-const Screen1 = () => {
+const EditScreen1 = () => {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [alias, setAlias] = React.useState("");
@@ -27,6 +27,28 @@ const Screen1 = () => {
     sp.profiles.myProperties.get().then((response) => {
       setName(response.DisplayName);
       setEmail(response.Email);
+      sp.web.lists
+        .getByTitle("personal")
+        .items.filter(`email eq '${response.Email}'`)
+        .select("alias,division,dp")
+        .get()
+        .then((response) => {
+          const { dp, alias, division } = response[0];
+          setAlias(alias);
+          setDivision(division);
+          localStorage.setItem("editdp", dp);
+          dp &&
+            setRes(
+              React.createElement("img", {
+                style: {
+                  width: "100px",
+                  height: "100px",
+                },
+                src: dp,
+                alt: "",
+              })
+            );
+        });
     });
   }, []);
 
@@ -41,32 +63,14 @@ const Screen1 = () => {
 
   const onNextHandler = (e) => {
     e.preventDefault();
-    sp.web.lists
-      .getByTitle("personal")
-      .items.filter(`email eq '${email}'`)
-      .get()
-      .then((result) => {
-        if (result.length > 0 && result[0].EXApprovalStatus == "Pending") {
-          swal(
-            "Error",
-            "Sorry! You have to wait for the MTN Experience Team to finish vetting your previous submission!",
-            "error"
-          );
-        } else {
-          localStorage.setItem(
-            "userData",
-            JSON.stringify({
-              name,
-              email,
-              alias,
-              division,
-              LineManager: lineManager,
-              dp: file,
-            })
-          );
-          history.push("/info/page1");
-        }
-      });
+    localStorage.setItem(
+      "edituserData",
+      JSON.stringify({
+        alias,
+        division,
+      })
+    );
+    history.push("/dashboard/edit/page1");
   };
 
   return (
@@ -118,8 +122,8 @@ const Screen1 = () => {
             setDivision(e.target.value);
           }}
           label="Select Division"
-          value={division}
           required={true}
+          value={division}
         >
           <option value="">--Select Division--</option>
           {listofDivision.map((item, index) => {
@@ -140,14 +144,16 @@ const Screen1 = () => {
                   width: "100px",
                   height: "100px",
                 },
-                src: URL.createObjectURL(e.target.files[0]),
+                src:
+                  URL.createObjectURL(e.target.files[0]) ||
+                  JSON.parse(localStorage.getItem("editdp")),
                 alt: "",
               })
             );
             reader.readAsDataURL(e.target.files[0]);
             reader.onload = function () {
               //base64encoded string
-              localStorage.setItem("dp", JSON.stringify(reader.result));
+              localStorage.setItem("editdp", JSON.stringify(reader.result));
             };
             reader.onerror = function (error) {
               console.log("Error: ", error);
@@ -166,4 +172,4 @@ const Screen1 = () => {
   );
 };
 
-export default Screen1;
+export default EditScreen1;

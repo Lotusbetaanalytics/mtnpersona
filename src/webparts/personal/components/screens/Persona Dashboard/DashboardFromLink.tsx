@@ -5,6 +5,10 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { useParams, useHistory } from "react-router-dom";
 import { sp } from "@pnp/sp";
 import { CommentModal } from "../EXPERIENCETEAM/View Reports/StaffView";
+import { AiFillFileImage, AiFillFilePdf } from "react-icons/ai";
+import { Tooltip } from "@material-ui/core";
+import { toPng } from "html-to-image";
+import swal from "sweetalert";
 
 type Params = {
   name: any;
@@ -31,6 +35,48 @@ const DashboardFromLink = () => {
   const [interestGroup, setInterestGroup] = React.useState([]);
   const [attributesGroup, setAttributesGroup] = React.useState([]);
   const [total, setTotal] = React.useState([]);
+
+  const [loading, setLoading] = React.useState(false);
+
+  const ref = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (loading) {
+      swal({
+        icon: "info",
+        buttons: [false],
+        closeOnClickOutside: false,
+        closeOnEsc: false,
+        text: "generating image...",
+      });
+    }
+  }, [loading]);
+
+  const onButtonClick = React.useCallback(() => {
+    setLoading(true);
+
+    if (ref.current === null) {
+      return;
+    }
+
+    toPng(ref.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const link = document.createElement("a");
+        link.download = "staff-persona.png";
+        link.href = dataUrl;
+        link.click();
+        setLoading(false);
+        swal("", "Image downloaded successfully", "success");
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+        swal(
+          "",
+          "An error occurred while generating the image. Please try again!",
+          "error"
+        );
+      });
+  }, [ref]);
 
   const history = useHistory();
 
@@ -379,112 +425,142 @@ const DashboardFromLink = () => {
   }, [list]);
 
   return (
-    <div className={styles.dashboard__container}>
-      <div className={styles.dashboard__header}>
-        <div className={styles.personalImage}>
-          <img src={staffImg} alt="" />
-        </div>
-        <div>
-          <h1>{userName}</h1>
-        </div>
-        <div className={styles.avatarSection}>
-          <img src={avatarDp} alt="" />
-          <div>{avatarDescription}</div>
-        </div>
-      </div>
-      <div className={styles.dashboard__cards}>
-        <div className={styles.dashboard__cards__left}>
-          <div className={styles.card__big}>
-            <div className={styles.card__big__heading}>
-              <h5>Short Bio</h5>
-              <div style={{ justifySelf: "flex-end" }}>
-                <AccountCircle />
-              </div>
-            </div>
-            <div
-              style={{
-                padding: "15px",
-                height: "100%",
-                fontSize: "medium",
-              }}
-            >
-              {bio}
-            </div>
+    <>
+      <Tooltip
+        title="Download as Image"
+        aria-label="Download as Image"
+        placement="top"
+      >
+        <button
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+            borderRadius: "100%",
+            height: "70px",
+            width: "70px",
+            backgroundColor: "#ffc423",
+            color: "#fff",
+            fontSize: "30px",
+            border: "none",
+            boxShadow: "0px 0px 10px #000",
+            zIndex: "9999",
+            cursor: "pointer",
+          }}
+          onClick={onButtonClick}
+        >
+          <AiFillFileImage />
+        </button>
+      </Tooltip>
+      <div className={styles.dashboard__container}>
+        <div className={styles.dashboard__header}>
+          <div className={styles.personalImage}>
+            <img src={staffImg} alt="" />
           </div>
-          <div className={styles.left__card__2}>
-            <div className={styles.single__card}>
-              <div>
-                <h5>Learning Preference</h5>
-                <div
-                  style={{
-                    padding: "10px",
-                    height: "100%",
-                    fontSize: "small",
-                  }}
-                >
-                  {learning}
+          <div className={styles.personaName}>
+            <h1>{userName}</h1>
+          </div>
+          <div className={styles.avatarSection}>
+            <img src={avatarDp} alt="" />
+            <div>{avatarDescription}</div>
+          </div>
+        </div>
+        <div className={styles.dashboard__cards}>
+          <div className={styles.dashboard__cards__left}>
+            <div className={styles.card__big}>
+              <div className={styles.card__big__heading}>
+                <h5>Short Bio</h5>
+                <div style={{ justifySelf: "flex-end" }}>
+                  <AccountCircle />
                 </div>
               </div>
-            </div>
-            <div className={styles.single__card}>
-              <div>
-                <h5>Communication Preference</h5>
+              <div
+                style={{
+                  padding: "15px",
+                  height: "100%",
+                  fontSize: "medium",
+                }}
+              >
+                {bio}
               </div>
-              <div>{communication}</div>
+            </div>
+            <div className={styles.left__card__2}>
+              <div className={styles.single__card}>
+                <div>
+                  <h5>Learning Preference</h5>
+                  <div
+                    style={{
+                      padding: "10px",
+                      height: "100%",
+                      fontSize: "small",
+                    }}
+                  >
+                    {learning}
+                  </div>
+                </div>
+              </div>
+              <div className={styles.single__card}>
+                <div>
+                  <h5>Communication Preference</h5>
+                </div>
+                <div>{communication}</div>
+              </div>
+            </div>
+            <div className={styles.left__card__3}>
+              <div className={styles.single__card__bg}>
+                <div>
+                  <h5>Motivators</h5>
+                </div>
+                <div>{motivator}</div>
+              </div>
+              <div className={styles.single__card__bg}>
+                <div>
+                  <h5>Worries</h5>
+                </div>
+                <div>{worries}</div>
+              </div>
             </div>
           </div>
-          <div className={styles.left__card__3}>
-            <div className={styles.single__card__bg}>
-              <div>
-                <h5>Motivators</h5>
+          <div className={styles.dashboard__cards__right}>
+            <div className={styles.card__right__first}>
+              <div className={styles.card__circle}>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <img
+                    src="https://lotusbetaanalytics.com/mtn/Vector-1.svg"
+                    alt=""
+                  />
+                  <img
+                    src="https://lotusbetaanalytics.com/mtn/Vector-2.svg"
+                    alt=""
+                  />
+                </div>
               </div>
-              <div>{motivator}</div>
+              <div>
+                <h5>Career Goal</h5>
+              </div>
+              <div>{goals}</div>
             </div>
-            <div className={styles.single__card__bg}>
-              <div>
-                <h5>Worries</h5>
+            <div className={styles.card__right__second}>
+              <div className={styles.card__circle}>
+                <img
+                  src="https://lotusbetaanalytics.com/mtn/Vector.svg"
+                  alt=""
+                />
               </div>
-              <div>{worries}</div>
+              <div>
+                <h5>Interests</h5>
+              </div>
+              <div className={styles.itemsDisplay}>{interests}</div>
+            </div>
+            <div className={styles.card__right__third}>
+              <div className={styles.right__heading}>
+                <h5>Key Attributes</h5>
+              </div>
+              <div className={styles.itemsDisplay}>{attributes}</div>
             </div>
           </div>
         </div>
-        <div className={styles.dashboard__cards__right}>
-          <div className={styles.card__right__first}>
-            <div className={styles.card__circle}>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <img
-                  src="https://lotusbetaanalytics.com/mtn/Vector-1.svg"
-                  alt=""
-                />
-                <img
-                  src="https://lotusbetaanalytics.com/mtn/Vector-2.svg"
-                  alt=""
-                />
-              </div>
-            </div>
-            <div>
-              <h5>Career Goal</h5>
-            </div>
-            <div>{goals}</div>
-          </div>
-          <div className={styles.card__right__second}>
-            <div className={styles.card__circle}>
-              <img src="https://lotusbetaanalytics.com/mtn/Vector.svg" alt="" />
-            </div>
-            <div>
-              <h5>Interests</h5>
-            </div>
-            <div className={styles.itemsDisplay}>{interests}</div>
-          </div>
-          <div className={styles.card__right__third}>
-            <div className={styles.right__heading}>
-              <h5>Key Attributes</h5>
-            </div>
-            <div className={styles.itemsDisplay}>{attributes}</div>
-          </div>
-        </div>
-      </div>
-      {rejected ? (
+        {/* {rejected ? (
         <button className={styles.rejectBtn} disabled>
           <Cancel />
         </button>
@@ -498,8 +574,9 @@ const DashboardFromLink = () => {
         handleClose={handleClose}
         id={id}
         history={history}
-      />
-    </div>
+      /> */}
+      </div>
+    </>
   );
 };
 

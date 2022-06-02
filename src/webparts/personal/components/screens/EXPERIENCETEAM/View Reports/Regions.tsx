@@ -19,8 +19,6 @@ import {
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import { useHistory } from "react-router-dom";
-import ExperienceTeamHeader from "../Experience Team Header/ExperienceTeamHeader";
-import ExperienceTeamNavbar from "../Experience Team Navbar/ExperienceTeamNavbar";
 import styles from "./report.module.scss";
 import { sp } from "@pnp/sp";
 import { Spinner } from "office-ui-fabric-react";
@@ -35,6 +33,13 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { Context } from "../../../Personal";
+import {
+  AntBarChart,
+  AntPieChart,
+} from "../../../Containers/AntChart/PieChart";
+import BarChart from "../../../Containers/Bar Chart/BarChart";
+import DataPie from "../../../Containers/Pie Chart/PieChart";
 
 ChartJS.register(
   CategoryScale,
@@ -64,7 +69,6 @@ const Regions = () => {
           id: questionID,
         }
     );
-    console.log(question);
 
     function findSimilarAnswer(arr) {
       let countArr = [];
@@ -161,42 +165,68 @@ const Regions = () => {
 
   const pieChartData = [
     {
-      x: 2,
-      y: getRegions(data)[0].count || 0,
-      label: `Eastern Region (All locations in the Eastern Region): ${
-        getRegions(data)[0].count
-      }%`,
+      value: getRegions(data)[0].count || 0,
+      name: `Eastern Region (All locations in the Eastern Region)`,
     },
     {
-      x: 3,
-      y: getRegions(data)[1].count || 0,
-      label: `HQ (MTN Plaza, MTN Penthouse, Y’ellodrome Annex and Akin Adesola): ${
-        getRegions(data)[1].count
-      }%`,
+      value: getRegions(data)[1].count || 0,
+      name: `HQ (MTN Plaza, MTN Penthouse, Y’ellodrome Annex and Akin Adesola)`,
     },
     {
-      x: 4,
-      y: getRegions(data)[2].count || 0,
-      label: `LSW (Aromire, Matori, Ojota, Opebi/MM2, Allen, Apapa Switch, VGC, Y’ello City, Ibadan, Benin, Abeokuta): ${
-        getRegions(data)[2].count
-      }%`,
+      value: getRegions(data)[2].count || 0,
+      name: `LSW (Aromire, Matori, Ojota, Opebi/MM2, Allen, Apapa Switch, VGC, Y’ello City, Ibadan, Benin, Abeokuta)`,
     },
     {
-      x: 7,
-      y: getRegions(data)[3].count || 0,
-      label: `Northern Region (All locations in the Northern Region): ${
-        getRegions(data)[3].count
-      }%`,
+      value: getRegions(data)[3].count || 0,
+      name: `Northern Region (All locations in the Northern Region)`,
     },
   ];
 
+  const barData = [
+    getRegions(data)[0].count,
+    getRegions(data)[1].count,
+    getRegions(data)[2].count,
+    getRegions(data)[3].count,
+  ];
+
+  const label = [
+    `Eastern Region (All locations in the Eastern Region)`,
+    `HQ (MTN Plaza, MTN Penthouse, Y’ellodrome Annex and Akin Adesola)`,
+    `LSW (Aromire, Matori, Ojota, Opebi/MM2, Allen, Apapa Switch, VGC, Y’ello City, Ibadan, Benin, Abeokuta)`,
+    `Northern Region (All locations in the Northern Region)`,
+  ];
+
+  const fill = ["#006993", "#91CC75", "#FAC858", "#EE6666"];
+
+  const analyticData = [
+    {
+      label: "Eastern Region (All locations in the Eastern Region)",
+      data: [getRegions(data)[0].count],
+      backgroundColor: "#006993",
+    },
+    {
+      label:
+        "HQ (MTN Plaza, MTN Penthouse, Y’ellodrome Annex and Akin Adesola)",
+      data: [getRegions(data)[1].count],
+      backgroundColor: "#91CC75",
+    },
+    {
+      label:
+        "LSW (Aromire, Matori, Ojota, Opebi/MM2, Allen, Apapa Switch, VGC, Y’ello City, Ibadan, Benin, Abeokuta)",
+      data: [getRegions(data)[2].count],
+      backgroundColor: "#FAC858",
+    },
+    {
+      label: "Northern Region (All locations in the Northern Region)",
+      data: [getRegions(data)[3].count],
+      backgroundColor: "#EE6666",
+    },
+  ];
+
+  const barLabel = ["Regions"];
   return (
-    <div className={styles.report__container}>
-      <ExperienceTeamNavbar />
-      <div className={styles.report__container__content}>
-        <div>
-          <ExperienceTeamHeader title="Analytical Report" />
-        </div>
+    <>
+      <>
         {findingData ? (
           <div className={styles.spinner}>
             <Spinner />
@@ -208,31 +238,6 @@ const Regions = () => {
               height: "100%",
             }}
           >
-            <div className={styles.tabs}>
-              {ReportTabs.map((tab, index) => {
-                return (
-                  <div
-                    className={`${styles.tabBtn} ${
-                      tab.active && styles.active
-                    }`}
-                    onClick={() => {
-                      history.push(tab.url);
-                      ReportTabs.filter(({ id }) => {
-                        return id === tab.id;
-                      })[0].active = true;
-                      ReportTabs.filter(({ id }) => {
-                        return id !== tab.id;
-                      }).map((tab) => {
-                        return (tab.active = false);
-                      });
-                    }}
-                  >
-                    {tab.title}
-                  </div>
-                );
-              })}
-            </div>
-
             <div>
               <button
                 className={`${styles.mtn__btn__table} ${styles.mtn__black}`}
@@ -306,6 +311,7 @@ const Regions = () => {
                     data={getRegions(data)}
                     options={{
                       exportButton: true,
+                      exportAllData: true,
                       actionsCellStyle: {
                         color: "#FF00dd",
                       },
@@ -328,160 +334,30 @@ const Regions = () => {
                   style={{
                     display: "flex",
                     gap: "10px",
-                    width: "80%",
+                    width: "60%",
                     height: "70%",
                   }}
                 >
                   <div className={styles.barChart}>
-                    <PieChart data={pieChartData} />
+                    <DataPie
+                      series={barData}
+                      fill={fill}
+                      labels={label}
+                      label=""
+                    />
                   </div>
                   <div className={styles.barChart}>
-                    <NewBarChart data={pieChartData} />
+                    Count <BarChart labels={barLabel} data={analyticData} />
+                    {/* <AntBarChart data={barData} label={label} title="Regions" /> */}
                   </div>
                 </div>
               )}
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </>
+    </>
   );
 };
 
 export default Regions;
-
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top" as const,
-    },
-    title: {
-      display: true,
-      text: "",
-    },
-    toolbar: {
-      display: true,
-    },
-  },
-};
-
-const labels = ["Question Groups"];
-
-export function BarChart({ data }) {
-  const alldata = {
-    labels,
-    datasets: [
-      {
-        label: "Learning",
-        data: data.learning,
-        backgroundColor: "rgba(255, 196, 35, 1)",
-      },
-      {
-        label: "Goals",
-        data: data.goals,
-        backgroundColor: "#006993",
-      },
-      {
-        label: "Motivator",
-        data: data.motivator,
-        backgroundColor: "#C4C4C4",
-      },
-      {
-        label: "Short Bio",
-        data: data.bio,
-        backgroundColor: "#F73D93",
-      },
-      {
-        label: "Priorities",
-        data: data.priorities,
-        backgroundColor: "#2F8F9D",
-      },
-      {
-        label: "Worries",
-        data: data.worries,
-        backgroundColor: "#F66B0E",
-      },
-      {
-        label: "Interests",
-        data: data.interests,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Communication",
-        data: data.communication,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Super Power and Key Attributes",
-        data: data.attributes,
-        backgroundColor: "#6D8B74",
-      },
-    ],
-  };
-  return <Bar options={options} data={alldata} height={180} />;
-}
-
-import { VictoryPie, VictoryTooltip, VictoryBar } from "victory";
-import { Context } from "../../../Personal";
-
-export const PieChart = ({ data }) => {
-  return (
-    <VictoryPie
-      data={data}
-      colorScale={[
-        "#006993",
-        "#C4C4C4",
-        "#FFC423",
-        "#F66B0E",
-        "#2F8F9D",
-        "#F73D93",
-        "#6D8B74",
-        "#F9CEEE",
-        "#112B3C",
-        "#9900F0",
-        "#A97155",
-        "#FF8080",
-        "#3A3845",
-        "#4D77FF",
-      ]}
-      radius={100}
-      style={{ labels: { fontSize: "12px" } }}
-      labelComponent={
-        <VictoryTooltip
-          cornerRadius={({ datum }) => datum.x * 2}
-          flyoutStyle={{ fontSize: "12px", padding: "10px" }}
-        />
-      }
-    />
-  );
-};
-
-export const NewBarChart = ({ data }) => {
-  return (
-    <VictoryBar
-      minDomain={0}
-      data={data}
-      colorScale={[
-        "#006993",
-        "#C4C4C4",
-        "#FFC423",
-        "#F66B0E",
-        "#2F8F9D",
-        "#F73D93",
-        "#6D8B74",
-      ]}
-      style={{ labels: { fontSize: "12px" }, data: { fill: "#006993" } }}
-      labelComponent={
-        <VictoryTooltip
-          cornerRadius={({ datum }) => datum.x * 2}
-          dy={({ datum }) => datum.y * -5}
-        />
-      }
-      name="Avatar Groups"
-      width={600}
-      height={400}
-      labels={({ datum }) => `${datum.label}`}
-    />
-  );
-};

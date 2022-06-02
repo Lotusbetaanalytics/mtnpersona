@@ -137,6 +137,7 @@ const PageFour = (props: Props) => {
                               answer: test[ind][ind],
                               id: items.ID,
                               section: items.section,
+                              question: items.questions,
                               type: "Others",
                             };
                             setOt({ ...ot, [ind]: thisReponse });
@@ -147,6 +148,7 @@ const PageFour = (props: Props) => {
                                 answer: e.target.value,
                                 id: items.ID,
                                 section: items.section,
+                                question: items.questions,
                                 type: items.type,
                               },
                             ]);
@@ -156,6 +158,7 @@ const PageFour = (props: Props) => {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
+                              question: items.questions,
                               type: items.type,
                             };
                             setOt({ ...ot, [ind]: thisReponse });
@@ -180,6 +183,7 @@ const PageFour = (props: Props) => {
                                       answer: test[ind][ind],
                                       id: items.ID,
                                       section: items.section,
+                                      question: items.questions,
                                       type: "Others",
                                     };
                                     setOt({ ...ot, [ind]: thisReponse });

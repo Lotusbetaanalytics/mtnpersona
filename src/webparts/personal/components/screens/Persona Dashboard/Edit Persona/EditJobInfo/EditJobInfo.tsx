@@ -1,46 +1,28 @@
 import * as React from "react";
-import { useHistory } from "react-router-dom";
-import { Header } from "../../Containers";
-import MyModal from "../../Containers/Modal/Modal";
-import styles from "./userRegistration.module.scss";
+import { Link, useHistory } from "react-router-dom";
+import { Header } from "../../../../Containers";
 import { sp, spGet, spPost } from "@pnp/sp";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
-import Toast from "../../Containers/Toast";
-import { prevHandler } from "./Job Info/JobInfo";
+import styles from "../userRegistration.module.scss";
 import swal from "sweetalert";
 
 type Props = {};
 
-const PageSix = (props: Props) => {
-  const history = useHistory();
-  const [open, setOpen] = React.useState(false);
-  const [show, setShow] = React.useState(false);
-  const [message, setMessage] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
+const EditJobInfo = (props: Props) => {
   const [list, setList] = React.useState([]);
   const [response, setResponse] = React.useState([]);
-  const [sectionResponses, setSectionResponses] = React.useState([]);
-  const [count, setCount] = React.useState(
-    0 || JSON.parse(localStorage.getItem("count"))
-  );
-  const [questions, setQuestions] = React.useState(0);
+  const [count, setCount] = React.useState(0);
   const [total, setTotal] = React.useState(0);
+  const [sectionResponses, setSectionResponses] = React.useState([]);
   const [others, setOthers] = React.useState("");
-  const [showField, setShowField] = React.useState(false);
   const [ot, setOt] = React.useState({});
   const [test, setTest] = React.useState([]);
+  const [userResponse, setUserResponse] = React.useState({});
+  const [myResponses, setMyResponses] = React.useState([]);
   let arr = [];
   const prevArrGet = [];
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   React.useEffect(() => {
     try {
@@ -51,7 +33,7 @@ const PageSix = (props: Props) => {
           setTotal(res.length);
           setList(
             res.filter(({ section }) => {
-              return section === "priorities";
+              return section === "bio";
             })
           );
         });
@@ -61,16 +43,27 @@ const PageSix = (props: Props) => {
   }, []);
 
   React.useEffect(() => {
-    setQuestions(list.length);
-    setCount((prev) => prev + list.length);
+    setCount(list.length);
     for (let i = 0; i < list.length; i++) {
       test.push({ [i]: "", show: false });
     }
   }, [list]);
 
   React.useEffect(() => {
-    setSectionResponses(prevHandler("priorities"));
+    sp.profiles.myProperties.get().then((profile) => {
+      sp.web.lists
+        .getByTitle("personal")
+        .items.filter(`email eq '${profile.Email}'`)
+        .select("responses,email,name,ID")
+        .get()
+        .then((response) => {
+          setMyResponses(JSON.parse(response[0].responses));
+          response.length > 0 && setUserResponse(response[0]);
+        });
+    });
   }, []);
+
+  const history = useHistory();
 
   const getItems = () => {
     for (let item in ot) {
@@ -78,9 +71,52 @@ const PageSix = (props: Props) => {
     }
   };
 
+  const onNextHandler = (e) => {
+    e.preventDefault();
+    getItems();
+    history.push("/dashboard/edit/page2");
+    const existing = JSON.parse(localStorage.getItem("editdata"));
+    if (prevArrGet.length > 0) {
+      localStorage.setItem(
+        "editdata",
+        JSON.stringify([...arr, ...prevArrGet, ...response, ...existing])
+      );
+    } else {
+      localStorage.setItem(
+        "editdata",
+        JSON.stringify([...arr, ...response, ...existing])
+      );
+    }
+  };
+
+  React.useEffect(() => {
+    const sectionResponse = prevHandler("bio");
+    setSectionResponses(sectionResponse);
+  }, []);
+
   const getChecked = (opt, id) => {
+    if (sectionResponses.length > 0) {
+      if (opt == "Others") {
+        const findOthers = sectionResponses.filter(
+          (item, i) => item.type == "Others" && item.id == id
+        );
+        if (findOthers.length > 0) {
+          prevArrGet.push(findOthers[0]);
+          return "Others";
+        }
+      }
+
+      const answer = sectionResponses.filter(({ answer }) => answer == opt);
+
+      if (answer.length > 0) {
+        prevArrGet.push(answer[0]);
+      }
+
+      return answer.length > 0 && answer[0].answer;
+    }
+
     if (opt == "Others") {
-      const findOthers = sectionResponses.filter(
+      const findOthers = myResponses.filter(
         (item, i) => item.type == "Others" && item.id == id
       );
       if (findOthers.length > 0) {
@@ -88,77 +124,20 @@ const PageSix = (props: Props) => {
         return "Others";
       }
     }
-    const answer = sectionResponses.filter(({ answer }) => answer == opt);
-    if (answer.length > 0) prevArrGet.push(answer[0]);
-    return answer.length > 0 && answer[0].answer;
-  };
 
-  const submitHandler = async (e: any) => {
-    e.preventDefault();
-    setLoading(true);
-    getItems();
-    const data = JSON.parse(localStorage.getItem("data"));
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const dp = JSON.parse(localStorage.getItem("dp"));
+    const answer = myResponses.filter(({ answer }) => answer == opt);
 
-    if (!data) {
-      setLoading(false);
-      localStorage.removeItem("userData");
-      localStorage.removeItem("dp");
-      setMessage("No answers provided!");
-      setShow(true);
-      setTimeout(() => {
-        history.push("/info/personal");
-      }, 1000);
-      return;
-    } else if (!userData) {
-      setLoading(false);
-      localStorage.removeItem("data");
-      localStorage.removeItem("dp");
-      setMessage("No user data found!");
-      setShow(true);
-      setTimeout(() => {
-        history.push("/info/personal");
-      }, 1000);
-      return;
-    } else {
-      const answerData = [...data, ...response, ...arr];
-      sp.web.lists
-        .getByTitle("personal")
-        .items.add({
-          Title: `${Math.random()}`,
-          name: userData.name,
-          alias: userData.alias,
-          responses: JSON.stringify(answerData),
-          division: userData.division,
-          email: userData.email,
-          LineManager: userData.LineManager,
-          dp: dp && dp,
-        })
-        .then(() => {
-          setLoading(false);
-          localStorage.removeItem("data");
-          localStorage.removeItem("userData");
-          localStorage.removeItem("dp");
-          setMessage("Answers Submitted!");
-          setShow(true);
-          setTimeout(() => {
-            history.push("/info/dashboard");
-          }, 1000);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-          setShow(true);
-          setMessage("An error occurred! Try again...");
-        });
+    if (answer.length > 0) {
+      prevArrGet.push(answer[0]);
     }
+
+    return answer.length > 0 && answer[0].answer;
   };
 
   return (
     <div className={styles.screen2__container}>
       <Header />
-      <form className={styles.job__info} onSubmit={submitHandler}>
+      <form className={styles.job__info} onSubmit={onNextHandler}>
         {list.map((items, ind) => {
           return (
             <div className={styles.job__form} key={ind}>
@@ -171,14 +150,26 @@ const PageSix = (props: Props) => {
                   {items.questions}
                 </label>
               </div>
+              <div className={styles.selectedResponse}>
+                <strong>Your selected response:</strong>
+                {/* @ts-ignore:*/}
+                {getAnswers(userResponse, items.questions, items.ID)}
+              </div>
               <>
                 {JSON.parse(items.options).map((opt: any, index: any) => {
                   return (
-                    <div className={styles.input__details} key={index}>
+                    <div className={styles.input__details}>
                       <input
                         type={items.type}
+                        data-id={index}
                         name={items.type == "radio" ? `${items.questions}` : ``}
-                        value={opt == "Others" ? others : opt ? opt : ""}
+                        value={
+                          opt == "Others"
+                            ? test.length > 0 && test[ind][ind]
+                            : opt
+                            ? opt
+                            : ""
+                        }
                         checked={opt == getChecked(opt, items.ID) ? true : null}
                         required={
                           items.type == "checkbox"
@@ -196,6 +187,7 @@ const PageSix = (props: Props) => {
                               question: items.questions,
                               type: "Others",
                             };
+
                             setOt({ ...ot, [ind]: thisReponse });
                           } else if (items.type == "checkbox") {
                             setResponse([
@@ -205,7 +197,7 @@ const PageSix = (props: Props) => {
                                 id: items.ID,
                                 section: items.section,
                                 question: items.questions,
-                                type: items.type,
+                                type: "checkbox",
                               },
                             ]);
                           } else {
@@ -215,7 +207,7 @@ const PageSix = (props: Props) => {
                               id: items.ID,
                               section: items.section,
                               question: items.questions,
-                              type: items.type,
+                              type: "radio",
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           }
@@ -266,32 +258,55 @@ const PageSix = (props: Props) => {
             </div>
           );
         })}
-        <div className={styles.nav__buttons} style={{ bottom: "-10px" }}>
-          {loading ? (
-            <span className={`${styles.nobackground__button} ${styles.btn}`}>
-              Cancel
-            </span>
-          ) : (
-            <span
-              className={`${styles.nobackground__button} ${styles.btn}`}
-              onClick={handleOpen}
-            >
-              Cancel
-            </span>
-          )}
-          {loading ? (
-            <button className={styles.filled__button}>Submitting...</button>
-          ) : (
-            <button className={styles.filled__button} type="submit">
-              Submit
-            </button>
-          )}
+        <div className={styles.nav__buttons}>
+          <button className={styles.nobackground__button}>
+            <Link to="/dashboard/edit/start">Previous</Link>
+          </button>
+          <button type="submit" className={styles.filled__button}>
+            Next
+          </button>
         </div>
-        <MyModal open={open} handleClose={handleClose} history={history} />
-        <Toast show={show} setShow={setShow} message={message} />
       </form>
     </div>
   );
 };
 
-export default PageSix;
+export default EditJobInfo;
+
+export const prevHandler = (section = "") => {
+  const responses = JSON.parse(localStorage.getItem("editdata")) || [];
+
+  const otherSections = responses.filter(
+    (response) => response.section !== section
+  );
+
+  localStorage.setItem("editdata", JSON.stringify(otherSections));
+
+  return responses.filter((response) => response.section == section);
+};
+export const getResponsesFromTwoSections = (section1 = "", section2 = "") => {
+  const responses = JSON.parse(localStorage.getItem("editdata")) || [];
+
+  const otherSections = responses.filter(
+    (response) => response.section !== section1 || response.section !== section2
+  );
+
+  localStorage.setItem("editdata", JSON.stringify(otherSections));
+
+  return responses.filter(
+    (response) => response.section === section1 || response.section === section2
+  );
+};
+
+export const getAnswers = (response, check, questionID) => {
+  if (response && response.responses) {
+    response = JSON.parse(response.responses);
+    return response
+      .filter(({ question, id }) => {
+        return question == check || id == questionID;
+      })
+      .map(({ answer }) => {
+        return <li>{answer}</li>;
+      });
+  }
+};

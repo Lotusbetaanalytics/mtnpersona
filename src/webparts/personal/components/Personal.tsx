@@ -46,6 +46,17 @@ import AnalyticsReport from "./screens/EXPERIENCETEAM/View Reports/Analytics";
 import DivisionAnalyticsReport from "./screens/EXPERIENCETEAM/View Reports/DivisionsAnalytics";
 import QuestionCategories from "./screens/EXPERIENCETEAM/View Reports/Categories";
 import Regions from "./screens/EXPERIENCETEAM/View Reports/Regions";
+import DownloadReport from "./screens/EXPERIENCETEAM/View Reports/download";
+import ConfigureDate from "./screens/EXPERIENCETEAM/Configure Date/ConfigureDate";
+import ViewDates from "./screens/EXPERIENCETEAM/Configure Date/ViewDates";
+import EditPageSix from "./screens/Persona Dashboard/Edit Persona/EditPageSix";
+import EditPageFive from "./screens/Persona Dashboard/Edit Persona/EditPageFive";
+import EditPageFour from "./screens/Persona Dashboard/Edit Persona/EditPageFour";
+import EditPageThree from "./screens/Persona Dashboard/Edit Persona/EditPageThree";
+import EditPageTwo from "./screens/Persona Dashboard/Edit Persona/EditPageTwo/EditPageTwo";
+import EditJobInfo from "./screens/Persona Dashboard/Edit Persona/EditJobInfo/EditJobInfo";
+import EditScreen1 from "./screens/Persona Dashboard/Edit Persona";
+import EditDate from "./screens/EXPERIENCETEAM/Configure Date/EditDate";
 
 export default class Personal extends React.Component<
   IPersonalProps,
@@ -61,6 +72,7 @@ export default class Personal extends React.Component<
     rejectedSurvey: any[];
     allQuestions: any[];
     numberOfStaff: number;
+    confirmedStaff: any[];
   }
 > {
   constructor(props: IPersonalProps) {
@@ -77,6 +89,7 @@ export default class Personal extends React.Component<
       rejectedSurvey: [],
       allQuestions: [],
       numberOfStaff: 0,
+      confirmedStaff: [],
     };
   }
 
@@ -91,6 +104,7 @@ export default class Personal extends React.Component<
           response.json().then((responseJSON: any) => {
             this.setState({
               numberOfStaff: responseJSON.value.length,
+              confirmedStaff: responseJSON.value,
             });
           });
         })
@@ -221,6 +235,7 @@ export default class Personal extends React.Component<
             rejectedSurvey: this.state.rejectedSurvey,
             allQuestions: this.state.allQuestions,
             numberOfStaff: this.state.numberOfStaff,
+            confirmedStaff: this.state.confirmedStaff,
           }}
         >
           {this.state.checkStatus ? (
@@ -251,6 +266,43 @@ export default class Personal extends React.Component<
                   exact
                   path="/hrbp/staff/:name/:email"
                   component={StaffPersona}
+                />
+
+                {/* Edit Persona Links */}
+                <Route
+                  exact
+                  path="/dashboard/edit/page6"
+                  component={EditPageSix}
+                />
+                <Route
+                  exact
+                  path="/dashboard/edit/page5"
+                  component={EditPageFive}
+                />
+                <Route
+                  exact
+                  path="/dashboard/edit/page4"
+                  component={EditPageFour}
+                />
+                <Route
+                  exact
+                  path="/dashboard/edit/page3"
+                  component={EditPageThree}
+                />
+                <Route
+                  exact
+                  path="/dashboard/edit/page2"
+                  component={EditPageTwo}
+                />
+                <Route
+                  exact
+                  path="/dashboard/edit/page1"
+                  component={EditJobInfo}
+                />
+                <Route
+                  exact
+                  path="/dashboard/edit/start"
+                  component={EditScreen1}
                 />
 
                 {/* Experience Team Links */}
@@ -301,10 +353,25 @@ export default class Personal extends React.Component<
                 />
                 <Route
                   exact
+                  path="/experienceteam/date"
+                  component={ConfigureDate}
+                />
+                <Route
+                  exact
+                  path="/experienceteam/date/edit/:id"
+                  component={EditDate}
+                />
+                <Route
+                  exact
+                  path="/experienceteam/date/view"
+                  component={ViewDates}
+                />
+                <Route
+                  exact
                   path="/experienceteam/report/:id"
                   component={StaffView}
                 />
-                <Route
+                {/* <Route
                   exact
                   path="/experienceteam/rejected/:id"
                   component={RejectedStaff}
@@ -313,7 +380,7 @@ export default class Personal extends React.Component<
                   exact
                   path="/experienceteam/rejected"
                   component={RejectedSurvey}
-                />
+                /> */}
 
                 {/* HRBP Team Links */}
                 <Route exact path="/hrbp/dashboard" component={HrbpDashboard} />
@@ -352,4 +419,5 @@ export const Context = React.createContext({
   rejectedSurvey: null,
   allQuestions: null,
   numberOfStaff: null,
+  confirmedStaff: null,
 });

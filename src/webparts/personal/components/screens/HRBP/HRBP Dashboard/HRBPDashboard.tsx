@@ -7,6 +7,7 @@ import {
 import { DocumentCardDetails } from "office-ui-fabric-react";
 import * as React from "react";
 import { sp } from "sp-pnp-js";
+import { AntPieChart } from "../../../Containers/AntChart/PieChart";
 import BarChart from "../../../Containers/Bar Chart/BarChart";
 import Card from "../../../Containers/Card/Card";
 import PieChart from "../../../Containers/Pie Chart/PieChart";
@@ -17,7 +18,7 @@ import HrbpNavbar from "../HRBP Navbar/HRBPNavbar";
 import styles from "./dashboard.module.scss";
 
 const HrbpDashboard = () => {
-  const { allSurvey } = React.useContext(Context);
+  const { allSurvey, rejectedSurvey: rejected } = React.useContext(Context);
   const [numberofSurvey, setNumberOfSurvey] = React.useState(0);
   const [rejectedSurvey, setRejectedSurvey] = React.useState(0);
   const [pendingSurvey, setPendingSurvey] = React.useState(0);
@@ -27,30 +28,37 @@ const HrbpDashboard = () => {
     division: "",
   });
 
-  const data = {
-    numberofSurvey: [numberofSurvey],
-    rejected: [rejectedSurvey],
-    pending: [pendingSurvey],
-  };
+  const data = [
+    // {
+    //   label: "Rejected Surveys",
+    //   data: [rejectedSurvey],
+    //   backgroundColor: "#006993",
+    // },
+    {
+      label: "Pending Surveys",
+      data: [pendingSurvey],
+      backgroundColor: "#C4C4C4",
+    },
+  ];
+
+  const barLabel = ["Employee Surveys"];
+  const label = ["Pending"];
   const pieChartData = [
-    { x: 2, y: numberofSurvey || 0, label: `All Surveys: ${numberofSurvey}` },
     {
-      x: 3,
-      y: pendingSurvey || 0,
-      label: `Pending Surveys: ${pendingSurvey}`,
+      value: pendingSurvey || 0,
+      name: `Pending`,
     },
-    {
-      x: 4,
-      y: rejectedSurvey || 0,
-      label: `Rejected Surveys: ${rejectedSurvey}`,
-    },
+    // {
+    //   value: rejectedSurvey || 0,
+    //   name: `Rejected`,
+    // },
   ];
 
   //Create Bar chart component
   const showBarChart = () => {
     return (
       <>
-        <BarChart data={data} />
+        <BarChart data={data} labels={barLabel} height={120} />
       </>
     );
   };
@@ -59,7 +67,7 @@ const HrbpDashboard = () => {
   const showPieChart = () => {
     return (
       <>
-        <PieChart data={pieChartData} />
+        <AntPieChart data={pieChartData} label={label} title="" />
       </>
     );
   };
@@ -81,9 +89,10 @@ const HrbpDashboard = () => {
       allSurvey.filter((survey) => survey.division == user.division).length
     );
     setRejectedSurvey(
-      allSurvey.filter(
+      rejected.filter(
         (survey) =>
-          survey.EXApprovalStatus === "No" && survey.division == user.division
+          survey.EXApprovalStatus === "Declined" &&
+          survey.division == user.division
       ).length
     );
     setPendingSurvey(
@@ -118,11 +127,11 @@ const HrbpDashboard = () => {
               number={numberofSurvey}
               icon={<BookSharp style={{ fontSize: 60 }} />}
             />
-            <Card
+            {/* <Card
               title="Rejected Surveys"
               number={rejectedSurvey}
               icon={<CancelOutlined style={{ fontSize: 60 }} />}
-            />
+            /> */}
             <Card
               title="Total Questions"
               number={numberofQuestions}

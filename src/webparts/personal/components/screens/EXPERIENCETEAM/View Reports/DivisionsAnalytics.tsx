@@ -19,8 +19,6 @@ import {
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import { useHistory } from "react-router-dom";
-import ExperienceTeamHeader from "../Experience Team Header/ExperienceTeamHeader";
-import ExperienceTeamNavbar from "../Experience Team Navbar/ExperienceTeamNavbar";
 import styles from "./report.module.scss";
 import { sp } from "@pnp/sp";
 import { Spinner } from "office-ui-fabric-react";
@@ -35,6 +33,13 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import {
+  AntBarChart,
+  AntPieChart,
+} from "../../../Containers/AntChart/PieChart";
+import { Context } from "../../../Personal";
+import BarChart from "../../../Containers/Bar Chart/BarChart";
+import DataPie from "../../../Containers/Pie Chart/PieChart";
 
 ChartJS.register(
   CategoryScale,
@@ -65,24 +70,6 @@ const DivisionAnalyticsReport = () => {
   const [networks, setNetworks] = React.useState(0);
   const [humanResource, setHumanResource] = React.useState(0);
   const [show, setShow] = React.useState("Table");
-
-  const barData = {
-    enterpriseBusiness,
-    humanResource,
-    finance,
-    informationTechnology,
-    internalAudit,
-    ceoOffice,
-    corporateServices,
-    cooOffice,
-    networks,
-    strategy,
-    digitalServices,
-    marketing,
-    sales,
-    riskAndCompliance,
-    customerRelations,
-  };
 
   const tableData = [
     { id: 1, Category: "Information Technology", count: informationTechnology },
@@ -294,89 +281,204 @@ const DivisionAnalyticsReport = () => {
 
   const pieChartData = [
     {
-      x: 1,
-      y: finance || 0,
-      label: `Finance: ${finance}%`,
+      value: finance,
+      name: `Finance`,
     },
     {
-      x: 2,
-      y: sales || 0,
-      label: `Sales and Distribution: ${sales}%`,
+      value: sales,
+      name: `Sales and Distribution`,
     },
     {
-      x: 3,
-      y: informationTechnology || 0,
-      label: `Information Technology: ${informationTechnology}%`,
+      value: informationTechnology,
+      name: `Information Technology`,
     },
     {
-      x: 4,
-      y: riskAndCompliance || 0,
-      label: `Risk and Compliance: ${riskAndCompliance}%`,
+      value: riskAndCompliance,
+      name: `Risk and Compliance`,
     },
     {
-      x: 5,
-      y: internalAudit || 0,
-      label: `Internal Audit and Fraud Forensics: ${internalAudit}%`,
+      value: internalAudit,
+      name: `Internal Audit and Fraud Forensics`,
     },
     {
-      x: 6,
-      y: networks || 0,
-      label: `Networks: ${networks}%`,
+      value: networks,
+      name: `Networks`,
     },
     {
-      x: 7,
-      y: strategy || 0,
-      label: `Strategy and Innovation: ${strategy}%`,
+      value: strategy,
+      name: `Strategy and Innovation`,
     },
     {
-      x: 8,
-      y: marketing || 0,
-      label: `Marketing: ${marketing}%`,
+      value: marketing,
+      name: `Marketing`,
     },
     {
-      x: 9,
-      y: digitalServices || 0,
-      label: `Digital Services: ${digitalServices}%`,
+      value: digitalServices,
+      name: `Digital Services`,
     },
     {
-      x: 10,
-      y: ceoOffice || 0,
-      label: `Company Secretariat + CEO Office: ${ceoOffice}%`,
+      value: ceoOffice,
+      name: `Company Secretariat + CEO Office`,
     },
     {
-      x: 11,
-      y: cooOffice || 0,
-      label: `Fixed BroadBand Office + COO’s Office: ${cooOffice}%`,
+      value: cooOffice,
+      name: `Fixed BroadBand Office + COO’s Office`,
     },
     {
-      x: 12,
-      y: customerRelations || 0,
-      label: `Customer Relations: ${customerRelations}%`,
+      value: customerRelations,
+      name: `Customer Relations`,
     },
     {
-      x: 13,
-      y: enterpriseBusiness || 0,
-      label: `Enterprise Business: ${enterpriseBusiness}%`,
+      value: enterpriseBusiness || 0,
+      name: `Enterprise Business`,
     },
     {
-      x: 14,
-      y: corporateServices || 0,
-      label: `Corporate Services: ${corporateServices}%`,
+      value: corporateServices || 0,
+      name: `Corporate Services`,
     },
     {
-      x: 15,
-      y: humanResource || 0,
-      label: `Human Resource: ${humanResource}%`,
+      value: humanResource || 0,
+      name: `Human Resource`,
     },
   ];
 
+  const label = [
+    "Finance",
+    "Sales and Distribution",
+    "Information Technology",
+    "Risk and Compliance",
+    "Internal Audit and Fraud Forensics",
+    "Networks",
+    "Strategy and Innovation",
+    "Marketing",
+    "Digital Services",
+    "Company Secretariat + CEO Office",
+    "Fixed BroadBand Office + COO’s Office",
+    "Customer Relations",
+    "Enterprise Business",
+    "Corporate Services",
+    "Human Resource",
+  ];
+
+  const analyticData = [
+    {
+      label: "Finance",
+      data: [finance],
+      backgroundColor: "#006993",
+    },
+    {
+      label: "Sales and Distribution",
+      data: [sales],
+      backgroundColor: "#91CC75",
+    },
+    {
+      label: "Information Technology",
+      data: [informationTechnology],
+      backgroundColor: "#FAC858",
+    },
+    {
+      label: "Risk and Compliance",
+      data: [riskAndCompliance],
+      backgroundColor: "#EE6666",
+    },
+    {
+      label: "Internal Audit and Fraud Forensics",
+      data: [internalAudit],
+      backgroundColor: "#FFCD56",
+    },
+    {
+      label: "Networks",
+      data: [networks],
+      backgroundColor: "#FF8C00",
+    },
+    {
+      label: "Strategy and Innovation",
+      data: [strategy],
+      backgroundColor: "#FFD700",
+    },
+    {
+      label: "Marketing",
+      data: [marketing],
+      backgroundColor: "#FF3C00",
+    },
+    {
+      label: "Digital Services",
+      data: [digitalServices],
+      backgroundColor: "#00092C",
+    },
+    {
+      label: "Company Secretariat + CEO Office",
+      data: [ceoOffice],
+      backgroundColor: "#4700D8",
+    },
+    {
+      label: "Fixed BroadBand Office + COO’s Office",
+      data: [cooOffice],
+      backgroundColor: "#8E3200",
+    },
+    {
+      label: "Customer Relations",
+      data: [customerRelations],
+      backgroundColor: "#125B50",
+    },
+    {
+      label: "Enterprise Business",
+      data: [enterpriseBusiness],
+      backgroundColor: "#68A7AD",
+    },
+    {
+      label: "Corporate Services",
+      data: [corporateServices],
+      backgroundColor: "#F9CEEE",
+    },
+    {
+      label: "Human Resource",
+      data: [humanResource],
+      backgroundColor: "#15133C",
+    },
+  ];
+
+  const barLabel = ["Divisions"];
+
+  const barData = [
+    finance,
+    sales,
+    informationTechnology,
+    riskAndCompliance,
+    internalAudit,
+    networks,
+    strategy,
+    marketing,
+    digitalServices,
+    ceoOffice,
+    cooOffice,
+    customerRelations,
+    enterpriseBusiness,
+    corporateServices,
+    humanResource,
+  ];
+
+  const fill = [
+    "#006993",
+    "#91CC75",
+    "#FAC858",
+    "#EE6666",
+    "#FFCD56",
+    "#FF8C00",
+    "#FFD700",
+    "#FF3C00",
+    "#00092C",
+    "#4700D8",
+    "#8E3200",
+    "#125B50",
+    "#68A7AD",
+    "#F9CEEE",
+    "#15133C",
+  ];
+
   return (
-    <div className={styles.report__container}>
-      <ExperienceTeamNavbar />
-      <div className={styles.report__container__content}>
-        <div>
-          <ExperienceTeamHeader title="Analytical Report" />
-        </div>
+    <>
+      <>
         {findingData ? (
           <div className={styles.spinner}>
             <Spinner />
@@ -388,31 +490,6 @@ const DivisionAnalyticsReport = () => {
               height: "100%",
             }}
           >
-            <div className={styles.tabs}>
-              {ReportTabs.map((tab, index) => {
-                return (
-                  <div
-                    className={`${styles.tabBtn} ${
-                      tab.active && styles.active
-                    }`}
-                    onClick={() => {
-                      history.push(tab.url);
-                      ReportTabs.filter(({ id }) => {
-                        return id === tab.id;
-                      })[0].active = true;
-                      ReportTabs.filter(({ id }) => {
-                        return id !== tab.id;
-                      }).map((tab) => {
-                        return (tab.active = false);
-                      });
-                    }}
-                  >
-                    {tab.title}
-                  </div>
-                );
-              })}
-            </div>
-
             <div>
               <button
                 className={`${styles.mtn__btn__table} ${styles.mtn__black}`}
@@ -486,6 +563,7 @@ const DivisionAnalyticsReport = () => {
                     data={tableData}
                     options={{
                       exportButton: true,
+                      exportAllData: true,
                       actionsCellStyle: {
                         color: "#FF00dd",
                       },
@@ -508,187 +586,36 @@ const DivisionAnalyticsReport = () => {
                   style={{
                     display: "flex",
                     gap: "10px",
-                    width: "80%",
+                    width: "60%",
                     height: "70%",
                   }}
                 >
                   <div className={styles.barChart}>
-                    <PieChart data={pieChartData} />
+                    {/* <AntPieChart
+                      data={pieChartData}
+                      title="Divisions"
+                      label={[]}
+                    /> */}
+
+                    <DataPie
+                      series={barData}
+                      labels={label}
+                      label=""
+                      fill={fill}
+                    />
                   </div>
                   <div className={styles.barChart}>
-                    <NewBarChart data={pieChartData} />
+                    Count <BarChart labels={barLabel} data={analyticData} />
+                    {/* <AntBarChart data={barData} label={label} title="" /> */}
                   </div>
                 </div>
               )}
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </>
+    </>
   );
 };
 
 export default DivisionAnalyticsReport;
-
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top" as const,
-    },
-    title: {
-      display: true,
-      text: "",
-    },
-    toolbar: {
-      display: true,
-    },
-  },
-};
-
-const labels = ["Submissions from Divisions"];
-
-export function BarChart({ data }) {
-  const alldata = {
-    labels,
-    datasets: [
-      {
-        label: "Finance",
-        data: data.finance,
-        backgroundColor: "rgba(255, 196, 35, 1)",
-      },
-      {
-        label: "Sales and Distribution",
-        data: data.sales,
-        backgroundColor: "#006993",
-      },
-      {
-        label: "Information Technology",
-        data: data.informationTechnology,
-        backgroundColor: "#C4C4C4",
-      },
-      {
-        label: "Risk and Compliance",
-        data: data.riskAndCompliance,
-        backgroundColor: "#F73D93",
-      },
-      {
-        label: "Internal Audit and Fraud Forensics",
-        data: data.internalAudit,
-        backgroundColor: "#2F8F9D",
-      },
-      {
-        label: "Networks",
-        data: data.networks,
-        backgroundColor: "#F66B0E",
-      },
-      {
-        label: "Strategy and Innovation",
-        data: data.strategy,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Marketing",
-        data: data.marketing,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Digital Services",
-        data: data.digitalServices,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Company Secretariat + CEO Office",
-        data: data.coOffice,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Fixed BroadBand Office + COO’s Office",
-        data: data.cooOffice,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Customer Relations",
-        data: data.customerRelations,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Enterprise Business",
-        data: data.enterpriseBusiness,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Corporate Services",
-        data: data.corporateServices,
-        backgroundColor: "#6D8B74",
-      },
-      {
-        label: "Human Resource",
-        data: data.humanResource,
-        backgroundColor: "#6D8B74",
-      },
-    ],
-  };
-  return <Bar options={options} data={alldata} height={180} />;
-}
-
-import { VictoryPie, VictoryTooltip, VictoryBar } from "victory";
-import { Context } from "../../../Personal";
-
-export const PieChart = ({ data }) => {
-  return (
-    <VictoryPie
-      data={data}
-      colorScale={[
-        "#006993",
-        "#C4C4C4",
-        "#FFC423",
-        "#F66B0E",
-        "#2F8F9D",
-        "#F73D93",
-        "#6D8B74",
-        "#F9CEEE",
-        "#112B3C",
-        "#9900F0",
-        "#A97155",
-        "#FF8080",
-        "#3A3845",
-        "#4D77FF",
-      ]}
-      radius={100}
-      style={{ labels: { fontSize: "12px" } }}
-      labelComponent={
-        <VictoryTooltip
-          cornerRadius={({ datum }) => datum.x * 2}
-          flyoutStyle={{ fontSize: "12px", padding: "10px" }}
-        />
-      }
-    />
-  );
-};
-
-export const NewBarChart = ({ data }) => {
-  return (
-    <VictoryBar
-      minDomain={0}
-      data={data}
-      colorScale={[
-        "#006993",
-        "#C4C4C4",
-        "#FFC423",
-        "#F66B0E",
-        "#2F8F9D",
-        "#F73D93",
-        "#6D8B74",
-      ]}
-      style={{ labels: { fontSize: "12px" }, data: { fill: "#FFC423" } }}
-      labelComponent={
-        <VictoryTooltip
-          cornerRadius={({ datum }) => datum.x * 2}
-          dy={({ datum }) => datum.y * -5}
-        />
-      }
-      labels={({ datum }) => `${datum.label}`}
-    />
-  );
-};
