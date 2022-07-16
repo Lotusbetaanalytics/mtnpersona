@@ -15,21 +15,83 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 import { useHistory } from "react-router-dom";
 import styles from "./report.module.scss";
 import { sp } from "@pnp/sp";
 import { Spinner } from "office-ui-fabric-react";
 import ExperienceTeamHeader from "../../EXPERIENCETEAM/Experience Team Header/ExperienceTeamHeader";
 import HrbpNavbar from "../HRBP Navbar/HRBPNavbar";
-import { FormControl, MenuItem, Select } from "@material-ui/core";
+import { Chip, FormControl, MenuItem, Select } from "@material-ui/core";
 import Filter from "../../../Containers/Filter/Filter";
 
 const HrbpViewReport = () => {
-  const getSection = (res, item) => {
+  const [questionsArr, setQuestions] = React.useState([]);
+  const [field, setField] = React.useState([]);
+  const getSection = (res, item, id) => {
     const sectionResponses = res.filter(({ section }) => section === item);
-
     return sectionResponses;
+  };
+
+  const get = (questions) => {
+    const obj = [];
+    for (let i = 0; i < questions.length; i++) {
+      obj.push({
+        title: questions[i].questions,
+        field: `${questions[i].questions}`,
+        type: "string",
+        render: ({ res }) => {
+          return res
+            .filter((response) => {
+              return response && response["question"] == questions[i].questions;
+            })
+            .map((response) => {
+              return (
+                <li style={{ fontSize: "10px" }}>
+                  {response[questions[i].questions]}
+                </li>
+              );
+            });
+        },
+        export: true,
+        hidden: true,
+      });
+    }
+
+    return obj;
+  };
+
+  const spoolAnswers = (res) => {
+    const arr = [];
+    for (let { question, answer } of res) {
+      arr.push([question, answer]);
+    }
+    return Object.fromEntries(arr);
+  };
+
+  const mapQuestions = (responses) => {
+    return responses.map(
+      ({ responses, name, email, dp, alias, AvatarGroup, ID, division }) => {
+        responses = JSON.parse(responses);
+        return {
+          name,
+          division,
+          ID,
+          email,
+          alias,
+          dp,
+          AvatarGroup,
+          responses: JSON.stringify(responses),
+          res: responses.map(({ question, answer }) => {
+            return {
+              [question]: answer,
+              question,
+            };
+          }),
+          ...spoolAnswers(responses),
+        };
+      }
+    );
   };
 
   const columns = [
@@ -37,7 +99,7 @@ const HrbpViewReport = () => {
       title: "Photo",
       field: "dp",
       type: "string" as const,
-      searchable: true,
+      export: false,
       render: (rowData) => {
         return (
           <img
@@ -78,333 +140,111 @@ const HrbpViewReport = () => {
       type: "string" as const,
       searchable: true,
     },
-    // { title: "Approval Status", field: "EXApprovalStatus", searchable: true },
-    {
-      title: "Short Bio",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "bio").length > 0 ? (
-              getSection(JSON.parse(rowData.responses), "bio").map(
-                ({ answer }) => {
-                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
-                }
-              )
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Communication Preference",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "communication").length >
-            0 ? (
-              getSection(JSON.parse(rowData.responses), "communication").map(
-                ({ answer }) => {
-                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
-                }
-              )
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Worries",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "worries").length > 0 ? (
-              getSection(JSON.parse(rowData.responses), "worries").map(
-                ({ answer }) => {
-                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
-                }
-              )
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Interests",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "interests").length >
-            0 ? (
-              getSection(JSON.parse(rowData.responses), "interests").map(
-                ({ answer }) => {
-                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
-                }
-              )
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Priorities",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "priorities").length >
-            0 ? (
-              getSection(JSON.parse(rowData.responses), "priorities").map(
-                ({ answer }) => {
-                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
-                }
-              )
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Goals",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "goals").length > 0 ? (
-              getSection(JSON.parse(rowData.responses), "goals").map(
-                ({ answer }) => {
-                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
-                }
-              )
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Motivators",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "motivator").length >
-            0 ? (
-              getSection(JSON.parse(rowData.responses), "motivator").map(
-                ({ answer }) => {
-                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
-                }
-              )
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Learning Styles",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "learning").length >
-            0 ? (
-              getSection(JSON.parse(rowData.responses), "learning").map(
-                ({ answer }) => {
-                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
-                }
-              )
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Attributes",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "attributes").length >
-            0 ? (
-              getSection(JSON.parse(rowData.responses), "attributes").map(
-                ({ answer }) => {
-                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
-                }
-              )
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
+
+    ...field,
   ];
 
   const [data, setData] = React.useState([]);
   const [findingData, setFindingData] = React.useState(false);
-  const [divisions, setDivisions] = React.useState([]);
-  const [filtered, setFiltered] = React.useState([]);
-  const [selected, setSelected] = React.useState("Choose Division");
-  const [showDivisionSelect, setShowDivisionSelection] = React.useState(false);
-  const [user, setUser] = React.useState({
-    division: "",
-  });
+  const [assignedDivision, setAssignedDivision] = React.useState([]);
+  const searchRef = React.useRef<HTMLInputElement>(null);
+  const paramRef = React.useRef<HTMLDivElement>(null);
 
   const history = useHistory();
 
   React.useEffect(() => {
-    setFindingData(true);
+    sp.web.lists
+      .getByTitle("Questions")
+      .items.select("questions,ID")
+      .get()
+      .then((questions) => {
+        setField(get(questions));
+      });
+  }, [data]);
+
+  React.useEffect(() => {
     sp.profiles.myProperties.get().then((data) => {
       sp.web.lists
         .getByTitle("Roles")
         .items.filter(`Email eq '${data.Email}'`)
         .get()
         .then((items: any) => {
-          setUser({ division: items[0].Division });
+          const { Role, BpDivisions } = items.filter(
+            (item) => item.Role == "HRBP"
+          )[0];
+
+          BpDivisions && localStorage.setItem("asd", BpDivisions);
         });
     });
   }, []);
 
-  React.useEffect(() => {
-    sp.web.lists
-      .getByTitle("personal")
-      .items.filter(`division eq '${user.division}'`)
-      .get()
-      .then((items: any) => {
-        setFindingData(false);
-        setData(items);
-      });
-  }, [user]);
+  const assignedDivisions = localStorage.getItem("asd");
 
   React.useEffect(() => {
-    sp.web.lists
-      .getByTitle("MTN DIVISION")
-      .items.get()
-      .then((items: any) => {
-        setDivisions(items);
-      });
+    if (assignedDivisions) {
+      sp.web.lists
+        .getByTitle("personal")
+        .items.get()
+        .then((items: any) => {
+          setFindingData(false);
+          const data = items.filter(({ division }) => {
+            return (
+              assignedDivisions &&
+              JSON.parse(localStorage.getItem("asd")).includes(division)
+            );
+          });
+          setData(mapQuestions(data));
+        });
+    }
   }, []);
 
-  const filterHandler = (param) => {
-    setSelected(param);
-
-    const filteredData = data.filter((item: any) => {
-      return item.division === param;
-    });
-    setFiltered(filteredData);
+  const changeHandler = (e) => {
+    e.preventDefault();
+    setFindingData(true);
+    sp.web.lists
+      .getByTitle("personal")
+      //@ts-ignore
+      .items.filter(`division eq '${paramRef.current.value}'`)
+      .get()
+      .then((items: any) => {
+        setData(mapQuestions(items));
+        setFindingData(false);
+      });
+    // }
   };
 
   return (
     <div className={styles.report__container}>
       <HrbpNavbar />
       <div className={styles.report__container__content}>
-        <ExperienceTeamHeader title="Report" />
+        <div>
+          <ExperienceTeamHeader title="Report" />
+        </div>
         {findingData ? (
           <div className={styles.spinner}>
             <Spinner />
           </div>
         ) : (
           <>
-            {/* <>
-              <Filter
-                showSelect={showDivisionSelect}
-                setShowSelection={setShowDivisionSelection}
-                value={selected}
-              >
-                <div
-                  style={{
-                    maxHeight: "450px",
-                    border: "1px solid rgba(0, 0, 0, 0.31)",
-                    overflowY: "scroll",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  {divisions.map(({ Division: division }) => {
-                    return (
-                      <div
-                        className={styles.container__content__select}
-                        onClick={() => {
-                          setShowDivisionSelection(false);
-                          filterHandler(division);
-                        }}
-                      >
-                        <div
-                          style={{
-                            flex: 1,
-                          }}
-                        >
-                          {division}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Filter>
-            </> */}
-            <>Division: {user.division}</>
+            <div
+              style={{
+                maxWidth: "50%",
+                maxHeight: "40%",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "10px",
+                boxSizing: "border-box",
+                padding: "5px",
+                margin: "20px",
+                alignItems: "center",
+              }}
+            >
+              <div> Your Divisions:</div>
+              {assignedDivisions &&
+                JSON.parse(assignedDivisions).map((item) => {
+                  return <Chip label={item} />;
+                })}
+            </div>
             <MaterialTable
               icons={{
                 Add: forwardRef((props: any, ref: any) => (
@@ -463,7 +303,7 @@ const HrbpViewReport = () => {
               columns={columns}
               data={data}
               options={{
-                exportButton: true,
+                exportButton: { csv: true, pdf: false },
                 actionsCellStyle: {
                   color: "#FF00dd",
                 },
@@ -482,6 +322,7 @@ const HrbpViewReport = () => {
                 width: "80%",
                 boxSizing: "border-box",
                 paddingLeft: "30px",
+                margin: "0 30px",
               }}
               actions={[
                 {
@@ -504,6 +345,77 @@ const HrbpViewReport = () => {
                   >
                     <span>{props.action.tooltip}</span>
                   </button>
+                ),
+
+                Toolbar: (props) => (
+                  <>
+                    <MTableToolbar {...props} />
+                    <form
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "10px",
+                      }}
+                    >
+                      <span>Choose Division</span>
+                      <select
+                        //@ts-ignore
+                        ref={paramRef}
+                        // onChange={selectChangeHandler}
+                        style={{ width: "300px" }}
+                      >
+                        {assignedDivisions &&
+                          JSON.parse(assignedDivisions).map((item) => {
+                            return <option value={item}>{item}</option>;
+                          })}
+                      </select>
+                      {/* <input
+                        type="search"
+                        //@ts-ignore
+                        ref={searchRef}
+                        placeholder="...search here"
+                        autoFocus
+                        // onChange={(e) => {
+                        //   setSearchVal(e.target.value);
+                        // }}
+                        list="people"
+                        style={{
+                          width: "300px",
+                          height: "40px",
+                          padding: "10px",
+                          borderRadius: "10px",
+                          outline: "none",
+                          border: "0.5px solid #ccc",
+                        }}
+                      /> */}
+                      <button
+                        type="submit"
+                        onClick={changeHandler}
+                        style={{
+                          width: "100px",
+                          height: "40px",
+                          padding: "10px",
+                          borderRadius: "10px",
+                          border: "none",
+                          outline: "none",
+                          cursor: "pointer",
+                          backgroundColor: "#000",
+                          color: "white",
+                        }}
+                      >
+                        Search
+                      </button>
+
+                      {/* <ReactHTMLTableToExcel
+                      id="test-table-xls-button"
+                      className="download-table-xls-button"
+                      table="report"
+                      filename="Employee Reports"
+                      sheet="tablexls"
+                      buttonText="Download as XLS"
+                    /> */}
+                    </form>
+                  </>
                 ),
               }}
             />

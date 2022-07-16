@@ -10,6 +10,7 @@ import "@pnp/sp/lists";
 import Toast from "../../../Containers/Toast";
 import { getAnswers, prevHandler } from "./EditJobInfo/EditJobInfo";
 import swal from "sweetalert";
+import { Context } from "../../../Personal";
 
 type Props = {};
 
@@ -25,6 +26,7 @@ const EditPageSix = (props: Props) => {
   const [count, setCount] = React.useState(
     0 || JSON.parse(localStorage.getItem("count"))
   );
+  const { editMode } = React.useContext(Context);
   const [questions, setQuestions] = React.useState(0);
   const [total, setTotal] = React.useState(0);
   const [others, setOthers] = React.useState("");
@@ -153,6 +155,14 @@ const EditPageSix = (props: Props) => {
         history.push("/dashboard/edit/start");
       }, 1000);
       return;
+    } else if (!editMode) {
+      setLoading(false);
+      setMessage("You cannot update this report at the moment!");
+      setShow(true);
+      setTimeout(() => {
+        history.push("/info/personal");
+      }, 1000);
+      return;
     } else if (!userData) {
       setLoading(false);
       localStorage.removeItem("editdata");
@@ -165,7 +175,6 @@ const EditPageSix = (props: Props) => {
       return;
     } else {
       const answerData = [...data, ...response, ...arr];
-
       sp.web.lists
         .getByTitle("personal")
         .items.getById(Number(responseId))
@@ -183,6 +192,14 @@ const EditPageSix = (props: Props) => {
           localStorage.removeItem("editdp");
           setMessage("Update Successful!");
           setShow(true);
+          sp.profiles.myProperties.get().then((response) => {
+            sp.web.lists.getByTitle("Logs").items.add({
+              Title: "Employee survey updated!",
+              Name: response.DisplayName,
+              Email: response.Email,
+              Description: "Employee survey updated",
+            });
+          });
           setTimeout(() => {
             history.push("/info/dashboard");
           }, 1000);
@@ -233,6 +250,13 @@ const EditPageSix = (props: Props) => {
                         }
                         onChange={(e: any) => {
                           if (opt == "Others") {
+                            myResponses.length > 0 &&
+                              setMyResponses((prev) => {
+                                return prev.filter(
+                                  ({ id, type }) =>
+                                    id != items.ID && type != "Others"
+                                );
+                              });
                             test[ind]["show"] = true;
                             test[ind][ind] = e.target.value;
                             let thisReponse = {
@@ -242,26 +266,55 @@ const EditPageSix = (props: Props) => {
                               question: items.questions,
                               type: "Others",
                             };
+
                             setOt({ ...ot, [ind]: thisReponse });
                           } else if (items.type == "checkbox") {
-                            setResponse([
-                              ...response,
+                            if (e.target && !e.target.checked) {
+                              myResponses.length > 0 &&
+                                setMyResponses((prev) => {
+                                  return prev.filter(
+                                    ({ answer }) => answer != opt
+                                  );
+                                });
+                              sectionResponses.length > 0 &&
+                                setSectionResponses((prev) => {
+                                  return prev.filter(
+                                    ({ answer }) => answer != opt
+                                  );
+                                });
+
+                              setResponse((prev) => {
+                                return prev.filter(
+                                  ({ answer }) => answer != opt
+                                );
+                              });
+
+                              return;
+                            }
+
+                            setResponse((prev) => [
+                              ...prev,
                               {
-                                answer: e.target.value,
+                                answer: opt,
                                 id: items.ID,
                                 section: items.section,
                                 question: items.questions,
-                                type: items.type,
+                                type: "checkbox",
                               },
                             ]);
-                          } else {
+                          } else if (items.type == "radio") {
+                            myResponses.length > 0 &&
+                              setMyResponses((prev) => {
+                                return prev.filter(({ id }) => id != items.ID);
+                              });
+
                             test[ind]["show"] = false;
                             let thisReponse = {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
                               question: items.questions,
-                              type: items.type,
+                              type: "radio",
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           }
@@ -326,11 +379,15 @@ const EditPageSix = (props: Props) => {
             </span>
           )}
           {loading ? (
-            <button className={styles.filled__button}>updating...</button>
-          ) : (
-            <button className={styles.filled__button} type="submit">
-              Update
+            <button disabled type="button" className={styles.filled__button}>
+              updating...
             </button>
+          ) : (
+            editMode && (
+              <button className={styles.filled__button} type="submit">
+                Update
+              </button>
+            )
           )}
         </div>
 

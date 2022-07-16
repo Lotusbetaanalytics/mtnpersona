@@ -10,9 +10,9 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  gap: 40px;
+  gap: 20px;
   position: absolute;
-  left: 200px;
+  left: 230px;
 }
 .dashboard__container__cards {
   display: flex;
@@ -84,7 +84,6 @@
   width: 75%;
   height: 75%;
   box-sizing: border-box;
-  border: 1px solid red;
   position: relative;
   bottom: 130px;
 }
@@ -92,9 +91,5 @@
 @media screen and (max-width: 600px) {
   .dashboard__container__cards {
     flex-direction: column;
-  }
-
-  .dashboard__container__content {
-    left: 0px;
   }
 }

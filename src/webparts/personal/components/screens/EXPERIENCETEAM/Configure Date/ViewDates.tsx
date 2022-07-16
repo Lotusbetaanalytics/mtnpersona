@@ -174,6 +174,7 @@ const ViewDates = () => {
                 width: "80%",
                 boxSizing: "border-box",
                 paddingLeft: "30px",
+                marginLeft: "20px",
               }}
               actions={[
                 // {

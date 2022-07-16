@@ -5,7 +5,7 @@ import "@pnp/sp/lists";
 import { graph } from "sp-pnp-js";
 import { graphGet } from "@pnp/graph";
 import ExperienceTeamHeader from "../Experience Team Header/ExperienceTeamHeader";
-import { FormControl, makeStyles } from "@material-ui/core";
+import { Chip, FormControl, makeStyles } from "@material-ui/core";
 import ExperienceTeamNavbar from "../Experience Team Navbar/ExperienceTeamNavbar";
 import styles from "./configure.module.scss";
 import Select from "../../../Containers/Select/Select";
@@ -17,6 +17,8 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
 import { useHistory } from "react-router-dom";
+import swal from "sweetalert";
+import { Cancel } from "@material-ui/icons";
 
 const ConfigureRoles = ({ context }) => {
   const useStyles = makeStyles((theme) => ({
@@ -48,6 +50,7 @@ const ConfigureRoles = ({ context }) => {
   const [openModal, setOpenModal] = React.useState(false);
   const [data, setData] = React.useState({});
   const [showDivisionField, setShowField] = React.useState(divisionRequired);
+  const [selectedDivision, setSelectedDivision] = React.useState([]);
 
   const handleOpenModal = (e) => {
     e.preventDefault();
@@ -56,6 +59,7 @@ const ConfigureRoles = ({ context }) => {
       Email: employeeEmail,
       Name: name,
       Division: divisions,
+      BpDivisions: JSON.stringify(selectedDivision),
       Role: role,
       Title: randomstring.generate(6),
     });
@@ -104,6 +108,10 @@ const ConfigureRoles = ({ context }) => {
     history.push("/experienceteam/dashboard");
   };
 
+  const deleteDivision = (index) => {
+    setSelectedDivision((prev) => prev.filter((item, i) => i !== index));
+  };
+
   return (
     <div className={styles.dashboard__container}>
       <ExperienceTeamNavbar />
@@ -147,8 +155,8 @@ const ConfigureRoles = ({ context }) => {
                 list="people"
               />
               <datalist id="people">
-                {confirmedStaff.map(({ field_8 }) => {
-                  return <option value={field_8}></option>;
+                {confirmedStaff.map(({ EMAIL_ADDRESS }) => {
+                  return <option value={EMAIL_ADDRESS}></option>;
                 })}
               </datalist>
             </div>
@@ -217,11 +225,34 @@ const ConfigureRoles = ({ context }) => {
                       return (
                         <div
                           className={styles.container__content__select}
-                          onClick={() => {
-                            setShowDivisionSelection(false);
-                            setDivision(division);
-                          }}
+                          // onClick={() => {
+                          //   setShowDivisionSelection(false);
+                          //   setDivision(division);
+                          // }}
                         >
+                          <input
+                            type="checkbox"
+                            value={division}
+                            onChange={(e) => {
+                              setDivision(division);
+
+                              if (selectedDivision.includes(division)) {
+                                setSelectedDivision((prev) => {
+                                  return prev.filter(
+                                    (div, index) =>
+                                      index !==
+                                      selectedDivision.indexOf(division)
+                                  );
+                                });
+                              } else {
+                                e.target.checked &&
+                                  setSelectedDivision((prev) => [
+                                    ...prev,
+                                    division,
+                                  ]);
+                              }
+                            }}
+                          />
                           <div
                             style={{
                               flex: 1,
@@ -237,6 +268,31 @@ const ConfigureRoles = ({ context }) => {
               </div>
             </div>
           )}
+          <div
+            style={{
+              width: "70%",
+              height: "100%",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "10px",
+              boxSizing: "border-box",
+              padding: "5px",
+            }}
+          >
+            {selectedDivision.map((division) => {
+              return (
+                <div
+                  style={{
+                    maxWidth: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Chip label={division} />
+                </div>
+              );
+            })}
+          </div>
           <div></div>
           {loading ? (
             <button disabled>Adding...</button>
@@ -272,7 +328,7 @@ const ConfigureRoles = ({ context }) => {
             </>
           )}
         </form>
-        <DisplayModal
+        <Display
           handleClose={handleCloseModal}
           open={openModal}
           data={data}
@@ -281,6 +337,8 @@ const ConfigureRoles = ({ context }) => {
           setEmail={setEmail}
           loading={loading}
           setLoading={setLoading}
+          setSelected={setSelectedDivision}
+          setDivision={setDivision}
         />
       </div>
       <SimpleSnackbar open={open} handleClose={handleClose} />
@@ -383,17 +441,167 @@ export function DisplayModal({
       .getByTitle("Roles")
       .items.add(data)
       .then((res) => {
-        setOpen(true);
+        // setOpen(true);
         setLoading(false);
         setEmail("");
         setTimeout(() => {
           setOpen(false);
           handleClose();
-        }, 1000);
+        }, 500);
+        swal("Success", "User Added Successfully", "success");
+        sp.profiles.myProperties.get().then((response) => {
+          sp.web.lists
+            .getByTitle("Logs")
+            .items.add({
+              Title: "Role Added",
+              Name: response.DisplayName,
+              EmailAddress: response.Email,
+              Description: "Role was added!",
+            })
+            .then(() => {
+              console.log("Logged");
+            });
+        });
       })
       .catch((err) => {
         setLoading(false);
-        setError(true);
+        swal("Error", "An error occured! Try again later...", "error");
+        // setError(true);
+      });
+  };
+
+  const handleCancel = () => {
+    handleClose();
+  };
+
+  const body = (
+    <div style={getModalStyle()} className={classes.paper}>
+      <p id="simple-modal-description">
+        Are you sure you want to add this user?
+      </p>
+      <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
+        <button
+          style={{
+            outline: "none",
+            border: "none",
+            height: "30px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: "10px",
+            padding: "20px",
+            boxSizing: "border-box",
+            cursor: "pointer",
+          }}
+          onClick={handleCancel}
+        >
+          Cancel
+        </button>
+        {loading ? (
+          <button
+            style={{
+              outline: "none",
+              border: "none",
+              height: "30px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: "10px",
+              padding: "20px",
+              boxSizing: "border-box",
+              cursor: "pointer",
+            }}
+            disabled
+          >
+            Adding user...
+          </button>
+        ) : (
+          <button
+            style={{
+              outline: "none",
+              border: "none",
+              height: "30px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: "10px",
+              padding: "20px",
+              boxSizing: "border-box",
+              cursor: "pointer",
+            }}
+            type="submit"
+            onClick={(e) => onSubmitHandler(e)}
+          >
+            Yes
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        {body}
+      </Modal>
+    </div>
+  );
+}
+export function Display({
+  handleClose,
+  open,
+  data,
+  setLoading,
+  loading,
+  setOpen,
+  setEmail,
+  setError,
+  setSelected,
+  setDivision,
+}) {
+  const classes = useStyles();
+
+  //Form submit Handler function
+  const onSubmitHandler = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    sp.web.lists
+      .getByTitle("Roles")
+      .items.add(data)
+      .then((res) => {
+        // setOpen(true);
+        setLoading(false);
+        setEmail("");
+        setTimeout(() => {
+          setOpen(false);
+          handleClose();
+        }, 500);
+        swal("Success", "User Added Successfully", "success");
+        sp.profiles.myProperties.get().then((response) => {
+          sp.web.lists
+            .getByTitle("Logs")
+            .items.add({
+              Title: "New Role Added",
+              Name: response.DisplayName,
+              EmailAddress: response.Email,
+              Description: "New role was added!",
+            })
+            .then(() => {
+              console.log("Log added");
+            });
+        });
+        setSelected([]);
+        setDivision("");
+      })
+      .catch((err) => {
+        setLoading(false);
+        swal("Error", "An error occured! Try again later...", "error");
+        // setError(true);
       });
   };
 

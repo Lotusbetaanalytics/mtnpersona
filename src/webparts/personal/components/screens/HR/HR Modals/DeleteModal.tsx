@@ -37,9 +37,21 @@ const DeleteModal = ({ open, handleClose, setList, id }) => {
         setList((prev) => {
           return prev.filter((item) => item.ID !== id);
         });
-        return addToast("Delete Successful", {
-          appearance: "success",
-          autoDismiss: true,
+        sp.profiles.myProperties.get().then((response) => {
+          sp.web.lists
+            .getByTitle("Logs")
+            .items.add({
+              Title: "Question Deleted",
+              Name: response.DisplayName,
+              EmailAddress: response.Email,
+              Description: "A question was deleted!",
+            })
+            .then(() => {
+              return addToast("Delete Successful", {
+                appearance: "success",
+                autoDismiss: true,
+              });
+            });
         });
       });
     handleClose();

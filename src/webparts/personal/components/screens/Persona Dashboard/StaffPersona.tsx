@@ -35,45 +35,48 @@ const StaffPersona = () => {
   const [total, setTotal] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
-    const ref = React.useRef<HTMLDivElement>(null);
-    React.useEffect(() => {
-      if (loading) {
-        swal({
-          icon: "info",
-          buttons: [false],
-          closeOnClickOutside: false,
-          closeOnEsc: false,
-          text: "generating image...",
-        });
-      }
-    }, [loading]);
+  const ref = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (loading) {
+      swal({
+        icon: "info",
+        buttons: [false],
+        closeOnClickOutside: false,
+        closeOnEsc: false,
+        text: "generating image...",
+      });
+    }
+  }, [loading]);
 
-    const onButtonClick = React.useCallback(() => {
-      setLoading(true);
+  const onButtonClick = React.useCallback(() => {
+    setLoading(true);
 
-      if (ref.current === null) {
-        return;
-      }
+    if (ref.current === null) {
+      return;
+    }
 
-      toPng(ref.current, { cacheBust: true })
-        .then((dataUrl) => {
-          const link = document.createElement("a");
-          link.download = "staff-persona.png";
-          link.href = dataUrl;
-          link.click();
-          setLoading(false);
-          swal("", "Image downloaded successfully", "success");
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-          swal(
-            "",
-            "An error occurred while generating the image. Please try again!",
-            "error"
-          );
-        });
-    }, [ref]);
+    toPng(ref.current, {
+      cacheBust: true,
+       height: 1100,
+    })
+      .then((dataUrl) => {
+        const link = document.createElement("a");
+        link.download = "staff-persona.png";
+        link.href = dataUrl;
+        link.click();
+        setLoading(false);
+        swal("", "Image downloaded successfully", "success");
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+        swal(
+          "",
+          "An error occurred while generating the image. Please try again!",
+          "error"
+        );
+      });
+  }, [ref]);
 
   const getNumberofInterests = () => {
     return sp.web.lists
@@ -441,7 +444,7 @@ const StaffPersona = () => {
         </button>
       </Tooltip>
 
-      <div className={styles.dashboard__container}>
+      <div className={styles.dashboard__container} ref={ref}>
         <div className={styles.dashboard__header}>
           <div className={styles.personalImage}>
             <img src={staffImg} alt="" />
@@ -512,30 +515,12 @@ const StaffPersona = () => {
           </div>
           <div className={styles.dashboard__cards__right}>
             <div className={styles.card__right__first}>
-              <div className={styles.card__circle}>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <img
-                    src="https://lotusbetaanalytics.com/mtn/Vector-1.svg"
-                    alt=""
-                  />
-                  <img
-                    src="https://lotusbetaanalytics.com/mtn/Vector-2.svg"
-                    alt=""
-                  />
-                </div>
-              </div>
               <div>
                 <h5>Career Goal</h5>
               </div>
               <div>{goals}</div>
             </div>
             <div className={styles.card__right__second}>
-              <div className={styles.card__circle}>
-                <img
-                  src="https://lotusbetaanalytics.com/mtn/Vector.svg"
-                  alt=""
-                />
-              </div>
               <div>
                 <h5>Interests</h5>
               </div>
@@ -543,7 +528,7 @@ const StaffPersona = () => {
             </div>
             <div className={styles.card__right__third}>
               <div className={styles.right__heading}>
-                <h5>Key Attributes</h5>
+                <h5 style={{ width: "100%" }}>Key Attributes</h5>
               </div>
               <div className={styles.itemsDisplay}>{attributes}</div>
             </div>

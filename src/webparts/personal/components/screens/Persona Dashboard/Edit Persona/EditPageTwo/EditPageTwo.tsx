@@ -176,6 +176,13 @@ const EditPageTwo = (props: Props) => {
                         }
                         onChange={(e: any) => {
                           if (opt == "Others") {
+                            myResponses.length > 0 &&
+                              setMyResponses((prev) => {
+                                return prev.filter(
+                                  ({ id, type }) =>
+                                    id != items.ID && type != "Others"
+                                );
+                              });
                             test[ind]["show"] = true;
                             test[ind][ind] = e.target.value;
                             let thisReponse = {
@@ -185,26 +192,55 @@ const EditPageTwo = (props: Props) => {
                               question: items.questions,
                               type: "Others",
                             };
+
                             setOt({ ...ot, [ind]: thisReponse });
                           } else if (items.type == "checkbox") {
-                            setResponse([
-                              ...response,
+                            if (e.target && !e.target.checked) {
+                              myResponses.length > 0 &&
+                                setMyResponses((prev) => {
+                                  return prev.filter(
+                                    ({ answer }) => answer != opt
+                                  );
+                                });
+                              sectionResponses.length > 0 &&
+                                setSectionResponses((prev) => {
+                                  return prev.filter(
+                                    ({ answer }) => answer != opt
+                                  );
+                                });
+
+                              setResponse((prev) => {
+                                return prev.filter(
+                                  ({ answer }) => answer != opt
+                                );
+                              });
+
+                              return;
+                            }
+
+                            setResponse((prev) => [
+                              ...prev,
                               {
-                                answer: e.target.value,
+                                answer: opt,
                                 id: items.ID,
                                 section: items.section,
-                                type: items.type,
                                 question: items.questions,
+                                type: "checkbox",
                               },
                             ]);
-                          } else {
+                          } else if (items.type == "radio") {
+                            myResponses.length > 0 &&
+                              setMyResponses((prev) => {
+                                return prev.filter(({ id }) => id != items.ID);
+                              });
+
                             test[ind]["show"] = false;
                             let thisReponse = {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
-                              type: items.type,
                               question: items.questions,
+                              type: "radio",
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           }

@@ -13,6 +13,7 @@ import { Link, useHistory } from "react-router-dom";
 import styles2 from "./modal.module.scss";
 import { Cancel } from "@material-ui/icons";
 import swal from "sweetalert";
+import { BASE_URL } from "../../../config";
 
 type user = {
   id: any;
@@ -40,8 +41,7 @@ const StaffView = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const href = `${proxy}#/info/dashboard/${employeeName}/${employeeEmail}`;
+  const href = `${BASE_URL}#/info/dashboard/${employeeName}/${employeeEmail}`;
 
   React.useEffect(() => {
     setFindingData(true);

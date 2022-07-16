@@ -57,6 +57,7 @@ import EditPageTwo from "./screens/Persona Dashboard/Edit Persona/EditPageTwo/Ed
 import EditJobInfo from "./screens/Persona Dashboard/Edit Persona/EditJobInfo/EditJobInfo";
 import EditScreen1 from "./screens/Persona Dashboard/Edit Persona";
 import EditDate from "./screens/EXPERIENCETEAM/Configure Date/EditDate";
+import { generateArrayOfDates } from "./screens/Landing Page";
 
 export default class Personal extends React.Component<
   IPersonalProps,
@@ -69,10 +70,10 @@ export default class Personal extends React.Component<
     email: string;
     lineManager: string;
     surveyId: string;
-    rejectedSurvey: any[];
     allQuestions: any[];
     numberOfStaff: number;
     confirmedStaff: any[];
+    editMode: boolean;
   }
 > {
   constructor(props: IPersonalProps) {
@@ -86,10 +87,11 @@ export default class Personal extends React.Component<
       email: "",
       lineManager: "",
       surveyId: "",
-      rejectedSurvey: [],
+
       allQuestions: [],
       numberOfStaff: 0,
       confirmedStaff: [],
+      editMode: false,
     };
   }
 
@@ -97,7 +99,7 @@ export default class Personal extends React.Component<
     try {
       this.props.context.spHttpClient
         .get(
-          `https://lotusbetaanalytics.sharepoint.com/sites/business_solutions/_api/lists/GetByTitle('CURRENT HCM STAFF LIST-test')/items?$filter=field_20 eq 'Permanent Employee'&$count=true`,
+          `https://mtncloud.sharepoint.com/sites/MTNNigeriaComplianceUniverse/testenv/_api/lists/GetByTitle('CURRENT HCM STAFF LIST')/items?$filter=EMPLOYMENT_x0020_STATUS_x002e_1 eq 'Permanent' or EMPLOYMENT_x0020_STATUS_x002e_1 eq 'Permanent Employee'&$count=true`,
           SPHttpClient.configurations.v1
         )
         .then((response: SPHttpClientResponse) => {
@@ -117,15 +119,17 @@ export default class Personal extends React.Component<
 
     try {
       sp.profiles.myProperties.get().then(({ Email }) => {
-        // Email = Email.toLowerCase();
+        localStorage.setItem("email", Email);
         this.props.context.spHttpClient
           .get(
-            `https://lotusbetaanalytics.sharepoint.com/sites/business_solutions/_api/lists/GetByTitle('CURRENT HCM STAFF LIST-test')/items?$filter=field_8 eq '${Email}'`,
+            `https://mtncloud.sharepoint.com/sites/MTNNigeriaComplianceUniverse/testenv/_api/lists/GetByTitle('CURRENT HCM STAFF LIST')/items?$filter=EMAIL_ADDRESS eq '${Email}'`,
             SPHttpClient.configurations.v1
           )
           .then((response: SPHttpClientResponse) => {
             response.json().then((responseJSON: any) => {
-              this.setState({ lineManager: responseJSON.value[0].field_18 });
+              this.setState({
+                lineManager: responseJSON.value[0].SUPERVISOR_x0020_EMAIL,
+              });
 
               if (responseJSON.value.length === 0) {
                 swal({
@@ -136,15 +140,25 @@ export default class Personal extends React.Component<
                   closeOnEsc: false,
                   buttons: [false],
                 });
+
+                sp.profiles.myProperties.get().then((response) => {
+                  sp.web.lists.getByTitle("Logs").items.add({
+                    Title: "Login attempt blocked",
+                    Name: response.DisplayName,
+                    EmailAddress: response.Email,
+                    Description: `A login attempt from ${response.Email} was blocked because user is not in the HCM list`,
+                  });
+                });
+
                 this.setState({ notFound: true });
                 return;
               }
 
               const findPermanentStaff = responseJSON.value.filter(
-                ({ field_20 }) => {
+                ({ EMPLOYMENT_x0020_STATUS_x002e_1 }) => {
                   return (
-                    field_20 === "Permanent Employee" ||
-                    field_20 === "Permanent"
+                    EMPLOYMENT_x0020_STATUS_x002e_1 === "Permanent Employee" ||
+                    EMPLOYMENT_x0020_STATUS_x002e_1 === "Permanent"
                   ); //find all permanent employees
                 }
               );
@@ -162,8 +176,8 @@ export default class Personal extends React.Component<
                 return;
               }
               //search the array to find a matching record
-              for (let { field_8 } of findPermanentStaff) {
-                if (field_8 != Email) {
+              for (let { EMAIL_ADDRESS } of findPermanentStaff) {
+                if (EMAIL_ADDRESS != Email) {
                   swal({
                     title: "You are not authorized to access this application.",
                     text: "Please contact your Manager",
@@ -201,20 +215,34 @@ export default class Personal extends React.Component<
         });
       });
     sp.web.lists
-      .getByTitle("RejectedSurveys")
-      .items.get()
-      .then((items: any) => {
-        this.setState({
-          rejectedSurvey: items,
-        });
-      });
-    sp.web.lists
       .getByTitle("Questions")
       .items.get()
       .then((items: any) => {
         this.setState({
           allQuestions: items,
         });
+      });
+
+    const today = new Date(Date.now()).toISOString();
+    sp.web.lists
+      .getByTitle("Survey Sessions")
+      .items.select("StartDate,EndDate,Status")
+      .get()
+      .then((items) => {
+        if (items.length > 0) {
+          const getDates = items
+            .filter(({ Status }) => Status === "Started")
+            .map(({ StartDate, EndDate }) => {
+              return generateArrayOfDates(EndDate, StartDate);
+            });
+
+          for (let datesArr of getDates) {
+            if (datesArr.includes(new Date(today).toLocaleDateString())) {
+              this.setState({ editMode: true });
+              return;
+            }
+          }
+        }
       });
   }
 
@@ -232,10 +260,11 @@ export default class Personal extends React.Component<
             lineManager: this.state.lineManager,
             surveyId: this.state.surveyId,
             setState: this.setState,
-            rejectedSurvey: this.state.rejectedSurvey,
+            rejectedSurvey: [],
             allQuestions: this.state.allQuestions,
             numberOfStaff: this.state.numberOfStaff,
             confirmedStaff: this.state.confirmedStaff,
+            editMode: this.state.editMode,
           }}
         >
           {this.state.checkStatus ? (
@@ -420,4 +449,5 @@ export const Context = React.createContext({
   allQuestions: null,
   numberOfStaff: null,
   confirmedStaff: null,
+  editMode: null,
 });

@@ -64,6 +64,7 @@ const ViewReport = () => {
             });
         },
         export: true,
+        hidden: true,
       });
     }
 
@@ -122,259 +123,259 @@ const ViewReport = () => {
     },
 
     // { title: "Approval Status", field: "EXApprovalStatus", searchable: true },
-    {
-      title: "Short Bio",
-      field: "responses",
-      searchable: true,
-      export: false,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "bio", rowData.ID)
-              .length > 0 ? (
-              getSection(JSON.parse(rowData.responses), "bio", rowData.ID).map(
-                ({ answer }) => {
-                  return <li style={{ fontSize: "10px" }}>{answer}</li>;
-                }
-              )
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Communication Preference",
-      field: "responses",
-      searchable: true,
-      export: false,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(
-              JSON.parse(rowData.responses),
-              "communication",
-              rowData.ID
-            ).length > 0 ? (
-              getSection(
-                JSON.parse(rowData.responses),
-                "communication",
-                rowData.ID
-              ).map(({ answer }) => {
-                return <li style={{ fontSize: "10px" }}>{answer}</li>;
-              })
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Worries",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      export: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "worries", rowData.ID)
-              .length > 0 ? (
-              getSection(
-                JSON.parse(rowData.responses),
-                "worries",
-                rowData.ID
-              ).map(({ answer }) => {
-                return <li style={{ fontSize: "10px" }}>{answer}</li>;
-              })
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Interests",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      export: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "interests", rowData.ID)
-              .length > 0 ? (
-              getSection(
-                JSON.parse(rowData.responses),
-                "interests",
-                rowData.ID
-              ).map(({ answer }) => {
-                return <li style={{ fontSize: "10px" }}>{answer}</li>;
-              })
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Priorities",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      export: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "priorities", rowData.ID)
-              .length > 0 ? (
-              getSection(
-                JSON.parse(rowData.responses),
-                "priorities",
-                rowData.ID
-              ).map(({ answer }) => {
-                return <li style={{ fontSize: "10px" }}>{answer}</li>;
-              })
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Goals",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      export: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "goals", rowData.ID)
-              .length > 0 ? (
-              getSection(
-                JSON.parse(rowData.responses),
-                "goals",
-                rowData.ID
-              ).map(({ answer }) => {
-                return <li style={{ fontSize: "10px" }}>{answer}</li>;
-              })
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Motivators",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      export: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "motivator", rowData.ID)
-              .length > 0 ? (
-              getSection(
-                JSON.parse(rowData.responses),
-                "motivator",
-                rowData.ID
-              ).map(({ answer }) => {
-                return <li style={{ fontSize: "10px" }}>{answer}</li>;
-              })
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Learning Styles",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      export: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "learning", rowData.ID)
-              .length > 0 ? (
-              getSection(
-                JSON.parse(rowData.responses),
-                "learning",
-                rowData.ID
-              ).map(({ answer }) => {
-                return <li style={{ fontSize: "10px" }}>{answer}</li>;
-              })
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
-    {
-      title: "Attributes",
-      field: "responses",
-      searchable: true,
-      cellStyle: {
-        width: "150%",
-      },
-      grouping: false,
-      export: false,
-      render: (rowData) => {
-        return (
-          <ul>
-            {getSection(JSON.parse(rowData.responses), "attributes", rowData.ID)
-              .length > 0 ? (
-              getSection(
-                JSON.parse(rowData.responses),
-                "attributes",
-                rowData.ID
-              ).map(({ answer }) => {
-                return <li style={{ fontSize: "10px" }}>{answer}</li>;
-              })
-            ) : (
-              <li>No Response</li>
-            )}
-          </ul>
-        );
-      },
-    },
+    // {
+    //   title: "Short Bio",
+    //   field: "responses",
+    //   searchable: true,
+    //   export: false,
+    //   cellStyle: {
+    //     width: "150%",
+    //   },
+    //   grouping: false,
+    //   render: (rowData) => {
+    //     return (
+    //       <ul>
+    //         {getSection(JSON.parse(rowData.responses), "bio", rowData.ID)
+    //           .length > 0 ? (
+    //           getSection(JSON.parse(rowData.responses), "bio", rowData.ID).map(
+    //             ({ answer }) => {
+    //               return <li style={{ fontSize: "10px" }}>{answer}</li>;
+    //             }
+    //           )
+    //         ) : (
+    //           <li>No Response</li>
+    //         )}
+    //       </ul>
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "Communication Preference",
+    //   field: "responses",
+    //   searchable: true,
+    //   export: false,
+    //   cellStyle: {
+    //     width: "150%",
+    //   },
+    //   grouping: false,
+    //   render: (rowData) => {
+    //     return (
+    //       <ul>
+    //         {getSection(
+    //           JSON.parse(rowData.responses),
+    //           "communication",
+    //           rowData.ID
+    //         ).length > 0 ? (
+    //           getSection(
+    //             JSON.parse(rowData.responses),
+    //             "communication",
+    //             rowData.ID
+    //           ).map(({ answer }) => {
+    //             return <li style={{ fontSize: "10px" }}>{answer}</li>;
+    //           })
+    //         ) : (
+    //           <li>No Response</li>
+    //         )}
+    //       </ul>
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "Worries",
+    //   field: "responses",
+    //   searchable: true,
+    //   cellStyle: {
+    //     width: "150%",
+    //   },
+    //   grouping: false,
+    //   export: false,
+    //   render: (rowData) => {
+    //     return (
+    //       <ul>
+    //         {getSection(JSON.parse(rowData.responses), "worries", rowData.ID)
+    //           .length > 0 ? (
+    //           getSection(
+    //             JSON.parse(rowData.responses),
+    //             "worries",
+    //             rowData.ID
+    //           ).map(({ answer }) => {
+    //             return <li style={{ fontSize: "10px" }}>{answer}</li>;
+    //           })
+    //         ) : (
+    //           <li>No Response</li>
+    //         )}
+    //       </ul>
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "Interests",
+    //   field: "responses",
+    //   searchable: true,
+    //   cellStyle: {
+    //     width: "150%",
+    //   },
+    //   grouping: false,
+    //   export: false,
+    //   render: (rowData) => {
+    //     return (
+    //       <ul>
+    //         {getSection(JSON.parse(rowData.responses), "interests", rowData.ID)
+    //           .length > 0 ? (
+    //           getSection(
+    //             JSON.parse(rowData.responses),
+    //             "interests",
+    //             rowData.ID
+    //           ).map(({ answer }) => {
+    //             return <li style={{ fontSize: "10px" }}>{answer}</li>;
+    //           })
+    //         ) : (
+    //           <li>No Response</li>
+    //         )}
+    //       </ul>
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "Priorities",
+    //   field: "responses",
+    //   searchable: true,
+    //   cellStyle: {
+    //     width: "150%",
+    //   },
+    //   grouping: false,
+    //   export: false,
+    //   render: (rowData) => {
+    //     return (
+    //       <ul>
+    //         {getSection(JSON.parse(rowData.responses), "priorities", rowData.ID)
+    //           .length > 0 ? (
+    //           getSection(
+    //             JSON.parse(rowData.responses),
+    //             "priorities",
+    //             rowData.ID
+    //           ).map(({ answer }) => {
+    //             return <li style={{ fontSize: "10px" }}>{answer}</li>;
+    //           })
+    //         ) : (
+    //           <li>No Response</li>
+    //         )}
+    //       </ul>
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "Goals",
+    //   field: "responses",
+    //   searchable: true,
+    //   cellStyle: {
+    //     width: "150%",
+    //   },
+    //   grouping: false,
+    //   export: false,
+    //   render: (rowData) => {
+    //     return (
+    //       <ul>
+    //         {getSection(JSON.parse(rowData.responses), "goals", rowData.ID)
+    //           .length > 0 ? (
+    //           getSection(
+    //             JSON.parse(rowData.responses),
+    //             "goals",
+    //             rowData.ID
+    //           ).map(({ answer }) => {
+    //             return <li style={{ fontSize: "10px" }}>{answer}</li>;
+    //           })
+    //         ) : (
+    //           <li>No Response</li>
+    //         )}
+    //       </ul>
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "Motivators",
+    //   field: "responses",
+    //   searchable: true,
+    //   cellStyle: {
+    //     width: "150%",
+    //   },
+    //   grouping: false,
+    //   export: false,
+    //   render: (rowData) => {
+    //     return (
+    //       <ul>
+    //         {getSection(JSON.parse(rowData.responses), "motivator", rowData.ID)
+    //           .length > 0 ? (
+    //           getSection(
+    //             JSON.parse(rowData.responses),
+    //             "motivator",
+    //             rowData.ID
+    //           ).map(({ answer }) => {
+    //             return <li style={{ fontSize: "10px" }}>{answer}</li>;
+    //           })
+    //         ) : (
+    //           <li>No Response</li>
+    //         )}
+    //       </ul>
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "Learning Styles",
+    //   field: "responses",
+    //   searchable: true,
+    //   cellStyle: {
+    //     width: "150%",
+    //   },
+    //   grouping: false,
+    //   export: false,
+    //   render: (rowData) => {
+    //     return (
+    //       <ul>
+    //         {getSection(JSON.parse(rowData.responses), "learning", rowData.ID)
+    //           .length > 0 ? (
+    //           getSection(
+    //             JSON.parse(rowData.responses),
+    //             "learning",
+    //             rowData.ID
+    //           ).map(({ answer }) => {
+    //             return <li style={{ fontSize: "10px" }}>{answer}</li>;
+    //           })
+    //         ) : (
+    //           <li>No Response</li>
+    //         )}
+    //       </ul>
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "Attributes",
+    //   field: "responses",
+    //   searchable: true,
+    //   cellStyle: {
+    //     width: "150%",
+    //   },
+    //   grouping: false,
+    //   export: false,
+    //   render: (rowData) => {
+    //     return (
+    //       <ul>
+    //         {getSection(JSON.parse(rowData.responses), "attributes", rowData.ID)
+    //           .length > 0 ? (
+    //           getSection(
+    //             JSON.parse(rowData.responses),
+    //             "attributes",
+    //             rowData.ID
+    //           ).map(({ answer }) => {
+    //             return <li style={{ fontSize: "10px" }}>{answer}</li>;
+    //           })
+    //         ) : (
+    //           <li>No Response</li>
+    //         )}
+    //       </ul>
+    //     );
+    //   },
+    // },
     ...field,
   ];
 
@@ -389,7 +390,9 @@ const ViewReport = () => {
       .items.filter(`${paramRef.current.value} eq '${searchRef.current.value}'`)
       .get()
       .then((items: any) => {
-        setData(mapQuestions(items));
+        if (items.length > 0) {
+          setData(mapQuestions(items));
+        }
         setFindingData(false);
       });
     // }
@@ -412,7 +415,9 @@ const ViewReport = () => {
       .getByTitle("personal")
       .items.get()
       .then((items: any) => {
-        setData(mapQuestions(items));
+        if (items.length > 0) {
+          setData(mapQuestions(items));
+        }
         setFindingData(false);
       });
   }, []);
@@ -436,12 +441,14 @@ const ViewReport = () => {
   };
 
   const mapQuestions = (responses) => {
+    if (!responses) return [];
     return responses.map(
-      ({ responses, name, email, dp, AvatarGroup, ID, division }) => {
-        responses = JSON.parse(responses);
+      ({ responses, name, email, alias, dp, AvatarGroup, ID, division }) => {
+        responses = (responses && JSON.parse(responses)) ?? [];
         return {
           name,
           division,
+          alias,
           ID,
           email,
           dp,
@@ -555,8 +562,10 @@ const ViewReport = () => {
             style={{
               boxShadow: "none",
               width: "80%",
+              maxHeight: "60vh",
               boxSizing: "border-box",
               paddingLeft: "30px",
+              margin: "0 40px",
             }}
             actions={[
               {
@@ -595,8 +604,9 @@ const ViewReport = () => {
                     <select
                       //@ts-ignore
                       ref={paramRef}
-                      // onChange={selectChangeHandler}
+                      onChange={selectChangeHandler}
                       style={{ width: "300px" }}
+                      value={searchParam}
                     >
                       <option value="email">Search By Employee Email</option>
                       <option value="name">Search By Employee Name</option>
@@ -643,15 +653,21 @@ const ViewReport = () => {
 
                     <datalist id="people">
                       {searchParam == "email"
-                        ? confirmedStaff.map(({ field_8 }) => {
-                            return <option value={field_8}></option>;
+                        ? confirmedStaff.map(({ EMAIL_ADDRESS }) => {
+                            return <option value={EMAIL_ADDRESS}></option>;
                           })
                         : searchParam == "name"
-                        ? confirmedStaff.map(({ field_5 }) => {
-                            return <option value={field_5}></option>;
-                          })
-                        : confirmedStaff.map(({ field_13 }) => {
-                            return <option value={field_13}></option>;
+                        ? confirmedStaff.map(
+                            ({ FIRST_x0020_NAME, LAST_x0020_NAME }) => {
+                              return (
+                                <option
+                                  value={`${FIRST_x0020_NAME} ${LAST_x0020_NAME}`}
+                                ></option>
+                              );
+                            }
+                          )
+                        : confirmedStaff.map(({ DEPARTMENT }) => {
+                            return <option value={DEPARTMENT}></option>;
                           })}
                     </datalist>
                     {/* <ReactHTMLTableToExcel

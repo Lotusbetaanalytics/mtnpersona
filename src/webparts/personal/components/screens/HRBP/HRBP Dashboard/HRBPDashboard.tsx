@@ -14,28 +14,41 @@ import PieChart from "../../../Containers/Pie Chart/PieChart";
 import { Context } from "../../../Personal";
 import ExperienceTeamHeader from "../../EXPERIENCETEAM/Experience Team Header/ExperienceTeamHeader";
 import HrbpNavbar from "../HRBP Navbar/HRBPNavbar";
-
 import styles from "./dashboard.module.scss";
+import {
+  SPHttpClient,
+  SPHttpClientConfiguration,
+  SPHttpClientResponse,
+} from "@microsoft/sp-http";
+import { BASE_URL } from "../../../config";
 
 const HrbpDashboard = () => {
-  const { allSurvey, rejectedSurvey: rejected } = React.useContext(Context);
-  const [numberofSurvey, setNumberOfSurvey] = React.useState(0);
-  const [rejectedSurvey, setRejectedSurvey] = React.useState(0);
+  const {
+    allSurvey,
+    rejectedSurvey: rejected,
+    confirmedStaff,
+    allQuestions,
+    spHttpClient,
+  } = React.useContext(Context);
   const [pendingSurvey, setPendingSurvey] = React.useState(0);
-  const [numberofQuestions, setNumberOfQuestions] = React.useState(0);
+  const [assignedDivisions, setAssignedDivisions] = React.useState([]);
   const [showChart, setShowChart] = React.useState(false);
-  const [user, setUser] = React.useState({
-    division: "",
-  });
+  const [email, setEmail] = React.useState("");
 
   const data = [
-    // {
-    //   label: "Rejected Surveys",
-    //   data: [rejectedSurvey],
-    //   backgroundColor: "#006993",
-    // },
     {
-      label: "Pending Surveys",
+      label: "Yet to complete",
+      data: [
+        confirmedStaff.filter((staff) =>
+          assignedDivisions
+            .join(" ")
+            .includes(staff.DEPARTMENT || staff.DIVISION)
+        ).length - pendingSurvey,
+      ],
+      backgroundColor: "#006993",
+    },
+    {
+      label: "Completed Surveys",
       data: [pendingSurvey],
       backgroundColor: "#C4C4C4",
     },
@@ -46,12 +59,17 @@ const HrbpDashboard = () => {
   const pieChartData = [
     {
       value: pendingSurvey || 0,
-      name: `Pending`,
+      name: `Completed Surveys`,
     },
-    // {
-    //   value: rejectedSurvey || 0,
-    //   name: `Rejected`,
-    // },
+    {
+      value:
+        confirmedStaff.filter((staff) =>
+          assignedDivisions
+            .join(" ")
+            .includes(staff.DEPARTMENT || staff.DIVISION)
+        ).length - pendingSurvey || 0,
+      name: `Staff yet to complete`,
+    },
   ];
 
   //Create Bar chart component
@@ -73,45 +91,48 @@ const HrbpDashboard = () => {
   };
 
   React.useEffect(() => {
-    sp.profiles.myProperties.get().then((data) => {
-      sp.web.lists
-        .getByTitle("Roles")
-        .items.filter(`Email eq '${data.Email}'`)
-        .get()
-        .then((items: any) => {
-          setUser({ division: items[0].Division });
-        });
-    });
+    sp.profiles.myProperties
+      .get()
+      .then((data) => {
+        setEmail(data.Email);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   React.useEffect(() => {
-    setNumberOfSurvey(
-      allSurvey.filter((survey) => survey.division == user.division).length
-    );
-    setRejectedSurvey(
-      rejected.filter(
-        (survey) =>
-          survey.EXApprovalStatus === "Declined" &&
-          survey.division == user.division
-      ).length
-    );
+    spHttpClient
+      .get(
+        `${BASE_URL}/_api/web/lists/getbytitle('Roles')/items?$filter=Email eq '${localStorage.getItem(
+          "email"
+        )}'`,
+        SPHttpClient.configurations.v1
+      )
+      .then((response: SPHttpClientResponse) => {
+        response.json().then((responseJSON: any) => {
+          console.log(responseJSON);
+          const { BpDivisions } =
+            responseJSON.value.filter((item) => item.Role == "HRBP").length >
+              0 && responseJSON.value.filter((item) => item.Role == "HRBP")[0];
+
+          BpDivisions && setAssignedDivisions(JSON.parse(BpDivisions));
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  React.useEffect(() => {
     setPendingSurvey(
       allSurvey.filter(
         (survey) =>
           survey.EXApprovalStatus === "Pending" &&
-          survey.division == user.division
+          assignedDivisions.join(" ").includes(survey.division)
       ).length
     );
-  }, [allSurvey, user]);
-
-  React.useEffect(() => {
-    sp.web.lists
-      .getByTitle("Questions")
-      .items.get()
-      .then((items: any) => {
-        setNumberOfQuestions(items.length);
-      });
-  }, []);
+  }, [allSurvey, assignedDivisions]);
 
   return (
     <>
@@ -123,18 +144,24 @@ const HrbpDashboard = () => {
           </div>
           <div className={styles.dashboard__container__cards}>
             <Card
-              title="Number of Survey"
-              number={numberofSurvey}
+              title="Completed Surveys"
+              number={pendingSurvey}
               icon={<BookSharp style={{ fontSize: 60 }} />}
             />
-            {/* <Card
-              title="Rejected Surveys"
-              number={rejectedSurvey}
+            <Card
+              title="Number of Staff"
+              number={
+                confirmedStaff.filter((staff) =>
+                  assignedDivisions
+                    .join(" ")
+                    .includes(staff.DEPARTMENT || staff.DIVISION)
+                ).length
+              }
               icon={<CancelOutlined style={{ fontSize: 60 }} />}
-            /> */}
+            />
             <Card
               title="Total Questions"
-              number={numberofQuestions}
+              number={allQuestions.length}
               icon={<QuestionAnswer style={{ fontSize: 60 }} />}
             />
           </div>
@@ -157,7 +184,7 @@ const HrbpDashboard = () => {
                 Bar Chart
               </div>
             </div>
-            <div>
+            <div style={{ width: "80%", height: "80%" }}>
               {showChart ? (
                 <div className={styles.barChart}>{showBarChart()}</div>
               ) : (

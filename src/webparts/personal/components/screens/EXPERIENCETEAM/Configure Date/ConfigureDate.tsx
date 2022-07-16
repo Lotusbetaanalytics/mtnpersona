@@ -339,8 +339,6 @@ export function DisplayModal({
     e.preventDefault();
     setLoading(true);
 
-    console.log(data.StartDate);
-
     sp.web.lists
       .getByTitle("Survey Sessions")
       .items.filter(`StartDate eq '${new Date(data.StartDate).toISOString()}'`)
@@ -361,10 +359,22 @@ export function DisplayModal({
           .then((res) => {
             setLoading(false);
             swal("Success", "Session Added", "success");
-            setTimeout(() => {
-              setOpen(false);
-              handleClose();
-            }, 1000);
+            sp.profiles.myProperties.get().then((response) => {
+              sp.web.lists
+                .getByTitle("Logs")
+                .items.add({
+                  Title: "New Date Added",
+                  Name: response.DisplayName,
+                  EmailAddress: response.Email,
+                  Description: "Survey date was added!",
+                })
+                .then(() => {
+                  setTimeout(() => {
+                    setOpen(false);
+                    handleClose();
+                  }, 1000);
+                });
+            });
           })
           .catch((err) => {
             setLoading(false);

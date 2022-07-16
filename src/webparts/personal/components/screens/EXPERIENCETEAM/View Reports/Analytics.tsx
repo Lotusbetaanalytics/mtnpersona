@@ -298,7 +298,14 @@ const AnalyticsReport = () => {
             <Spinner />
           </div>
         ) : (
-          <div style={{ width: "100%", height: "100%" }}>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              padding: "auto",
+              margin: "auto",
+            }}
+          >
             <div
               style={{ float: "left", boxSizing: "border-box", margin: "20px" }}
             >
@@ -402,6 +409,7 @@ const AnalyticsReport = () => {
                         width: "80%",
                         boxSizing: "border-box",
                         paddingLeft: "30px",
+                        marginLeft:"25px"
                       }}
                     />
                   </div>

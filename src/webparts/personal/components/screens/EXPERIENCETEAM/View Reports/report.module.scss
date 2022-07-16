@@ -3,6 +3,8 @@
   width: 100%;
   display: flex;
   overflow: hidden;
+  padding: 0.5rem;
+  box-sizing: border-box;
 }
 
 .report__container__content {
@@ -10,9 +12,9 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  gap: 40px;
+  gap: 5px;
   position: absolute;
-  left: 200px;
+  left: 220px;
 }
 .role__edit__container {
   display: flex;
@@ -209,11 +211,4 @@
 .active {
   background: #ffc423;
   cursor: pointer;
-}
-
-@media screen and (max-width: 600px) {
-  .report__container__content {
-    left: 10px;
-    width: 85%;
-  }
 }

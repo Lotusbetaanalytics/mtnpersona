@@ -25,6 +25,7 @@ const PageSix = (props: Props) => {
   const [count, setCount] = React.useState(
     0 || JSON.parse(localStorage.getItem("count"))
   );
+
   const [questions, setQuestions] = React.useState(0);
   const [total, setTotal] = React.useState(0);
   const [others, setOthers] = React.useState("");
@@ -145,6 +146,14 @@ const PageSix = (props: Props) => {
           setTimeout(() => {
             history.push("/info/dashboard");
           }, 1000);
+          sp.profiles.myProperties.get().then((response) => {
+            sp.web.lists.getByTitle("Logs").items.add({
+              Title: "Survey Completed!",
+              Name: response.DisplayName,
+              Email: response.Email,
+              Description: "A survey was completed!",
+            });
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -187,6 +196,13 @@ const PageSix = (props: Props) => {
                         }
                         onChange={(e: any) => {
                           if (opt == "Others") {
+                            sectionResponses.length > 0 &&
+                              setSectionResponses((prev) => {
+                                return prev.filter(
+                                  ({ id, type }) =>
+                                    id != items.ID && type != "Others"
+                                );
+                              });
                             test[ind]["show"] = true;
                             test[ind][ind] = e.target.value;
                             let thisReponse = {
@@ -196,26 +212,50 @@ const PageSix = (props: Props) => {
                               question: items.questions,
                               type: "Others",
                             };
+
                             setOt({ ...ot, [ind]: thisReponse });
                           } else if (items.type == "checkbox") {
-                            setResponse([
-                              ...response,
+                            if (e.target && !e.target.checked) {
+                              sectionResponses.length > 0 &&
+                                setSectionResponses((prev) => {
+                                  return prev.filter(
+                                    ({ answer, id }) =>
+                                      answer != opt && id != items.ID
+                                  );
+                                });
+
+                              setResponse((prev) => {
+                                return prev.filter(
+                                  ({ answer }) => answer != opt
+                                );
+                              });
+
+                              return;
+                            }
+
+                            setResponse((prev) => [
+                              ...prev,
                               {
-                                answer: e.target.value,
+                                answer: opt,
                                 id: items.ID,
                                 section: items.section,
                                 question: items.questions,
-                                type: items.type,
+                                type: "checkbox",
                               },
                             ]);
-                          } else {
+                          } else if (items.type == "radio") {
+                            sectionResponses.length > 0 &&
+                              setSectionResponses((prev) => {
+                                return prev.filter(({ id }) => id != items.ID);
+                              });
+
                             test[ind]["show"] = false;
                             let thisReponse = {
                               answer: e.target.value,
                               id: items.ID,
                               section: items.section,
                               question: items.questions,
-                              type: items.type,
+                              type: "radio",
                             };
                             setOt({ ...ot, [ind]: thisReponse });
                           }

@@ -3,34 +3,37 @@ import styles from "./landing.module.scss";
 import { Link } from "react-router-dom";
 import { sp } from "@pnp/sp";
 import swal from "sweetalert";
+import { Context } from "../../Personal";
 
 type Props = {};
 
 const Landing = (props: Props) => {
   const [role, setRole] = React.useState("");
   const [showReport, setShowReport] = React.useState(false);
-  const [editMode, setEditMode] = React.useState(false);
+  // const [editMode, setEditMode] = React.useState(false);
+  const { editMode } = React.useContext(Context);
 
-  React.useEffect(() => {
-    const today = new Date(Date.now()).toISOString();
-    sp.web.lists
-      .getByTitle("Survey Sessions")
-      .items.filter("Status eq 'Started'")
-      .select("StartDate,EndDate,Status")
-      .get()
-      .then((items) => {
-        const getDates = items.map(({ StartDate, EndDate }) => {
-          return generateArrayOfDates(EndDate, StartDate);
-        });
+  // React.useEffect(() => {
+  //   const today = new Date(Date.now()).toISOString();
+  //   sp.web.lists
+  //     .getByTitle("Survey Sessions")
+  //     .items.filter("Status eq 'Started'")
+  //     .select("StartDate,EndDate,Status")
+  //     .get()
+  //     .then((items) => {
+  //       const getDates = items.map(({ StartDate, EndDate }) => {
+  //         return generateArrayOfDates(EndDate, StartDate);
+  //       });
 
-        for (let datesArr of getDates) {
-          if (datesArr.includes(new Date(today).toLocaleDateString())) {
-            setEditMode(true);
-            return;
-          }
-        }
-      });
-  }, []);
+  //       for (let datesArr of getDates) {
+  //         if (datesArr.includes(new Date(today).toLocaleDateString())) {
+  //           localStorage.setItem("sessionStarted", JSON.stringify(true));
+  //           setEditMode(true);
+  //           return;
+  //         }
+  //       }
+  //     });
+  // }, []);
 
   React.useEffect(() => {
     sp.profiles.myProperties.get().then((profile) => {

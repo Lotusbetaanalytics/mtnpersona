@@ -8,6 +8,7 @@ import "@pnp/sp/lists";
 import styles from "./userRegistration.module.scss";
 import { Context } from "../../../Personal";
 import swal from "sweetalert";
+import { Tooltip } from "@material-ui/core";
 
 const EditScreen1 = () => {
   const [name, setName] = React.useState("");
@@ -16,7 +17,7 @@ const EditScreen1 = () => {
   const [division, setDivision] = React.useState("");
   const [file, setFile] = React.useState("");
   const [res, setRes] = React.useState(null);
-  const { lineManager, setState } = React.useContext(Context);
+  const { lineManager, editMode } = React.useContext(Context);
   const [listofDivision, setListOfDivision] = React.useState([]);
 
   const reader = new FileReader();
@@ -36,7 +37,7 @@ const EditScreen1 = () => {
           const { dp, alias, division } = response[0];
           setAlias(alias);
           setDivision(division);
-          localStorage.setItem("editdp", dp);
+          localStorage.setItem("editdp", JSON.stringify(dp));
           dp &&
             setRes(
               React.createElement("img", {
@@ -163,9 +164,23 @@ const EditScreen1 = () => {
         />
         <div style={{ width: "10vw", height: "10vh" }}>{res}</div>
         <div className={styles.nav__buttons}>
-          <button type="submit" className={styles.filled__button}>
-            Next
-          </button>
+          {editMode ? (
+            <Tooltip title="Start Edit">
+              <button type="submit" className={styles.filled__button}>
+                Next
+              </button>
+            </Tooltip>
+          ) : (
+            <Tooltip title="You cannot edit">
+              <button
+                type="button"
+                disabled
+                className={styles.nobackground__button}
+              >
+                Next
+              </button>
+            </Tooltip>
+          )}
         </div>
       </form>
     </div>

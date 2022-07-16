@@ -7,11 +7,18 @@ import { Link, useHistory } from "react-router-dom";
 import styles from "./modal.module.scss";
 import { Cancel } from "@material-ui/icons";
 import { sp, spGet, spPost } from "@pnp/sp";
+import {
+  SPHttpClient,
+  SPHttpClientConfiguration,
+  SPHttpClientResponse,
+} from "@microsoft/sp-http";
 import { default as pnp, ItemAddResult } from "sp-pnp-js";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import Toast from "../../../Containers/Toast";
 import { FormControl, MenuItem, Select } from "@material-ui/core";
+import { Context } from "../../../Personal";
+import { BASE_URL } from "../../../config";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,6 +44,17 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
   const [loading, setLoading] = React.useState(false);
   const history = useHistory();
   const questionList = JSON.parse(localStorage.getItem("hr"));
+  const { spHttpClient } = React.useContext(Context);
+
+  React.useEffect(() => {
+    sp.web.lists
+      .getByTitle("Questions")
+      .items.get()
+      .then((res) => {
+        console.log(res);
+      });
+  }, []);
+
   const onSubmitHandler = () => {
     setLoading(true);
     if (!questionList) {
@@ -47,30 +65,59 @@ const ModalFive = ({ open: newOpen, handleClose }) => {
       }, 1500);
     } else {
       try {
-        sp.web.lists
-          .getByTitle("Questions")
-          .items.add({
-            Title: `${Math.random()}`,
-            questions: questionList.question,
-            section: section,
-            type: questionList.type,
-            required: JSON.stringify(questionList.required),
-            options: JSON.stringify(questionList.options),
+        spHttpClient
+          .post(
+            `${BASE_URL}/_api/web/lists/getbytitle('Questions')/items`,
+            SPHttpClient.configurations.v1,
+            {
+              headers: {
+                Accept: "application/json;odata=nometadata",
+                "Content-type": "application/json;odata=nometadata",
+                "odata-version": "",
+              },
+              body: JSON.stringify({
+                Title: `${section}`,
+                questions: questionList.question,
+                section: section,
+                type: questionList.type,
+                required: JSON.stringify(questionList.required),
+                options: JSON.stringify(questionList.options),
+              }),
+            }
+          )
+          .then((response: SPHttpClientResponse) => {
+            if (response.ok) {
+              response.json().then((responseJSON) => {
+                localStorage.removeItem("hr");
+                setShow(true);
+                setMessage("Question Added!");
+                setLoading(false);
+                sp.profiles.myProperties.get().then((response) => {
+                  sp.web.lists.getByTitle("Logs").items.add({
+                    Title: "New Question Added!",
+                    Name: response.DisplayName,
+                    EmailAddress: response.Email,
+                    Description: "A new question has been added!",
+                  });
+                });
+                setTimeout(() => {
+                  closeModal();
+                }, 500);
+              });
+            } else {
+              response.json().then((responseJSON) => {
+                console.log(responseJSON);
+                setShow(true);
+                setMessage("Something went wrong");
+                setLoading(false);
+              });
+            }
           })
-          .then(() => {
-            localStorage.removeItem("hr");
-            setShow(true);
-            setMessage("Question Added!");
-            setLoading(false);
-            setTimeout(() => {
-              closeModal();
-            }, 500);
-          })
-          .catch((e) => {
+          .catch((err) => {
             setLoading(false);
             setShow(true);
             setMessage("Something went wrong");
-            console.log(e);
+            console.log(err);
           });
       } catch (e) {
         setLoading(false);

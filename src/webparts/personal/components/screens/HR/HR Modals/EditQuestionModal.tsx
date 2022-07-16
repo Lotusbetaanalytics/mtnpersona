@@ -10,6 +10,13 @@ import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import { Cancel, CancelSharp } from "@material-ui/icons";
 import { FormControl, MenuItem, Select } from "@material-ui/core";
+import { Context } from "../../../Personal";
+import {
+  SPHttpClient,
+  SPHttpClientConfiguration,
+  SPHttpClientResponse,
+} from "@microsoft/sp-http";
+import { BASE_URL } from "../../../config";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,6 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
   const classes = useStyles();
+  const { spHttpClient } = React.useContext(Context);
   const [question, setQuestion] = React.useState("");
   const [opt, setopt] = React.useState([]);
   const [section, setSection] = React.useState("");
@@ -46,22 +54,46 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
   }, [item]);
 
   const yesHandler = () => {
-    sp.web.lists
-      .getByTitle("Questions")
-      .items.getById(id)
-      .update({
-        questions: question,
-        type: type,
-        options: JSON.stringify(opt),
-        required: JSON.stringify(required),
-        section: section,
-      })
+    spHttpClient
+      .post(
+        `${BASE_URL}/_api/web/lists/getbytitle('Questions')/items(${id})`,
+        SPHttpClient.configurations.v1,
+        {
+          headers: {
+            Accept: "application/json;odata=nometadata",
+            "Content-type": "application/json;odata=nometadata",
+            "odata-version": "",
+            "IF-MATCH": "*",
+            "X-HTTP-Method": "MERGE",
+          },
+          body: JSON.stringify({
+            questions: question,
+            type: type,
+            options: JSON.stringify(opt),
+            required: JSON.stringify(required),
+            section: section,
+          }),
+        }
+      )
       .then(() => {
         sp.web.lists
           .getByTitle("Questions")
           .items.get()
           .then((res) => {
             setList(res);
+            sp.profiles.myProperties.get().then((response) => {
+              sp.web.lists
+                .getByTitle("Logs")
+                .items.add({
+                  Title: "Question Edited!",
+                  Name: response.DisplayName,
+                  EmailAddress: response.Email,
+                  Description: "A question was edited!",
+                })
+                .then(() => {
+                  console.log("success");
+                });
+            });
           });
       });
     handleClose();

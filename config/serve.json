@@ -2,5 +2,5 @@
   "$schema": "https://developer.microsoft.com/json-schemas/core-build/serve.schema.json",
   "port": 4321,
   "https": true,
-  "initialPage": "https://lotusbetaanalytics.sharepoint.com/sites/Persona/_layouts/workbench.aspx"
+  "initialPage": "https://mtncloud.sharepoint.com/sites/UATApplications/MTNPersona/_layouts/workbench.aspx"
 }

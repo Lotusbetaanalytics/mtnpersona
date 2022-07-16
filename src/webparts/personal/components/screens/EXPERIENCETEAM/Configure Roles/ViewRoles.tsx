@@ -21,11 +21,13 @@ import { useHistory, useParams } from "react-router-dom";
 import ExperienceTeamHeader from "../Experience Team Header/ExperienceTeamHeader";
 import ExperienceTeamNavbar from "../Experience Team Navbar/ExperienceTeamNavbar";
 import styles from "../View Reports/report.module.scss";
+import style from "./configure.module.scss";
 import { sp } from "@pnp/sp";
 import { Spinner } from "office-ui-fabric-react";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { Fade, Modal, Backdrop } from "@material-ui/core/";
+import { Fade, Modal, Backdrop, Chip } from "@material-ui/core/";
 import { useToasts } from "react-toast-notifications";
+import Select from "../../../Containers/Select/Select";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,7 +53,21 @@ const ViewRoles = () => {
     { title: "Employee Name", field: "Name", type: "string" as const },
     { title: "Email", field: "Email", type: "string" as const },
     { title: "Role", field: "Role" },
-    { title: "Division", field: "Division", type: "string" as const },
+    // { title: "Division", field: "Division", type: "string" as const },
+    {
+      title: "Assigned Divisions",
+      field: "BpDivisions",
+      type: "string" as const,
+      render: ({ BpDivisions }) => {
+        return (
+          BpDivisions &&
+          JSON.parse(BpDivisions) &&
+          JSON.parse(BpDivisions).map((item: any) => {
+            return <li>{item}</li>;
+          })
+        );
+      },
+    },
   ];
 
   const [data, setData] = React.useState([]);
@@ -174,6 +190,7 @@ const ViewRoles = () => {
                 width: "80%",
                 boxSizing: "border-box",
                 paddingLeft: "30px",
+                marginLeft: "20px",
               }}
               actions={[
                 {
@@ -241,6 +258,7 @@ export const TransitionsModal = ({
 }) => {
   const { addToast } = useToasts();
   const classes = useStyles();
+  const [deleting, setDeleting] = React.useState(false);
 
   const noHandler = (e: any) => {
     e.preventDefault();
@@ -248,12 +266,22 @@ export const TransitionsModal = ({
   };
   const yesHandler = (e: any) => {
     e.preventDefault();
+    setDeleting(true);
     sp.web.lists
       .getByTitle("Roles")
       .items.getById(itemID)
       .delete()
       .then(() => {
+        setDeleting(false);
         setData((prev) => prev.filter((item: any) => item.ID !== itemID));
+        sp.profiles.myProperties.get().then((response) => {
+          sp.web.lists.getByTitle("Logs").items.add({
+            Title: "Role deleted!",
+            Name: response.DisplayName,
+            EmailAddress: response.Email,
+            Description: "User role was deleted!",
+          });
+        });
         return addToast("Delete Successful", {
           appearance: "success",
           autoDismiss: true,
@@ -292,8 +320,14 @@ export const TransitionsModal = ({
             </div>
             <h3>Are you sure you want to delete?</h3>
             <div className={styles.modal__container}>
-              <button onClick={noHandler}>No</button>
-              <button onClick={yesHandler}>Yes</button>
+              <button disabled={deleting} onClick={noHandler}>
+                No
+              </button>
+              {deleting ? (
+                <button disabled>Deleting...</button>
+              ) : (
+                <button onClick={yesHandler}>Yes</button>
+              )}
             </div>
           </div>
         </Fade>
@@ -309,11 +343,17 @@ export const EditRoles = () => {
   const user = useParams() as link;
   const history = useHistory();
   const { addToast } = useToasts();
-
+  const [allDivisions, setAllDivisions] = React.useState([]);
+  const [showDivisionSelect, setShowDivisionSelection] = React.useState(false);
+  const [divisionRequired, setDivisionRequired] = React.useState(false);
+  const [openModal, setOpenModal] = React.useState(false);
+  const [selectedDivision, setSelectedDivision] = React.useState([]);
   const [foundRole, setFoundRole] = React.useState("");
   const [foundEmail, setFoundEmail] = React.useState("");
   const [foundDivision, setFoundDivision] = React.useState("");
+  const [divisions, setDivisions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [newDivisions, setNewDivisions] = React.useState("");
   React.useEffect(() => {
     sp.web.lists
       .getByTitle("Roles")
@@ -323,30 +363,92 @@ export const EditRoles = () => {
         setFoundDivision(items.Division);
         setFoundRole(items.Role);
         setFoundEmail(items.Email);
+        if (items.BpDivisions) {
+          setDivisions(JSON.parse(items.BpDivisions));
+        }
       });
   }, []);
 
-  const updateHandler = (e) => {
-    e.preventDefault();
-    setLoading(true);
+  //Get all divisions
+  React.useEffect(() => {
     sp.web.lists
-      .getByTitle("Roles")
-      .items.getById(Number(user.id))
-      .update({ Email: foundEmail })
-      .then((result) => {
-        setLoading(false);
-        return addToast("Update Successful", {
-          appearance: "success",
-          autoDismiss: true,
-        });
-      })
-      .catch((err) => {
-        setLoading(false);
-        return addToast("An error occured! Please try again", {
-          appearance: "error",
-          autoDismiss: true,
-        });
+      .getByTitle("MTN DIVISION")
+      .items.get()
+      .then((response) => {
+        setAllDivisions(response);
       });
+  }, []);
+
+  const deleteDivision = (index) => {
+    window.confirm("Are you sure you want to delete this division?") &&
+      setDivisions((prev) => prev.filter((item, i) => i !== index));
+  };
+
+  const updateHandler = (e) => {
+    if (foundRole == "HRBP") {
+      e.preventDefault();
+      setLoading(true);
+      sp.web.lists
+        .getByTitle("Roles")
+        .items.getById(Number(user.id))
+        .update({
+          Email: foundEmail,
+          BpDivisions: JSON.stringify(divisions),
+        })
+        .then((result) => {
+          setLoading(false);
+          sp.profiles.myProperties.get().then((response) => {
+            sp.web.lists.getByTitle("Logs").items.add({
+              Title: "Role edited!",
+              Name: response.DisplayName,
+              EmailAddress: response.Email,
+              Description: "User role was edited!",
+            });
+          });
+          return addToast("Update Successful", {
+            appearance: "success",
+            autoDismiss: true,
+          });
+        })
+        .catch((err) => {
+          setLoading(false);
+          return addToast("An error occured! Please try again", {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        });
+    } else {
+      e.preventDefault();
+      setLoading(true);
+      sp.web.lists
+        .getByTitle("Roles")
+        .items.getById(Number(user.id))
+        .update({
+          Email: foundEmail,
+        })
+        .then((result) => {
+          setLoading(false);
+          sp.profiles.myProperties.get().then((response) => {
+            sp.web.lists.getByTitle("Logs").items.add({
+              Title: "Role edited!",
+              Name: response.DisplayName,
+              EmailAddress: response.Email,
+              Description: "User role was edited!",
+            });
+          });
+          return addToast("Update Successful", {
+            appearance: "success",
+            autoDismiss: true,
+          });
+        })
+        .catch((err) => {
+          setLoading(false);
+          return addToast("An error occured! Please try again", {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        });
+    }
   };
 
   const backHandler = () => {
@@ -383,15 +485,17 @@ export const EditRoles = () => {
                 className={styles.role__edit__input}
               />
             </div>
-            <div className={styles.role__edit__container}>
-              <label htmlFor="">Division</label>
-              <input
-                type="text"
-                className={styles.role__edit__input}
-                value={foundDivision}
-                readOnly
-              />
-            </div>
+            {foundRole != "HRBP" && (
+              <div className={styles.role__edit__container}>
+                <label htmlFor="">Division</label>
+                <input
+                  type="text"
+                  className={styles.role__edit__input}
+                  value={foundDivision}
+                  readOnly
+                />
+              </div>
+            )}
             <div className={styles.role__edit__container}>
               <label htmlFor="">Email</label>
               <input
@@ -403,8 +507,91 @@ export const EditRoles = () => {
                 }}
               />
             </div>
+            {foundRole == "HRBP" && (
+              <>
+                <div>
+                  <label htmlFor="">Assigned Divisions</label>
+                  <div
+                    style={{
+                      maxWidth: "50%",
+                      maxHeight: "40%",
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "10px",
+                      boxSizing: "border-box",
+                      padding: "5px",
+                    }}
+                  >
+                    {divisions.map((item: any) => {
+                      return (
+                        <div
+                          style={{
+                            maxWidth: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Chip label={item} />
+                          <span
+                            onClick={() => {
+                              deleteDivision(divisions.indexOf(item));
+                            }}
+                          >
+                            <Cancel />
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className={style.input__area}>
+                  <div>Add Division</div>
+                  <div>
+                    <Select
+                      value={newDivisions}
+                      showSelect={showDivisionSelect}
+                      setShowSelection={setShowDivisionSelection}
+                    >
+                      <div
+                        style={{
+                          maxHeight: "450px",
+                          border: "1px solid rgba(0, 0, 0, 0.31)",
+                          overflowY: "scroll",
+                          backgroundColor: "#fff",
+                        }}
+                      >
+                        {allDivisions.map(({ Division: division }) => {
+                          return (
+                            <div
+                              className={style.container__content__select}
+                              onClick={() => {
+                                setShowDivisionSelection(false);
+                                setNewDivisions(division);
+                                if (divisions.indexOf(division) == -1) {
+                                  setDivisions((prev) => [...prev, division]);
+                                }
+                              }}
+                            >
+                              <div
+                                style={{
+                                  flex: 1,
+                                }}
+                              >
+                                {division}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </Select>
+                  </div>
+                </div>
+              </>
+            )}
             <div className={styles.role__edit__btn}>
-              <button onClick={backHandler}>Go back</button>
+              <button type="button" onClick={backHandler}>
+                Go back
+              </button>
               {loading ? (
                 <button disabled>Updating...</button>
               ) : (

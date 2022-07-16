@@ -7,6 +7,7 @@ const InputField = ({
   label,
   type,
   id,
+  list = "",
   readOnly = false,
   required = false,
 }) => {
@@ -21,6 +22,7 @@ const InputField = ({
         id={id}
         readOnly={readOnly}
         required={required}
+        list={list}
       />
     </div>
   );

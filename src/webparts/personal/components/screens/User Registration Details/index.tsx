@@ -16,8 +16,9 @@ const Screen1 = () => {
   const [division, setDivision] = React.useState("");
   const [file, setFile] = React.useState("");
   const [res, setRes] = React.useState(null);
-  const { lineManager, setState } = React.useContext(Context);
+  const { lineManager, setState, confirmedStaff } = React.useContext(Context);
   const [listofDivision, setListOfDivision] = React.useState([]);
+  const [editLineManager, setEditLineManager] = React.useState(lineManager);
 
   const reader = new FileReader();
 
@@ -60,12 +61,19 @@ const Screen1 = () => {
               email,
               alias,
               division,
-              LineManager: lineManager,
+              LineManager: editLineManager,
               dp: file,
             })
           );
           history.push("/info/page1");
         }
+      })
+      .catch((error) => {
+        swal(
+          "Error",
+          "An error occurred while processing your request. Please try again later.",
+          "error"
+        );
       });
   };
 
@@ -95,14 +103,20 @@ const Screen1 = () => {
         />
         <Input
           type="text"
-          value={lineManager}
+          value={editLineManager}
           onChange={(e: any) => {
-            // setEmail(e.target.value);
+            setEditLineManager(e.target.value);
           }}
-          readOnly={true}
           label="Employee Line Manager"
           id="manager"
+          list="people"
+          required={true}
         />
+        <datalist id="people">
+          {confirmedStaff.map(({ EMAIL_ADDRESS }) => {
+            return <option value={EMAIL_ADDRESS}></option>;
+          })}
+        </datalist>
         <Input
           type="text"
           value={alias}

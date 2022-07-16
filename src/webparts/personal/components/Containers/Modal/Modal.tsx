@@ -155,7 +155,19 @@ export const ModalPermission = ({ open, handleClose, history, id, data }) => {
           autoDismiss: true,
         });
         setLoading(false);
-        history.push("/experienceteam/date/view");
+        sp.profiles.myProperties.get().then((response) => {
+          sp.web.lists
+            .getByTitle("Logs")
+            .items.add({
+              Title: "Update Survey Session",
+              Name: response.DisplayName,
+              EmailAddress: response.Email,
+              Description: "Survey date was edited!",
+            })
+            .then(() => {
+              history.push("/experienceteam/date/view");
+            });
+        });
       })
       .catch((err) => {
         setLoading(false);

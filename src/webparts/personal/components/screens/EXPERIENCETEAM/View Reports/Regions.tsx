@@ -326,6 +326,7 @@ const Regions = () => {
                       width: "80%",
                       boxSizing: "border-box",
                       paddingLeft: "30px",
+                      marginLeft: "25px",
                     }}
                   />
                 </div>
