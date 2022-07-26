@@ -1,4 +1,5 @@
 import * as React from "react";
+import { BASE_URL } from "../config";
 
 const PageNotFound = () => {
   return (
@@ -16,9 +17,7 @@ const PageNotFound = () => {
       <h1>Page Not Found!</h1>
       <div>
         Check the url and try again or &nbsp;&nbsp;
-        <a href="https://lotusbetaanalytics.sharepoint.com/sites/Persona#/">
-          Go Home
-        </a>
+        <a href={`${BASE_URL}`}>Go Home</a>
       </div>
     </div>
   );

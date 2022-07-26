@@ -17,6 +17,7 @@ import {
   SPHttpClientResponse,
 } from "@microsoft/sp-http";
 import { BASE_URL } from "../../../config";
+import { useToasts } from "react-toast-notifications";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,6 +45,7 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
   const [newOption, setNewOption] = React.useState("");
   const [listOfSections, setListOfSections] = React.useState([]);
   const [required, setRequired] = React.useState(false);
+  const { addToast } = useToasts();
 
   React.useEffect(() => {
     setQuestion(item.questions);
@@ -81,6 +83,10 @@ const EditQuestionModal = ({ open, handleClose, setList, item, id }) => {
           .items.get()
           .then((res) => {
             setList(res);
+            addToast("Edit Successful", {
+              appearance: "success",
+              autoDismiss: true,
+            });
             sp.profiles.myProperties.get().then((response) => {
               sp.web.lists
                 .getByTitle("Logs")

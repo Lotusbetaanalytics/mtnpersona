@@ -66,7 +66,10 @@ const Landing = (props: Props) => {
       <div className={`${styles.landing__container}`}>
         <div className={`${styles.landing__contents}`}>
           <div className={`${styles.landing__logo}`}>
-            <img src="https://lotusbetaanalytics.com/mtn/logo.jpg" alt="MTN" />
+            <img
+              src="https://www.mtn.com/wp-content/themes/mtn-refresh/public/img/mtn-logo.svg"
+              alt="MTN"
+            />
           </div>
           <div className={`${styles.landing__title}`}>
             <h6>Welcome to the</h6>
@@ -79,9 +82,9 @@ const Landing = (props: Props) => {
                   </button>
                   <button>
                     {showReport ? (
-                      <Link to="/info/dashboard">View Report</Link>
+                      <Link to="/info/dashboard">View My Report</Link>
                     ) : (
-                      <Link to="/info/personal">Discover Persona</Link>
+                      <Link to="/info/personal">Discover My Persona</Link>
                     )}
                   </button>
                 </div>
@@ -92,24 +95,24 @@ const Landing = (props: Props) => {
                   </button>
                   <button>
                     {showReport ? (
-                      <Link to="/info/dashboard">View Report</Link>
+                      <Link to="/info/dashboard">View My Report</Link>
                     ) : (
-                      <Link to="/info/personal">Discover Persona</Link>
+                      <Link to="/info/personal">Discover My Persona</Link>
                     )}
                   </button>
                 </div>
               ) : (
                 <button>
                   {showReport ? (
-                    <Link to="/info/dashboard">View Report</Link>
+                    <Link to="/info/dashboard">View My Report</Link>
                   ) : (
-                    <Link to="/info/personal">Discover Persona</Link>
+                    <Link to="/info/personal">Discover My Persona</Link>
                   )}
                 </button>
               )}
               {editMode && showReport && (
                 <button>
-                  <Link to="/dashboard/edit/start">Edit Persona</Link>
+                  <Link to="/dashboard/edit/start">Edit My Persona</Link>
                 </button>
               )}
             </div>

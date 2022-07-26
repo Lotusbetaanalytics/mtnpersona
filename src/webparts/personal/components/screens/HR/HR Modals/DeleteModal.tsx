@@ -47,7 +47,7 @@ const DeleteModal = ({ open, handleClose, setList, id }) => {
               Description: "A question was deleted!",
             })
             .then(() => {
-              return addToast("Delete Successful", {
+              addToast("Delete Successful", {
                 appearance: "success",
                 autoDismiss: true,
               });

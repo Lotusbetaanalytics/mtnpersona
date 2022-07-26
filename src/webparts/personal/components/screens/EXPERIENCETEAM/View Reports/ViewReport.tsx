@@ -484,8 +484,6 @@ const ViewReport = () => {
           </div>
         ) : (
           <MaterialTable
-            //@ts-ignore:
-            id="report"
             icons={{
               Add: forwardRef((props: any, ref: any) => (
                 <AddBox {...props} ref={ref} />

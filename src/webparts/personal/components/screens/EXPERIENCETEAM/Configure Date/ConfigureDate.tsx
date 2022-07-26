@@ -372,7 +372,7 @@ export function DisplayModal({
                   setTimeout(() => {
                     setOpen(false);
                     handleClose();
-                  }, 1000);
+                  }, 500);
                 });
             });
           })
